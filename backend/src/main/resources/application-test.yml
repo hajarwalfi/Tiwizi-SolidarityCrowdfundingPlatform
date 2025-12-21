@@ -1,0 +1,29 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:tiwizi
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+        dialect: org.hibernate.dialect.H2Dialect
+
+  liquibase:
+    enabled: false
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+logging:
+  level:
+    com.tiwizi: INFO
+    org.springframework: WARN
+    org.hibernate: WARN

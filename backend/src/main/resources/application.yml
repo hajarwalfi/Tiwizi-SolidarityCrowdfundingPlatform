@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: Tiwizi
+
+  profiles:
+    active: dev
+
+server:
+  port: 8080
+  error:
+    include-message: always
+
+logging:
+  level:
+    com.tiwizi: DEBUG
+    org.springframework: INFO
