@@ -1,4 +1,4 @@
-package Tiwizi;
+package com.tiwizi;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
