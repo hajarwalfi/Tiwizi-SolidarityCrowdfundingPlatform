@@ -1,9 +1,9 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/Tiwizi
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/Tiwizi}
     driver-class-name: org.postgresql.Driver
-    username: postgres
-    password: BLISSFUL
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:}
 
   jpa:
     hibernate:
