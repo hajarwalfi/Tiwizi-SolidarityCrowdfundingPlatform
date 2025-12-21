@@ -1,5 +1,6 @@
 spring:
   datasource:
+    # DB_PASSWORD must be provided via environment (no default) to avoid committing secrets
     url: ${DB_URL:jdbc:postgresql://localhost:5432/Tiwizi}
     driver-class-name: org.postgresql.Driver
     username: ${DB_USERNAME:postgres}
