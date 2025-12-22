@@ -1,0 +1,90 @@
+databaseChangeLog:
+  - changeSet:
+      id: 003-create-donations-table
+      author: Hajar Walfi
+      changes:
+        - createTable:
+            tableName: donations
+            columns:
+              - column:
+                  name: id
+                  type: varchar(36)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+                  defaultValueComputed: gen_random_uuid()::varchar
+              - column:
+                  name: campaign_id
+                  type: varchar(36)
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_donations_campaign
+                    references: campaigns(id)
+              - column:
+                  name: donor_id
+                  type: varchar(36)
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_donations_donor
+                    references: users(id)
+              - column:
+                  name: amount
+                  type: decimal(15,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: payment_method
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: payment_status
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                  defaultValue: "PENDING"
+              - column:
+                  name: transaction_id
+                  type: varchar(255)
+              - column:
+                  name: message
+                  type: text
+              - column:
+                  name: is_anonymous
+                  type: boolean
+                  defaultValueBoolean: false
+              - column:
+                  name: receipt_url
+                  type: varchar(500)
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+        - createIndex:
+            tableName: donations
+            indexName: idx_donations_campaign
+            columns:
+              - column:
+                  name: campaign_id
+        - createIndex:
+            tableName: donations
+            indexName: idx_donations_donor
+            columns:
+              - column:
+                  name: donor_id
+        - createIndex:
+            tableName: donations
+            indexName: idx_donations_payment_status
+            columns:
+              - column:
+                  name: payment_status
+        - createIndex:
+            tableName: donations
+            indexName: idx_donations_created_at
+            columns:
+              - column:
+                  name: created_at
