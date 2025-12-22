@@ -1,0 +1,79 @@
+databaseChangeLog:
+  - changeSet:
+      id: 006-create-reports-table
+      author: Hajar Walfi
+      changes:
+        - createTable:
+            tableName: reports
+            columns:
+              - column:
+                  name: id
+                  type: varchar(36)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+                  defaultValueComputed: gen_random_uuid()::varchar
+              - column:
+                  name: campaign_id
+                  type: varchar(36)
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_reports_campaign
+                    references: campaigns(id)
+              - column:
+                  name: reporter_id
+                  type: varchar(36)
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_reports_reporter
+                    references: users(id)
+              - column:
+                  name: reason
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                  defaultValue: "PENDING"
+              - column:
+                  name: reviewed_by
+                  type: varchar(36)
+                  constraints:
+                    foreignKeyName: fk_reports_reviewer
+                    references: users(id)
+              - column:
+                  name: reviewed_at
+                  type: timestamp
+              - column:
+                  name: admin_notes
+                  type: text
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+        - createIndex:
+            tableName: reports
+            indexName: idx_reports_campaign
+            columns:
+              - column:
+                  name: campaign_id
+        - createIndex:
+            tableName: reports
+            indexName: idx_reports_reporter
+            columns:
+              - column:
+                  name: reporter_id
+        - createIndex:
+            tableName: reports
+            indexName: idx_reports_status
+            columns:
+              - column:
+                  name: status

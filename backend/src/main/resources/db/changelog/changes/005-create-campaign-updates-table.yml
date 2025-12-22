@@ -1,0 +1,51 @@
+databaseChangeLog:
+  - changeSet:
+      id: 005-create-campaign-updates-table
+      author: Hajar Walfi
+      changes:
+        - createTable:
+            tableName: campaign_updates
+            columns:
+              - column:
+                  name: id
+                  type: varchar(36)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+                  defaultValueComputed: gen_random_uuid()::varchar
+              - column:
+                  name: campaign_id
+                  type: varchar(36)
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_campaign_updates_campaign
+                    references: campaigns(id)
+              - column:
+                  name: title
+                  type: varchar(200)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: content
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: image_url
+                  type: varchar(500)
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+        - createIndex:
+            tableName: campaign_updates
+            indexName: idx_campaign_updates_campaign
+            columns:
+              - column:
+                  name: campaign_id
+        - createIndex:
+            tableName: campaign_updates
+            indexName: idx_campaign_updates_created_at
+            columns:
+              - column:
+                  name: created_at

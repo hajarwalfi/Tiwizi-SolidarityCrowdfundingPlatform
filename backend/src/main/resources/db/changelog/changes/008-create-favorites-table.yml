@@ -1,0 +1,49 @@
+databaseChangeLog:
+  - changeSet:
+      id: 008-create-favorites-table
+      author: Hajar Walfi
+      changes:
+        - createTable:
+            tableName: favorites
+            columns:
+              - column:
+                  name: id
+                  type: varchar(36)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+                  defaultValueComputed: gen_random_uuid()::varchar
+              - column:
+                  name: user_id
+                  type: varchar(36)
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_favorites_user
+                    references: users(id)
+              - column:
+                  name: campaign_id
+                  type: varchar(36)
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_favorites_campaign
+                    references: campaigns(id)
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+        - addUniqueConstraint:
+            tableName: favorites
+            columnNames: user_id, campaign_id
+            constraintName: uk_favorites_user_campaign
+        - createIndex:
+            tableName: favorites
+            indexName: idx_favorites_user
+            columns:
+              - column:
+                  name: user_id
+        - createIndex:
+            tableName: favorites
+            indexName: idx_favorites_campaign
+            columns:
+              - column:
+                  name: campaign_id
