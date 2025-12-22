@@ -5,3 +5,30 @@ databaseChangeLog:
       changes:
         - tagDatabase:
             tag: version-0.0.1
+
+  - include:
+      file: db/changelog/changes/001-create-users-table.yml
+
+  - include:
+      file: db/changelog/changes/002-create-campaigns-table.yml
+
+  - include:
+      file: db/changelog/changes/003-create-donations-table.yml
+
+  - include:
+      file: db/changelog/changes/004-create-documents-table.yml
+
+  - include:
+      file: db/changelog/changes/005-create-campaign-updates-table.yml
+
+  - include:
+      file: db/changelog/changes/006-create-reports-table.yml
+
+  - include:
+      file: db/changelog/changes/007-create-fund-requests-table.yml
+
+  - include:
+      file: db/changelog/changes/008-create-favorites-table.yml
+
+  - include:
+      file: db/changelog/changes/009-create-notifications-table.yml
