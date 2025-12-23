@@ -1,0 +1,167 @@
+<div class="min-h-screen bg-gray-50 p-8">
+  <div class="max-w-6xl mx-auto space-y-8">
+
+    <!-- Header -->
+    <div class="text-center">
+      <h1 class="text-4xl font-bold text-gray-900 mb-2">Tailwind CSS Test Component</h1>
+      <p class="text-lg text-gray-600">Demonstrating various Tailwind CSS utilities</p>
+    </div>
+
+    <!-- Color Palette -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <h2 class="text-2xl font-semibold text-gray-800 mb-4">Color Palette</h2>
+      <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+        <div class="bg-blue-500 text-white p-4 rounded text-center">Blue</div>
+        <div class="bg-green-500 text-white p-4 rounded text-center">Green</div>
+        <div class="bg-red-500 text-white p-4 rounded text-center">Red</div>
+        <div class="bg-yellow-500 text-white p-4 rounded text-center">Yellow</div>
+        <div class="bg-purple-500 text-white p-4 rounded text-center">Purple</div>
+        <div class="bg-pink-500 text-white p-4 rounded text-center">Pink</div>
+      </div>
+    </div>
+
+    <!-- Buttons -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <h2 class="text-2xl font-semibold text-gray-800 mb-4">Buttons</h2>
+      <div class="flex flex-wrap gap-4">
+        <button class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition">
+          Primary Button
+        </button>
+        <button class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded transition">
+          Secondary Button
+        </button>
+        <button class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition">
+          Success Button
+        </button>
+        <button class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition">
+          Danger Button
+        </button>
+        <button class="border-2 border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white font-bold py-2 px-4 rounded transition">
+          Outline Button
+        </button>
+      </div>
+    </div>
+
+    <!-- Cards -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <h2 class="text-2xl font-semibold text-gray-800 mb-4">Cards</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        <div class="border rounded-lg overflow-hidden shadow hover:shadow-lg transition">
+          <div class="bg-gradient-to-r from-blue-500 to-purple-600 h-32"></div>
+          <div class="p-4">
+            <h3 class="font-bold text-xl mb-2">Card Title 1</h3>
+            <p class="text-gray-600">This is a sample card with Tailwind CSS styling.</p>
+            <button class="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">
+              Learn More
+            </button>
+          </div>
+        </div>
+
+        <div class="border rounded-lg overflow-hidden shadow hover:shadow-lg transition">
+          <div class="bg-gradient-to-r from-green-500 to-teal-600 h-32"></div>
+          <div class="p-4">
+            <h3 class="font-bold text-xl mb-2">Card Title 2</h3>
+            <p class="text-gray-600">Another beautiful card showcasing gradients.</p>
+            <button class="mt-4 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition">
+              Learn More
+            </button>
+          </div>
+        </div>
+
+        <div class="border rounded-lg overflow-hidden shadow hover:shadow-lg transition">
+          <div class="bg-gradient-to-r from-pink-500 to-orange-600 h-32"></div>
+          <div class="p-4">
+            <h3 class="font-bold text-xl mb-2">Card Title 3</h3>
+            <p class="text-gray-600">Responsive cards that adapt to screen size.</p>
+            <button class="mt-4 bg-pink-500 text-white px-4 py-2 rounded hover:bg-pink-600 transition">
+              Learn More
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Forms -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <h2 class="text-2xl font-semibold text-gray-800 mb-4">Form Elements</h2>
+      <form class="space-y-4">
+        <div>
+          <label class="block text-gray-700 font-bold mb-2">Text Input</label>
+          <input type="text" placeholder="Enter your name"
+                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+
+        <div>
+          <label class="block text-gray-700 font-bold mb-2">Email Input</label>
+          <input type="email" placeholder="your@email.com"
+                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+
+        <div>
+          <label class="block text-gray-700 font-bold mb-2">Textarea</label>
+          <textarea rows="4" placeholder="Enter your message"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+        </div>
+
+        <div class="flex items-center">
+          <input type="checkbox" id="agree" class="mr-2 h-4 w-4 text-blue-500">
+          <label for="agree" class="text-gray-700">I agree to the terms and conditions</label>
+        </div>
+
+        <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded-lg transition">
+          Submit Form
+        </button>
+      </form>
+    </div>
+
+    <!-- Alerts -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <h2 class="text-2xl font-semibold text-gray-800 mb-4">Alerts</h2>
+      <div class="space-y-4">
+        <div class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 rounded">
+          <p class="font-bold">Info Alert</p>
+          <p>This is an informational message.</p>
+        </div>
+
+        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded">
+          <p class="font-bold">Success Alert</p>
+          <p>Your action was completed successfully!</p>
+        </div>
+
+        <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded">
+          <p class="font-bold">Warning Alert</p>
+          <p>Please review this warning message.</p>
+        </div>
+
+        <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded">
+          <p class="font-bold">Error Alert</p>
+          <p>An error occurred. Please try again.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Responsive Grid -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <h2 class="text-2xl font-semibold text-gray-800 mb-4">Responsive Grid</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div class="bg-indigo-500 text-white p-6 rounded text-center">Item 1</div>
+        <div class="bg-indigo-500 text-white p-6 rounded text-center">Item 2</div>
+        <div class="bg-indigo-500 text-white p-6 rounded text-center">Item 3</div>
+        <div class="bg-indigo-500 text-white p-6 rounded text-center">Item 4</div>
+        <div class="bg-indigo-500 text-white p-6 rounded text-center">Item 5</div>
+        <div class="bg-indigo-500 text-white p-6 rounded text-center">Item 6</div>
+        <div class="bg-indigo-500 text-white p-6 rounded text-center">Item 7</div>
+        <div class="bg-indigo-500 text-white p-6 rounded text-center">Item 8</div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="bg-gray-800 text-white rounded-lg shadow-md p-6 text-center">
+      <p class="text-lg">Tailwind CSS is working perfectly! ✅</p>
+      <p class="text-sm text-gray-400 mt-2">All utility classes are properly configured</p>
+    </div>
+
+  </div>
+</div>
