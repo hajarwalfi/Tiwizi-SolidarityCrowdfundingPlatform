@@ -1,0 +1,42 @@
+databaseChangeLog:
+  - changeSet:
+      id: 013-align-donations-table
+      author: Hajar Walfi
+      changes:
+        # Rename columns to match entity
+        - renameColumn:
+            tableName: donations
+            oldColumnName: payment_status
+            newColumnName: status
+            columnDataType: varchar(50)
+
+        - renameColumn:
+            tableName: donations
+            oldColumnName: transaction_id
+            newColumnName: payment_transaction_id
+            columnDataType: varchar(255)
+
+        # Drop old index and create new one with updated column name
+        - dropIndex:
+            tableName: donations
+            indexName: idx_donations_payment_status
+
+        - createIndex:
+            tableName: donations
+            indexName: idx_donations_status
+            columns:
+              - column:
+                  name: status
+
+        # Add missing column
+        - addColumn:
+            tableName: donations
+            columns:
+              - column:
+                  name: paid_at
+                  type: timestamp
+
+        # Drop columns that aren't in the entity
+        - dropColumn:
+            tableName: donations
+            columnName: updated_at

@@ -1,0 +1,114 @@
+databaseChangeLog:
+  - changeSet:
+      id: 012-align-campaigns-table
+      author: Hajar Walfi
+      changes:
+        # Rename columns to match entity
+        - renameColumn:
+            tableName: campaigns
+            oldColumnName: current_amount
+            newColumnName: amount_collected
+            columnDataType: decimal(15,2)
+
+        - renameColumn:
+            tableName: campaigns
+            oldColumnName: beneficiary_id
+            newColumnName: creator_id
+            columnDataType: varchar(36)
+
+        # Update foreign key and index name after renaming
+        - dropIndex:
+            tableName: campaigns
+            indexName: idx_campaigns_beneficiary
+
+        - dropForeignKeyConstraint:
+            baseTableName: campaigns
+            constraintName: fk_campaigns_beneficiary
+
+        - addForeignKeyConstraint:
+            baseTableName: campaigns
+            baseColumnNames: creator_id
+            constraintName: fk_campaigns_creator
+            referencedTableName: users
+            referencedColumnNames: id
+
+        - createIndex:
+            tableName: campaigns
+            indexName: idx_campaigns_creator
+            columns:
+              - column:
+                  name: creator_id
+
+        # Add missing columns
+        - addColumn:
+            tableName: campaigns
+            columns:
+              - column:
+                  name: location
+                  type: varchar(100)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: priority_score
+                  type: decimal(10,2)
+                  defaultValue: "0.00"
+              - column:
+                  name: approved_at
+                  type: timestamp
+              - column:
+                  name: deleted_at
+                  type: timestamp
+
+        # Drop index for city before dropping the column
+        - dropIndex:
+            tableName: campaigns
+            indexName: idx_campaigns_city
+
+        # Drop columns that aren't in the entity
+        - dropColumn:
+            tableName: campaigns
+            columnName: city
+
+        - dropColumn:
+            tableName: campaigns
+            columnName: province
+
+        - dropColumn:
+            tableName: campaigns
+            columnName: verification_status
+
+        - dropColumn:
+            tableName: campaigns
+            columnName: rib
+
+        - dropColumn:
+            tableName: campaigns
+            columnName: is_featured
+
+        - dropColumn:
+            tableName: campaigns
+            columnName: views_count
+
+        - dropColumn:
+            tableName: campaigns
+            columnName: shares_count
+
+        - dropColumn:
+            tableName: campaigns
+            columnName: published_at
+
+        # Add index for priority_score
+        - createIndex:
+            tableName: campaigns
+            indexName: idx_campaigns_priority_score
+            columns:
+              - column:
+                  name: priority_score
+
+        # Add index for location
+        - createIndex:
+            tableName: campaigns
+            indexName: idx_campaigns_location
+            columns:
+              - column:
+                  name: location

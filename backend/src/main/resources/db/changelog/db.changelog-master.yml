@@ -32,3 +32,15 @@ databaseChangeLog:
 
   - include:
       file: db/changelog/changes/009-create-notifications-table.yml
+
+  - include:
+      file: db/changelog/changes/011-alter-campaign-updates-table.yml
+
+  - include:
+      file: db/changelog/changes/012-align-campaigns-table.yml
+
+  - include:
+      file: db/changelog/changes/013-align-donations-table.yml
+
+  - include:
+      file: db/changelog/changes/015-align-users-table.yml

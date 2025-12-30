@@ -1,0 +1,17 @@
+databaseChangeLog:
+  - changeSet:
+      id: 011-alter-campaign-updates-table
+      author: Hajar Walfi
+      changes:
+        - dropColumn:
+            tableName: campaign_updates
+            columnName: title
+        - dropColumn:
+            tableName: campaign_updates
+            columnName: image_url
+        - addColumn:
+            tableName: campaign_updates
+            columns:
+              - column:
+                  name: photo_urls
+                  type: text

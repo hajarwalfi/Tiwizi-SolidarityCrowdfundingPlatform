@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id: 014-align-all-remaining-tables-v7
+      author: Hajar Walfi
+      changes:
+        # Fix notifications table - note: most columns were already migrated in earlier runs
+        - addColumn:
+            tableName: notifications
+            columns:
+              - column:
+                  name: read_at
+                  type: timestamp
+
+        # Fix reports table - note: reviewed_at was already renamed and admin_notes dropped in earlier runs
+        # No additional changes needed
