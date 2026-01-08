@@ -18,6 +18,28 @@ spring:
     enabled: true
     change-log: classpath:db/changelog/db.changelog-master.yml
 
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${OKTA_OAUTH2_ISSUER}
+      client:
+        registration:
+          okta:
+            client-id: ${OKTA_OAUTH2_CLIENT_ID}
+            client-secret: ${OKTA_OAUTH2_CLIENT_SECRET}
+            scope: openid, profile, email
+        provider:
+          okta:
+            issuer-uri: ${OKTA_OAUTH2_ISSUER}
+
+okta:
+  oauth2:
+    issuer: ${OKTA_OAUTH2_ISSUER}
+    client-id: ${OKTA_OAUTH2_CLIENT_ID}
+    client-secret: ${OKTA_OAUTH2_CLIENT_SECRET}
+    audience: api://default
+
 logging:
   level:
     com.tiwizi: DEBUG
