@@ -25,9 +25,9 @@ public class User {
     @Column(name = "id", length = 36, nullable = false)
     private String id;
 
-    @NotBlank(message = "Keycloak ID is required")
-    @Column(name = "keycloak_id", unique = true, nullable = false, length = 255)
-    private String keycloakId;
+    @NotBlank(message = "Okta ID is required")
+    @Column(name = "okta_id", unique = true, nullable = false, length = 255)
+    private String oktaId;
 
     @NotBlank(message = "Email is required")
     @Email(message = "Email should be valid")

@@ -14,7 +14,7 @@ databaseChangeLog:
                     nullable: false
                   defaultValueComputed: gen_random_uuid()::varchar
               - column:
-                  name: keycloak_id
+                  name: okta_id
                   type: varchar(255)
                   constraints:
                     nullable: false
@@ -61,10 +61,10 @@ databaseChangeLog:
                   defaultValueComputed: CURRENT_TIMESTAMP
         - createIndex:
             tableName: users
-            indexName: idx_users_keycloak_id
+            indexName: idx_users_okta_id
             columns:
               - column:
-                  name: keycloak_id
+                  name: okta_id
         - createIndex:
             tableName: users
             indexName: idx_users_email
