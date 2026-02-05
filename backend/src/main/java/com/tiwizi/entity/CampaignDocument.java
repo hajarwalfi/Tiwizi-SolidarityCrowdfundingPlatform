@@ -18,8 +18,9 @@ import java.time.LocalDateTime;
 public class CampaignDocument {
 
     @Id
-    @Column(name = "id", length = 36, nullable = false)
-    private String id; // UUID from database
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id", nullable = false)
+    private String id;
 
     @NotNull(message = "Campaign is required")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
