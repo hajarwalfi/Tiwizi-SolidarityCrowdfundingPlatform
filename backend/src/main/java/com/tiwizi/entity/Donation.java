@@ -4,10 +4,7 @@ import com.tiwizi.enums.DonationStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
@@ -25,17 +22,22 @@ import java.time.LocalDateTime;
 public class Donation {
 
     @Id
-    @Column(name = "id", length = 36, nullable = false)
-    private String id; // UUID from database
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id", nullable = false)
+    private String id;
 
     @NotNull(message = "Campaign is required")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "campaign_id", nullable = false)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Campaign campaign;
 
     @NotNull(message = "Donor is required")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "donor_id", nullable = false)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private User donor;
 
     @NotNull(message = "Amount is required")
@@ -46,10 +48,6 @@ public class Donation {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 20)
     private DonationStatus status = DonationStatus.PENDING;
-
-    @Size(max = 500, message = "Message cannot exceed 500 characters")
-    @Column(name = "message", length = 500)
-    private String message;
 
     @Column(name = "is_anonymous", nullable = false)
     private Boolean isAnonymous = false;

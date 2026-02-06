@@ -22,8 +22,9 @@ import java.time.LocalDateTime;
 public class Notification {
 
     @Id
-    @Column(name = "id", length = 36, nullable = false)
-    private String id; // UUID from database
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id", nullable = false)
+    private String id;
 
     @NotNull(message = "User is required")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -32,7 +33,7 @@ public class Notification {
 
     @NotBlank(message = "Type is required")
     @Column(name = "type", nullable = false, length = 50)
-    private String type; // DONATION_RECEIVED, CAMPAIGN_APPROVED, GOAL_REACHED, etc.
+    private String type; // DONATION_RECEIVED, CAMPAIGN_ACTIVE, GOAL_REACHED, etc.
 
     @NotBlank(message = "Message is required")
     @Column(name = "message", nullable = false, columnDefinition = "TEXT")
