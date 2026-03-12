@@ -35,3 +35,18 @@ build/
 # Log files
 logs/
 *.log
+/Doc/ClassDiagram.mmd
+/.claude/agents/jira-backlog-generator.md
+/nul
+/Doc/Plannification.md
+/Doc/PRD.md
+/.claude/settings.local.json
+/.claude/agents/uml-architect.md
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Sensitive config files
+**/application-local.yml

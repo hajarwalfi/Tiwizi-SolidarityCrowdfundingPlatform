@@ -18,27 +18,30 @@ spring:
     enabled: true
     change-log: classpath:db/changelog/db.changelog-master.yml
 
+  # OAuth2 Client Configuration
   security:
     oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: ${OKTA_OAUTH2_ISSUER}
       client:
         registration:
-          okta:
-            client-id: ${OKTA_OAUTH2_CLIENT_ID}
-            client-secret: ${OKTA_OAUTH2_CLIENT_SECRET}
-            scope: openid, profile, email
-        provider:
-          okta:
-            issuer-uri: ${OKTA_OAUTH2_ISSUER}
+          google:
+            client-id: 236784399461-dqnrvs5vslpre61i0si0k2082htosu1f.apps.googleusercontent.com
+            client-secret: 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
+            scope:
+              - openid
+              - profile
+              - email
 
-okta:
+# JWT Configuration
+jwt:
+  secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+  expiration: 86400000  # 24 hours in milliseconds
+  refresh-expiration: 604800000  # 7 days in milliseconds
+
+# Application Configuration
+app:
   oauth2:
-    issuer: ${OKTA_OAUTH2_ISSUER}
-    client-id: ${OKTA_OAUTH2_CLIENT_ID}
-    client-secret: ${OKTA_OAUTH2_CLIENT_SECRET}
-    audience: api://default
+    frontend-redirect-url: http://localhost:4200/oauth2/redirect
+    frontend-error-url: http://localhost:4200/oauth2/error
 
 logging:
   level:
