@@ -1,0 +1,25 @@
+databaseChangeLog:
+  - changeSet:
+      id: 024-remove-scores-add-deadline
+      author: tiwizi
+      changes:
+        - dropColumn:
+            tableName: campaigns
+            columnName: priority_score
+        - dropColumn:
+            tableName: campaigns
+            columnName: trust_score
+        - addColumn:
+            tableName: campaigns
+            columns:
+              - column:
+                  name: deadline
+                  type: DATE
+                  constraints:
+                    nullable: true
+        - createIndex:
+            tableName: campaigns
+            indexName: idx_campaign_deadline
+            columns:
+              - column:
+                  name: deadline

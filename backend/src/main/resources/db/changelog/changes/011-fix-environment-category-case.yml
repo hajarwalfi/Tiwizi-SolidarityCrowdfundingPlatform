@@ -1,0 +1,20 @@
+databaseChangeLog:
+  - changeSet:
+      id: 006-fix-environment-category-case
+      author: Hajar Walfi
+      changes:
+        - update:
+            tableName: campaigns
+            columns:
+              - column:
+                  name: category
+                  value: ENVIRONMENT
+            where: category = 'Environment'
+      rollback:
+        - update:
+            tableName: campaigns
+            columns:
+              - column:
+                  name: category
+                  value: Environment
+            where: category = 'ENVIRONMENT'

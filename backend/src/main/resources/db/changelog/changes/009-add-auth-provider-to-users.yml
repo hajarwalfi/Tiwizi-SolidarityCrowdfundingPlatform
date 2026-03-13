@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: 009-add-auth-provider-to-users
+      author: Hajar Walfi
+      changes:
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: auth_provider
+                  type: varchar(20)
+                  defaultValue: AUTH0_DB
+                  constraints:
+                    nullable: false

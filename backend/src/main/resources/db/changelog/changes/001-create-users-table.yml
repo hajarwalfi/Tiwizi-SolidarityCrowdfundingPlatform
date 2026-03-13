@@ -9,10 +9,10 @@ databaseChangeLog:
               - column:
                   name: id
                   type: varchar(36)
+                  defaultValueComputed: gen_random_uuid()
                   constraints:
                     primaryKey: true
                     nullable: false
-                  defaultValueComputed: gen_random_uuid()::varchar
               - column:
                   name: okta_id
                   type: varchar(255)
@@ -26,45 +26,51 @@ databaseChangeLog:
                     nullable: false
                     unique: true
               - column:
+                  name: full_name
+                  type: varchar(255)
+              - column:
                   name: first_name
                   type: varchar(100)
-                  constraints:
-                    nullable: false
               - column:
                   name: last_name
                   type: varchar(100)
-                  constraints:
-                    nullable: false
               - column:
-                  name: phone
+                  name: phone_number
                   type: varchar(20)
               - column:
+                  name: profile_picture_url
+                  type: varchar(500)
+              - column:
                   name: role
-                  type: varchar(50)
+                  type: varchar(20)
                   constraints:
                     nullable: false
+                  defaultValue: VISITOR
               - column:
-                  name: total_donated
-                  type: decimal(15,2)
-                  defaultValue: "0.00"
-              - column:
-                  name: is_banned
+                  name: is_email_verified
                   type: boolean
+                  constraints:
+                    nullable: false
                   defaultValueBoolean: false
               - column:
                   name: created_at
                   type: timestamp
-                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
               - column:
                   name: updated_at
                   type: timestamp
-                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: last_login_at
+                  type: timestamp
+
         - createIndex:
             tableName: users
             indexName: idx_users_okta_id
             columns:
               - column:
                   name: okta_id
+
         - createIndex:
             tableName: users
             indexName: idx_users_email

@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: 025-migrate-approved-to-active
+      author: tiwizi
+      changes:
+        - update:
+            tableName: campaigns
+            columns:
+              - column:
+                  name: status
+                  value: ACTIVE
+            where: status = 'APPROVED'

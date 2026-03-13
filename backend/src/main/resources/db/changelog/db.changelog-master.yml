@@ -1,10 +1,10 @@
 databaseChangeLog:
   - changeSet:
-      id: 1
+      id: initial-schema-v1
       author: Hajar Walfi
       changes:
         - tagDatabase:
-            tag: version-0.0.1
+            tag: version-1.0.0
 
   - include:
       file: db/changelog/changes/001-create-users-table.yml
@@ -25,22 +25,67 @@ databaseChangeLog:
       file: db/changelog/changes/006-create-reports-table.yml
 
   - include:
-      file: db/changelog/changes/007-create-fund-requests-table.yml
+      file: db/changelog/changes/007-create-notifications-table.yml
 
   - include:
-      file: db/changelog/changes/008-create-favorites-table.yml
+      file: db/changelog/changes/008-rename-okta-id-to-provider-id.yml
 
   - include:
-      file: db/changelog/changes/009-create-notifications-table.yml
+      file: db/changelog/changes/009-add-auth-provider-to-users.yml
 
   - include:
-      file: db/changelog/changes/011-alter-campaign-updates-table.yml
+      file: db/changelog/changes/010-add-password-and-nullable-provider-id.yml
 
   - include:
-      file: db/changelog/changes/012-align-campaigns-table.yml
+      file: db/changelog/changes/011-fix-environment-category-case.yml
 
   - include:
-      file: db/changelog/changes/013-align-donations-table.yml
+      file: db/changelog/changes/012-add-user-profile-enhancements.yml
 
   - include:
-      file: db/changelog/changes/015-align-users-table.yml
+      file: db/changelog/changes/013-create-favorites-table.yml
+
+  - include:
+      file: db/changelog/changes/014-fix-description-column-type.yml
+
+  - include:
+      file: db/changelog/changes/016-update-reports-enums.yml
+
+  - include:
+      file: db/changelog/changes/017-add-ban-columns-to-users.yml
+
+  - include:
+      file: db/changelog/changes/018-migrate-donor-role-to-user.yml
+
+  - include:
+      file: db/changelog/changes/019-add-stripe-customer-id.yml
+
+  - include:
+      file: db/changelog/changes/020-add-linked-providers-to-users.yml
+
+  - include:
+      file: db/changelog/changes/021-rename-categories-to-english.yml
+
+  - include:
+      file: db/changelog/changes/022-seed-test-data.yml
+
+  - include:
+      file: db/changelog/changes/023-drop-message-from-donations.yml
+
+  - include:
+      file: db/changelog/changes/024-remove-scores-add-deadline.yml
+
+  - include:
+      file: db/changelog/changes/025-migrate-approved-to-active.yml
+
+  - include:
+      file: db/changelog/changes/026-add-suspended-campaign-status.yml
+
+  - include:
+      file: db/changelog/changes/027-add-user-reports.yml
+
+  - include:
+      file: db/changelog/changes/028-add-campaign-contact-info.yml
+
+  - include:
+      file: db/changelog/changes/029-remove-facebook-linked-from-users.yml

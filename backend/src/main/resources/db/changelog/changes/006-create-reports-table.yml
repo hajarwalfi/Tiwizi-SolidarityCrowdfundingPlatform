@@ -9,24 +9,20 @@ databaseChangeLog:
               - column:
                   name: id
                   type: varchar(36)
+                  defaultValueComputed: gen_random_uuid()
                   constraints:
                     primaryKey: true
                     nullable: false
-                  defaultValueComputed: gen_random_uuid()::varchar
               - column:
                   name: campaign_id
                   type: varchar(36)
                   constraints:
                     nullable: false
-                    foreignKeyName: fk_reports_campaign
-                    references: campaigns(id)
               - column:
                   name: reporter_id
                   type: varchar(36)
                   constraints:
                     nullable: false
-                    foreignKeyName: fk_reports_reporter
-                    references: users(id)
               - column:
                   name: reason
                   type: varchar(100)
@@ -35,45 +31,58 @@ databaseChangeLog:
               - column:
                   name: description
                   type: text
-                  constraints:
-                    nullable: false
               - column:
                   name: status
-                  type: varchar(50)
+                  type: varchar(20)
                   constraints:
                     nullable: false
-                  defaultValue: "PENDING"
-              - column:
-                  name: reviewed_by
-                  type: varchar(36)
-                  constraints:
-                    foreignKeyName: fk_reports_reviewer
-                    references: users(id)
-              - column:
-                  name: reviewed_at
-                  type: timestamp
-              - column:
-                  name: admin_notes
-                  type: text
+                  defaultValue: PENDING
               - column:
                   name: created_at
                   type: timestamp
-                  defaultValueComputed: CURRENT_TIMESTAMP
-        - createIndex:
-            tableName: reports
-            indexName: idx_reports_campaign
-            columns:
+                  constraints:
+                    nullable: false
               - column:
-                  name: campaign_id
-        - createIndex:
-            tableName: reports
-            indexName: idx_reports_reporter
-            columns:
+                  name: resolved_at
+                  type: timestamp
               - column:
-                  name: reporter_id
+                  name: reviewed_by
+                  type: varchar(36)
+
+        - addForeignKeyConstraint:
+            baseTableName: reports
+            baseColumnNames: campaign_id
+            referencedTableName: campaigns
+            referencedColumnNames: id
+            constraintName: fk_reports_campaign
+            onDelete: CASCADE
+
+        - addForeignKeyConstraint:
+            baseTableName: reports
+            baseColumnNames: reporter_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_reports_reporter
+            onDelete: CASCADE
+
+        - addForeignKeyConstraint:
+            baseTableName: reports
+            baseColumnNames: reviewed_by
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_reports_reviewer
+            onDelete: SET NULL
+
         - createIndex:
             tableName: reports
-            indexName: idx_reports_status
+            indexName: idx_report_status
             columns:
               - column:
                   name: status
+
+        - createIndex:
+            tableName: reports
+            indexName: idx_report_created_at
+            columns:
+              - column:
+                  name: created_at

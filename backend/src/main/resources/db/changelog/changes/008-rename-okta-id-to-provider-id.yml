@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - changeSet:
+      id: 008-rename-okta-id-to-provider-id
+      author: Hajar Walfi
+      changes:
+        - dropIndex:
+            tableName: users
+            indexName: idx_users_okta_id
+
+        - renameColumn:
+            tableName: users
+            oldColumnName: okta_id
+            newColumnName: provider_id
+            columnDataType: varchar(255)
+
+        - createIndex:
+            tableName: users
+            indexName: idx_users_provider_id
+            columns:
+              - column:
+                  name: provider_id

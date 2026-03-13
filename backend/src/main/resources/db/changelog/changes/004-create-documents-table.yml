@@ -9,25 +9,18 @@ databaseChangeLog:
               - column:
                   name: id
                   type: varchar(36)
+                  defaultValueComputed: gen_random_uuid()
                   constraints:
                     primaryKey: true
                     nullable: false
-                  defaultValueComputed: gen_random_uuid()::varchar
               - column:
                   name: campaign_id
                   type: varchar(36)
                   constraints:
                     nullable: false
-                    foreignKeyName: fk_documents_campaign
-                    references: campaigns(id)
               - column:
                   name: document_type
                   type: varchar(50)
-                  constraints:
-                    nullable: false
-              - column:
-                  name: file_name
-                  type: varchar(255)
                   constraints:
                     nullable: false
               - column:
@@ -36,27 +29,18 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: file_size
-                  type: bigint
-              - column:
-                  name: mime_type
-                  type: varchar(100)
-              - column:
                   name: cloudinary_public_id
                   type: varchar(255)
               - column:
                   name: uploaded_at
                   type: timestamp
-                  defaultValueComputed: CURRENT_TIMESTAMP
-        - createIndex:
-            tableName: documents
-            indexName: idx_documents_campaign
-            columns:
-              - column:
-                  name: campaign_id
-        - createIndex:
-            tableName: documents
-            indexName: idx_documents_type
-            columns:
-              - column:
-                  name: document_type
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            baseTableName: documents
+            baseColumnNames: campaign_id
+            referencedTableName: campaigns
+            referencedColumnNames: id
+            constraintName: fk_documents_campaign
+            onDelete: CASCADE

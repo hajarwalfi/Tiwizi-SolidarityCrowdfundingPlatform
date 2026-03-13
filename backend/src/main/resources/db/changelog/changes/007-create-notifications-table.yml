@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: 009-create-notifications-table
+      id: 007-create-notifications-table
       author: Hajar Walfi
       changes:
         - createTable:
@@ -9,31 +9,18 @@ databaseChangeLog:
               - column:
                   name: id
                   type: varchar(36)
+                  defaultValueComputed: gen_random_uuid()
                   constraints:
                     primaryKey: true
                     nullable: false
-                  defaultValueComputed: gen_random_uuid()::varchar
               - column:
                   name: user_id
                   type: varchar(36)
                   constraints:
                     nullable: false
-                    foreignKeyName: fk_notifications_user
-                    references: users(id)
-              - column:
-                  name: campaign_id
-                  type: varchar(36)
-                  constraints:
-                    foreignKeyName: fk_notifications_campaign
-                    references: campaigns(id)
               - column:
                   name: type
                   type: varchar(50)
-                  constraints:
-                    nullable: false
-              - column:
-                  name: title
-                  type: varchar(200)
                   constraints:
                     nullable: false
               - column:
@@ -42,28 +29,43 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
+                  name: related_entity_id
+                  type: varchar(36)
+              - column:
                   name: is_read
                   type: boolean
+                  constraints:
+                    nullable: false
                   defaultValueBoolean: false
               - column:
                   name: created_at
                   type: timestamp
-                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: read_at
+                  type: timestamp
+
+        - addForeignKeyConstraint:
+            baseTableName: notifications
+            baseColumnNames: user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_notifications_user
+            onDelete: CASCADE
+
         - createIndex:
             tableName: notifications
-            indexName: idx_notifications_user
+            indexName: idx_notification_user_read
             columns:
               - column:
                   name: user_id
-        - createIndex:
-            tableName: notifications
-            indexName: idx_notifications_is_read
-            columns:
               - column:
                   name: is_read
+
         - createIndex:
             tableName: notifications
-            indexName: idx_notifications_created_at
+            indexName: idx_notification_created_at
             columns:
               - column:
                   name: created_at

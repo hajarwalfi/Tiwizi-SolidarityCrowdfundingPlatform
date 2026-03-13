@@ -1,0 +1,31 @@
+databaseChangeLog:
+  - changeSet:
+      id: update-reports-enums
+      author: Hajar Walfi
+      changes:
+        # Update existing data to match enum values before changing column type
+        - sql:
+            sql: |
+              UPDATE reports SET reason = 'FRAUD' WHERE reason = 'fraud';
+              UPDATE reports SET reason = 'SPAM' WHERE reason = 'spam';
+              UPDATE reports SET reason = 'INAPPROPRIATE' WHERE reason = 'inappropriate';
+              UPDATE reports SET reason = 'DUPLICATE' WHERE reason = 'duplicate';
+              UPDATE reports SET reason = 'FALSE_INFO' WHERE reason = 'false_info';
+              UPDATE reports SET reason = 'OTHER' WHERE reason = 'other';
+
+              UPDATE reports SET status = 'PENDING' WHERE status = 'pending';
+              UPDATE reports SET status = 'REVIEWED' WHERE status = 'reviewed';
+              UPDATE reports SET status = 'RESOLVED' WHERE status = 'resolved';
+              UPDATE reports SET status = 'REJECTED' WHERE status = 'rejected';
+
+        # Modify reason column
+        - modifyDataType:
+            tableName: reports
+            columnName: reason
+            newDataType: varchar(50)
+
+        # Modify status column
+        - modifyDataType:
+            tableName: reports
+            columnName: status
+            newDataType: varchar(20)

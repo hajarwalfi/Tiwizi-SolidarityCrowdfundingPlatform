@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: 008-create-favorites-table
+      id: create-favorites-table
       author: Hajar Walfi
       changes:
         - createTable:
@@ -12,38 +12,54 @@ databaseChangeLog:
                   constraints:
                     primaryKey: true
                     nullable: false
-                  defaultValueComputed: gen_random_uuid()::varchar
               - column:
                   name: user_id
                   type: varchar(36)
                   constraints:
                     nullable: false
-                    foreignKeyName: fk_favorites_user
-                    references: users(id)
               - column:
                   name: campaign_id
                   type: varchar(36)
                   constraints:
                     nullable: false
-                    foreignKeyName: fk_favorites_campaign
-                    references: campaigns(id)
               - column:
                   name: created_at
                   type: timestamp
                   defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
         - addUniqueConstraint:
             tableName: favorites
             columnNames: user_id, campaign_id
-            constraintName: uk_favorites_user_campaign
+            constraintName: uk_favorite_user_campaign
+
+        - addForeignKeyConstraint:
+            baseTableName: favorites
+            baseColumnNames: user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_favorite_user
+            onDelete: CASCADE
+
+        - addForeignKeyConstraint:
+            baseTableName: favorites
+            baseColumnNames: campaign_id
+            referencedTableName: campaigns
+            referencedColumnNames: id
+            constraintName: fk_favorite_campaign
+            onDelete: CASCADE
+
         - createIndex:
             tableName: favorites
-            indexName: idx_favorites_user
+            indexName: idx_favorite_user
             columns:
               - column:
                   name: user_id
+
         - createIndex:
             tableName: favorites
-            indexName: idx_favorites_campaign
+            indexName: idx_favorite_campaign
             columns:
               - column:
                   name: campaign_id

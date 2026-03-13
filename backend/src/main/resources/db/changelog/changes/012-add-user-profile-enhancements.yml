@@ -1,0 +1,69 @@
+databaseChangeLog:
+  - changeSet:
+      id: 012-add-user-profile-enhancements
+      author: tiwizi
+      changes:
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: background_picture_url
+                  type: VARCHAR(500)
+                  remarks: "URL of the user's background/cover picture"
+              - column:
+                  name: display_name
+                  type: VARCHAR(100)
+                  remarks: "User's display name (can be different from full name)"
+              - column:
+                  name: bio
+                  type: VARCHAR(500)
+                  remarks: "User's biography or description"
+              - column:
+                  name: is_profile_public
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+                  remarks: "Whether the user's profile is public or private"
+              - column:
+                  name: facebook_url
+                  type: VARCHAR(255)
+                  remarks: "User's Facebook profile URL"
+              - column:
+                  name: twitter_url
+                  type: VARCHAR(255)
+                  remarks: "User's Twitter/X profile URL"
+              - column:
+                  name: instagram_url
+                  type: VARCHAR(255)
+                  remarks: "User's Instagram profile URL"
+              - column:
+                  name: linkedin_url
+                  type: VARCHAR(255)
+                  remarks: "User's LinkedIn profile URL"
+              - column:
+                  name: website_url
+                  type: VARCHAR(255)
+                  remarks: "User's personal website URL"
+      rollback:
+        - dropColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: background_picture_url
+              - column:
+                  name: display_name
+              - column:
+                  name: bio
+              - column:
+                  name: is_profile_public
+              - column:
+                  name: facebook_url
+              - column:
+                  name: twitter_url
+              - column:
+                  name: instagram_url
+              - column:
+                  name: linkedin_url
+              - column:
+                  name: website_url

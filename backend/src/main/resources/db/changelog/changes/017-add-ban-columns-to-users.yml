@@ -1,0 +1,33 @@
+databaseChangeLog:
+  - changeSet:
+      id: 017-add-ban-columns-to-users
+      author: tiwizi
+      changes:
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: is_banned
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+                  remarks: "Whether the user is banned from the platform"
+              - column:
+                  name: ban_reason
+                  type: VARCHAR(500)
+                  remarks: "Reason for banning the user"
+              - column:
+                  name: banned_at
+                  type: TIMESTAMP
+                  remarks: "Timestamp when the user was banned"
+      rollback:
+        - dropColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: is_banned
+              - column:
+                  name: ban_reason
+              - column:
+                  name: banned_at

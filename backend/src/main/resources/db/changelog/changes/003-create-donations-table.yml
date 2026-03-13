@@ -9,82 +9,84 @@ databaseChangeLog:
               - column:
                   name: id
                   type: varchar(36)
+                  defaultValueComputed: gen_random_uuid()
                   constraints:
                     primaryKey: true
                     nullable: false
-                  defaultValueComputed: gen_random_uuid()::varchar
               - column:
                   name: campaign_id
                   type: varchar(36)
                   constraints:
                     nullable: false
-                    foreignKeyName: fk_donations_campaign
-                    references: campaigns(id)
               - column:
                   name: donor_id
                   type: varchar(36)
                   constraints:
                     nullable: false
-                    foreignKeyName: fk_donations_donor
-                    references: users(id)
               - column:
                   name: amount
-                  type: decimal(15,2)
+                  type: decimal(10,2)
                   constraints:
                     nullable: false
               - column:
-                  name: payment_method
-                  type: varchar(50)
+                  name: status
+                  type: varchar(20)
                   constraints:
                     nullable: false
-              - column:
-                  name: payment_status
-                  type: varchar(50)
-                  constraints:
-                    nullable: false
-                  defaultValue: "PENDING"
-              - column:
-                  name: transaction_id
-                  type: varchar(255)
+                  defaultValue: PENDING
               - column:
                   name: message
-                  type: text
+                  type: varchar(500)
               - column:
                   name: is_anonymous
                   type: boolean
+                  constraints:
+                    nullable: false
                   defaultValueBoolean: false
               - column:
-                  name: receipt_url
-                  type: varchar(500)
+                  name: payment_method
+                  type: varchar(50)
+              - column:
+                  name: payment_transaction_id
+                  type: varchar(255)
               - column:
                   name: created_at
                   type: timestamp
-                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
               - column:
-                  name: updated_at
+                  name: paid_at
                   type: timestamp
-                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: receipt_url
+                  type: varchar(500)
+
+        - addForeignKeyConstraint:
+            baseTableName: donations
+            baseColumnNames: campaign_id
+            referencedTableName: campaigns
+            referencedColumnNames: id
+            constraintName: fk_donations_campaign
+            onDelete: CASCADE
+
+        - addForeignKeyConstraint:
+            baseTableName: donations
+            baseColumnNames: donor_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_donations_donor
+            onDelete: CASCADE
+
         - createIndex:
             tableName: donations
-            indexName: idx_donations_campaign
+            indexName: idx_donation_status
             columns:
               - column:
-                  name: campaign_id
+                  name: status
+
         - createIndex:
             tableName: donations
-            indexName: idx_donations_donor
-            columns:
-              - column:
-                  name: donor_id
-        - createIndex:
-            tableName: donations
-            indexName: idx_donations_payment_status
-            columns:
-              - column:
-                  name: payment_status
-        - createIndex:
-            tableName: donations
-            indexName: idx_donations_created_at
+            indexName: idx_donation_created_at
             columns:
               - column:
                   name: created_at

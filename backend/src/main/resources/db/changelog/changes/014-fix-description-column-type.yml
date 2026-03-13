@@ -1,0 +1,24 @@
+databaseChangeLog:
+  - changeSet:
+      id: fix-description-column-type
+      author: Hajar Walfi
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: bytea
+            sql: |
+              SELECT data_type FROM information_schema.columns 
+              WHERE table_name = 'campaigns' AND column_name = 'description'
+      changes:
+        - sql:
+            sql: |
+              ALTER TABLE campaigns 
+              ALTER COLUMN description TYPE text 
+              USING convert_from(description, 'UTF8');
+      comment: "Fix description column type from bytea to text for LOWER() function compatibility"
+      rollback:
+        - sql:
+            sql: |
+              ALTER TABLE campaigns 
+              ALTER COLUMN description TYPE bytea 
+              USING description::bytea;

@@ -1,0 +1,18 @@
+databaseChangeLog:
+  - changeSet:
+      id: 029-remove-facebook-linked-from-users
+      author: tiwizi
+      changes:
+        - dropColumn:
+            tableName: users
+            columnName: facebook_linked
+      rollback:
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: facebook_linked
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false

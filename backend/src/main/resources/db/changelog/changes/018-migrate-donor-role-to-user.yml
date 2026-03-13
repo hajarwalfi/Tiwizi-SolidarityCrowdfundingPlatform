@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: 018-migrate-donor-role-to-user
+      author: Hajar Walfi
+      comment: "Rename legacy DONOR role to USER — role now controls permissions, not behavior"
+      changes:
+        - update:
+            tableName: users
+            columns:
+              - column:
+                  name: role
+                  value: USER
+            where: "role = 'DONOR'"

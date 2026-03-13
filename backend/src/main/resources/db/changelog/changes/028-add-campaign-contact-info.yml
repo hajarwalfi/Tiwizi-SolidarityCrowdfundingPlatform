@@ -1,0 +1,29 @@
+databaseChangeLog:
+  - changeSet:
+      id: 028-add-campaign-contact-info
+      author: Hajar Walfi
+      changes:
+        - addColumn:
+            tableName: campaigns
+            columns:
+              - column:
+                  name: phone
+                  type: VARCHAR(30)
+              - column:
+                  name: contact_email
+                  type: VARCHAR(255)
+              - column:
+                  name: rib_number
+                  type: VARCHAR(100)
+              - column:
+                  name: facebook
+                  type: VARCHAR(255)
+              - column:
+                  name: instagram
+                  type: VARCHAR(255)
+              - column:
+                  name: twitter
+                  type: VARCHAR(255)
+              - column:
+                  name: website
+                  type: VARCHAR(255)

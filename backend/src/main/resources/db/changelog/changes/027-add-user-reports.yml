@@ -1,0 +1,24 @@
+databaseChangeLog:
+  - changeSet:
+      id: 027-add-user-reports
+      author: Hajar Walfi
+      comment: "Make campaign_id nullable on reports, add reported_user_id and report_type to support user reports"
+      changes:
+        - sql:
+            sql: ALTER TABLE reports ALTER COLUMN campaign_id DROP NOT NULL;
+        - addColumn:
+            tableName: reports
+            columns:
+              - column:
+                  name: reported_user_id
+                  type: VARCHAR(36)
+                  constraints:
+                    nullable: true
+                    foreignKeyName: fk_reports_reported_user
+                    references: users(id)
+              - column:
+                  name: report_type
+                  type: VARCHAR(20)
+                  defaultValue: CAMPAIGN
+                  constraints:
+                    nullable: false

@@ -1,0 +1,29 @@
+databaseChangeLog:
+  - changeSet:
+      id: 020-add-linked-providers-to-users
+      author: tiwizi
+      changes:
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: google_linked
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+                  remarks: "Whether the user has linked a Google account"
+              - column:
+                  name: facebook_linked
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+                  remarks: "Whether the user has linked a Facebook account"
+      rollback:
+        - dropColumn:
+            tableName: users
+            columnName: google_linked
+        - dropColumn:
+            tableName: users
+            columnName: facebook_linked

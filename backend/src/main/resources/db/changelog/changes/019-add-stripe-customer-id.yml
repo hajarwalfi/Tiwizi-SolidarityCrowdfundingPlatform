@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: 019-add-stripe-customer-id
+      author: tiwizi
+      changes:
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: stripe_customer_id
+                  type: varchar(255)
+                  constraints:
+                    nullable: true
+                    unique: true

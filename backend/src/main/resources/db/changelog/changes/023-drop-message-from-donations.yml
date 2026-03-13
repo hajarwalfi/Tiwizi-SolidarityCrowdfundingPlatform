@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: 023-drop-message-from-donations
+      author: Hajar Walfi
+      changes:
+        - dropColumn:
+            tableName: donations
+            columnName: message

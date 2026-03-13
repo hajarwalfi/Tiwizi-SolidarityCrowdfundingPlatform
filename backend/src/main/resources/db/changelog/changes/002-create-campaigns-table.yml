@@ -9,17 +9,10 @@ databaseChangeLog:
               - column:
                   name: id
                   type: varchar(36)
+                  defaultValueComputed: gen_random_uuid()
                   constraints:
                     primaryKey: true
                     nullable: false
-                  defaultValueComputed: gen_random_uuid()::varchar
-              - column:
-                  name: beneficiary_id
-                  type: varchar(36)
-                  constraints:
-                    nullable: false
-                    foreignKeyName: fk_campaigns_beneficiary
-                    references: users(id)
               - column:
                   name: title
                   type: varchar(200)
@@ -31,100 +24,104 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: category
-                  type: varchar(50)
-                  constraints:
-                    nullable: false
-              - column:
                   name: goal_amount
-                  type: decimal(15,2)
+                  type: decimal(10,2)
                   constraints:
                     nullable: false
               - column:
-                  name: current_amount
-                  type: decimal(15,2)
-                  defaultValue: "0.00"
-              - column:
-                  name: city
-                  type: varchar(100)
+                  name: amount_collected
+                  type: decimal(10,2)
                   constraints:
                     nullable: false
-              - column:
-                  name: province
-                  type: varchar(100)
-                  constraints:
-                    nullable: false
+                  defaultValueNumeric: 0.00
               - column:
                   name: status
-                  type: varchar(50)
+                  type: varchar(20)
                   constraints:
                     nullable: false
-                  defaultValue: "PENDING"
+                  defaultValue: PENDING
               - column:
-                  name: trust_score
-                  type: decimal(3,2)
-                  defaultValue: "0.00"
+                  name: category
+                  type: varchar(30)
+                  constraints:
+                    nullable: false
               - column:
-                  name: verification_status
-                  type: varchar(50)
-                  defaultValue: "PENDING"
+                  name: location
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
               - column:
                   name: rejection_reason
                   type: text
               - column:
-                  name: rib
-                  type: varchar(24)
+                  name: priority_score
+                  type: decimal(10,2)
+                  defaultValueNumeric: 0.00
+              - column:
+                  name: trust_score
+                  type: decimal(5,2)
+                  defaultValueNumeric: 0.00
               - column:
                   name: is_urgent
                   type: boolean
+                  constraints:
+                    nullable: false
                   defaultValueBoolean: false
-              - column:
-                  name: is_featured
-                  type: boolean
-                  defaultValueBoolean: false
-              - column:
-                  name: views_count
-                  type: integer
-                  defaultValue: "0"
-              - column:
-                  name: shares_count
-                  type: integer
-                  defaultValue: "0"
               - column:
                   name: created_at
                   type: timestamp
-                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
               - column:
                   name: updated_at
                   type: timestamp
-                  defaultValueComputed: CURRENT_TIMESTAMP
               - column:
-                  name: published_at
+                  name: approved_at
                   type: timestamp
               - column:
                   name: closed_at
                   type: timestamp
-        - createIndex:
-            tableName: campaigns
-            indexName: idx_campaigns_beneficiary
-            columns:
               - column:
-                  name: beneficiary_id
+                  name: deleted_at
+                  type: timestamp
+              - column:
+                  name: creator_id
+                  type: varchar(36)
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            baseTableName: campaigns
+            baseColumnNames: creator_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_campaigns_creator
+            onDelete: CASCADE
+
         - createIndex:
             tableName: campaigns
-            indexName: idx_campaigns_status
+            indexName: idx_campaign_status
             columns:
               - column:
                   name: status
+
         - createIndex:
             tableName: campaigns
-            indexName: idx_campaigns_category
+            indexName: idx_campaign_category
             columns:
               - column:
                   name: category
+
         - createIndex:
             tableName: campaigns
-            indexName: idx_campaigns_city
+            indexName: idx_campaign_location
             columns:
               - column:
-                  name: city
+                  name: location
+
+        - createIndex:
+            tableName: campaigns
+            indexName: idx_campaign_priority_score
+            columns:
+              - column:
+                  name: priority_score

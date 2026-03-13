@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: 026-add-suspended-campaign-status
+      author: tiwizi
+      comment: "campaign status column is varchar(20) — no ALTER TYPE needed, SUSPENDED is valid as-is"
+      changes:
+        - sql:
+            sql: SELECT 1;

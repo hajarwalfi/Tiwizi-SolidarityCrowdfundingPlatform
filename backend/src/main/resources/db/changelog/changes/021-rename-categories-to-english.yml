@@ -1,0 +1,76 @@
+databaseChangeLog:
+  - changeSet:
+      id: 021-rename-categories-to-english
+      author: Hajar Walfi
+      changes:
+        - update:
+            tableName: campaigns
+            columns:
+              - column:
+                  name: category
+                  value: HEALTH
+            where: category = 'SANTE'
+        - update:
+            tableName: campaigns
+            columns:
+              - column:
+                  name: category
+                  value: HOUSING
+            where: category = 'LOGEMENT'
+        - update:
+            tableName: campaigns
+            columns:
+              - column:
+                  name: category
+                  value: FOOD
+            where: category = 'ALIMENTATION'
+        - update:
+            tableName: campaigns
+            columns:
+              - column:
+                  name: category
+                  value: EMERGENCY
+            where: category = 'URGENCE'
+        - update:
+            tableName: campaigns
+            columns:
+              - column:
+                  name: category
+                  value: OTHER
+            where: category = 'AUTRE'
+      rollback:
+        - update:
+            tableName: campaigns
+            columns:
+              - column:
+                  name: category
+                  value: SANTE
+            where: category = 'HEALTH'
+        - update:
+            tableName: campaigns
+            columns:
+              - column:
+                  name: category
+                  value: LOGEMENT
+            where: category = 'HOUSING'
+        - update:
+            tableName: campaigns
+            columns:
+              - column:
+                  name: category
+                  value: ALIMENTATION
+            where: category = 'FOOD'
+        - update:
+            tableName: campaigns
+            columns:
+              - column:
+                  name: category
+                  value: URGENCE
+            where: category = 'EMERGENCY'
+        - update:
+            tableName: campaigns
+            columns:
+              - column:
+                  name: category
+                  value: AUTRE
+            where: category = 'OTHER'
