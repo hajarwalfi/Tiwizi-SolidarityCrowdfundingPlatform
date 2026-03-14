@@ -1,13 +1,26 @@
 import { Routes } from '@angular/router';
-import { TailwindTest } from './shared/components/tailwind-test/tailwind-test';
+import { adminGuard } from './core/guards/admin.guard';
 
 export const routes: Routes = [
+  // Visitor routes (public — home, campaigns)
   {
     path: '',
-    component: TailwindTest
+    loadChildren: () => import('./routes/visitor.routes').then(m => m.visitorRoutes)
   },
+  // Auth routes
   {
-    path: 'tailwind-test',
-    component: TailwindTest
+    path: '',
+    loadChildren: () => import('./routes/auth.routes').then(m => m.authRoutes)
+  },
+  // User dashboard (all authenticated user routes under /dashboard)
+  {
+    path: '',
+    loadChildren: () => import('./routes/user.routes').then(m => m.userRoutes)
+  },
+  // Admin routes
+  {
+    path: 'admin',
+    canActivate: [adminGuard],
+    loadChildren: () => import('./routes/admin.routes').then(m => m.adminRoutes)
   }
 ];

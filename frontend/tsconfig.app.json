@@ -3,6 +3,7 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
+    "module": "ESNext",
     "outDir": "./out-tsc/app",
     "types": [],
     "baseUrl": "./",

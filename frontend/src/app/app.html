@@ -1,1 +1,7 @@
+@if (!isAdmin() && !isAuth() && !isDashboard()) {
+  <app-header></app-header>
+}
 <router-outlet />
+@if (!isDashboard() && !isAuth() && !isHome()) {
+  <app-footer></app-footer>
+}
