@@ -1,0 +1,74 @@
+<div class="relative">
+
+  <!-- Trigger button -->
+  <button #trigger type="button" (click)="toggle()"
+    [class]="'w-full flex items-center gap-3 px-5 py-3.5 border-2 rounded-[1rem] transition-all text-[15px] text-left outline-none ' + (isOpen() ? 'bg-white border-[#FF594B]' : 'bg-[#F9F7F4] border-transparent hover:bg-white hover:border-[#FF594B]')">
+    <svg class="shrink-0 text-gray-400" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+    </svg>
+    <span [class]="selectedDate() ? 'text-[#1c1c1c] font-medium text-sm' : 'text-gray-400 text-sm'">
+      {{ displayValue || 'Pick a date' }}
+    </span>
+  </button>
+
+  <!-- Calendar dropdown -->
+  @if (isOpen()) {
+    <div class="fixed z-[9999] bg-white rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.10)] border border-gray-100 p-3"
+      style="width: 260px"
+      [style.top.px]="dropdownTop()"
+      [style.left.px]="dropdownLeft()">
+
+      <!-- Month navigation -->
+      <div class="flex items-center justify-between mb-2">
+        <button type="button" (click)="prevMonth()"
+          class="w-6 h-6 flex items-center justify-center rounded-lg hover:bg-[#F5F3EF] transition-colors">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#1c1c1c" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <span class="text-xs font-bold text-[#1c1c1c]">{{ monthLabel }}</span>
+        <button type="button" (click)="nextMonth()"
+          class="w-6 h-6 flex items-center justify-center rounded-lg hover:bg-[#F5F3EF] transition-colors">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#1c1c1c" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+      </div>
+
+      <!-- Week day headers -->
+      <div class="grid grid-cols-7 mb-0.5">
+        @for (d of WEEK_DAYS; track d) {
+          <div class="text-center text-[10px] font-bold text-gray-400 py-0.5">{{ d }}</div>
+        }
+      </div>
+
+      <!-- Day grid -->
+      <div class="grid grid-cols-7">
+        @for (day of calendarDays(); track day.date.getTime()) {
+          <button type="button" (click)="select(day.date)"
+            [class]="
+              'h-7 w-full flex items-center justify-center text-xs rounded-lg transition-all font-medium ' +
+              (isSelected(day.date)
+                ? 'bg-[#FF594B] text-white font-bold'
+                : isToday(day.date)
+                  ? 'ring-2 ring-[#FF594B] text-[#FF594B] font-bold hover:bg-[#FFF5F4]'
+                  : day.currentMonth
+                    ? 'text-[#1c1c1c] hover:bg-[#F5F3EF]'
+                    : 'text-gray-300 hover:bg-[#F9F7F4]')
+            ">
+            {{ day.date.getDate() }}
+          </button>
+        }
+      </div>
+
+      <!-- Footer -->
+      <div class="flex justify-between mt-2 pt-2 border-t border-gray-100">
+        <button type="button" (click)="clear()"
+          class="text-[11px] font-semibold text-gray-400 hover:text-[#FF594B] transition-colors">
+          Clear
+        </button>
+        <button type="button" (click)="selectToday()"
+          class="text-[11px] font-semibold text-[#FF594B] hover:text-[#e04a3e] transition-colors">
+          Today
+        </button>
+      </div>
+    </div>
+  }
+
+</div>

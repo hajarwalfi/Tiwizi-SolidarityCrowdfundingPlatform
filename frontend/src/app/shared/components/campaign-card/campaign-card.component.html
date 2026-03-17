@@ -1,0 +1,110 @@
+<div
+  [routerLink]="['/campaigns', campaign.id]"
+  class="group relative rounded-3xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 cursor-pointer"
+  [style.animation]="'fadeInUp 0.4s ease-out ' + animationDelay + 'ms both'"
+>
+
+  <!-- ── Full-card media area (swap gradient for <img>/<video> later) ── -->
+  <div class="relative h-[330px]">
+
+    <!-- Gradient placeholder -->
+    <div class="absolute inset-0" [style.background]="categoryGradient"></div>
+
+    <!-- Status / Urgent badge — top left -->
+    <div class="absolute top-3 left-3 z-10">
+      <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-black/50 backdrop-blur-sm rounded-full text-white text-[11px] font-semibold shadow-sm">
+        @if (campaign.isUrgent) {
+          <span class="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse shrink-0"></span>
+          Urgent
+        } @else {
+          <span class="w-1.5 h-1.5 rounded-full bg-white/60 shrink-0"></span>
+          {{ statusLabel }}
+        }
+      </span>
+    </div>
+
+    <!-- Favorite button — top right -->
+    @if (showFavorite) {
+      <div class="absolute top-3 right-3 z-10">
+        <app-favorite-button [campaignId]="campaign.id"></app-favorite-button>
+      </div>
+    }
+
+    <!-- Carousel dots — just above the text overlay -->
+    <div class="absolute bottom-[88px] left-0 right-0 flex justify-center gap-1.5 pointer-events-none z-10">
+      <span class="w-1.5 h-1.5 rounded-full bg-white shadow-sm"></span>
+      <span class="w-1.5 h-1.5 rounded-full bg-white/40 border border-white/70"></span>
+      <span class="w-1.5 h-1.5 rounded-full bg-white/40 border border-white/70"></span>
+      <span class="w-1.5 h-1.5 rounded-full bg-white/40 border border-white/70"></span>
+    </div>
+
+    <!-- Dark gradient overlay — title + separator + info row -->
+    <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/85 via-black/60 to-transparent pt-10 z-10">
+
+      <!-- Title + goal -->
+      <div class="flex items-start justify-between gap-3 px-4 pt-1 pb-0">
+        <h3 class="font-bold text-white text-[15px] leading-snug line-clamp-2 flex-1">
+          {{ campaign.title }}
+        </h3>
+        <span class="shrink-0 font-extrabold text-sm text-[#FF594B] whitespace-nowrap">
+          {{ campaign.goalAmount | currencyMad }}
+        </span>
+      </div>
+
+      <!-- Separator -->
+      <div class="mx-4 mt-2.5 border-t border-white/15"></div>
+
+      <!-- Bottom info row -->
+      <div class="flex items-center px-4 py-3 text-[11px] font-semibold text-white/65">
+
+        <!-- Location -->
+        <div class="flex items-center gap-1.5 flex-1 min-w-0">
+          <svg class="w-3.5 h-3.5 shrink-0 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+          </svg>
+          <span class="truncate">{{ campaign.location }}</span>
+        </div>
+
+        <div class="w-px h-3.5 bg-white/20 mx-3 shrink-0"></div>
+
+        <!-- Beneficiary -->
+        <div class="flex items-center gap-1.5 flex-1 min-w-0">
+          <svg class="w-3.5 h-3.5 shrink-0 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+          </svg>
+          <span class="truncate">{{ campaign.creatorName }}</span>
+        </div>
+
+        <div class="w-px h-3.5 bg-white/20 mx-3 shrink-0"></div>
+
+        <!-- Days left (when deadline set) or Progress % -->
+        @if (daysUntilDeadline !== null) {
+          <div class="flex items-center gap-1.5 shrink-0">
+            <svg class="w-3.5 h-3.5 shrink-0 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <span class="font-extrabold" [class]="daysUntilDeadline <= 3 ? 'text-red-400' : daysUntilDeadline <= 7 ? 'text-orange-400' : 'text-yellow-300'">
+              {{ daysUntilDeadline === 0 ? 'Today' : daysUntilDeadline + 'd left' }}
+            </span>
+          </div>
+        } @else {
+          <div class="flex items-center gap-1.5 shrink-0">
+            <svg class="w-3.5 h-3.5 shrink-0 text-[#FF594B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+            </svg>
+            <span class="font-extrabold text-[#FF594B]">{{ progressPct | number:'1.0-0' }}%</span>
+          </div>
+        }
+
+      </div>
+    </div>
+
+  </div>
+
+</div>
