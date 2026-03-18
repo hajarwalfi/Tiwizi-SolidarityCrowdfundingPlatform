@@ -1,0 +1,124 @@
+<div class="min-h-screen pt-[65px]" style="background-color: #fdfbf7;">
+
+  <!-- ─── Filters ──────────────────────────────────────────── -->
+  <div>
+    <app-campaign-filters
+      [selectedCategory]="selectedCategory()"
+      [showUrgentOnly]="showUrgentOnly()"
+      [showDeadlineSoon]="showDeadlineSoon()"
+      [showNearlyFunded]="showNearlyFunded()"
+      (searchChanged)="onSearchChanged($event)"
+      (locationChanged)="onLocationChanged($event)"
+      (categoryChanged)="onCategoryChanged($event)"
+      (urgentToggled)="onUrgentToggled()"
+      (deadlineSoonToggled)="onDeadlineSoonToggled()"
+      (nearlyFundedToggled)="onNearlyFundedToggled()"
+      (filtersCleared)="onFiltersCleared()"
+    ></app-campaign-filters>
+  </div>
+
+  <!-- ─── Content ──────────────────────────────────────────── -->
+  <div class="max-w-5xl mx-auto px-6 py-6">
+
+    <!-- Loading skeleton -->
+    @if (isLoading()) {
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        @for (i of [1,2,3,4,5,6,7,8]; track i) {
+          <div class="rounded-2xl overflow-hidden bg-white animate-pulse">
+            <div class="h-48 bg-gray-100"></div>
+            <div class="p-4 space-y-2.5">
+              <div class="h-4 bg-gray-100 rounded-lg w-3/4"></div>
+              <div class="h-3 bg-gray-100 rounded-lg w-1/2"></div>
+              <div class="h-1.5 bg-gray-100 rounded-full w-full mt-3"></div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Error -->
+    @if (!isLoading() && error()) {
+      <div class="max-w-sm mx-auto mt-12 text-center">
+        <div class="w-14 h-14 rounded-2xl bg-red-50 flex items-center justify-center mx-auto mb-4">
+          <svg class="w-7 h-7 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+          </svg>
+        </div>
+        <p class="text-gray-700 font-semibold mb-4">{{ error() }}</p>
+        <button (click)="loadCampaigns()"
+          class="px-5 py-2 bg-[#FF594B] text-white rounded-xl text-sm font-bold hover:bg-[#e04a3e] transition-colors">
+          Try again
+        </button>
+      </div>
+    }
+
+    <!-- Cards grid -->
+    @if (!isLoading() && !error() && campaigns().length > 0) {
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        @for (campaign of campaigns(); track campaign.id; let i = $index) {
+          <app-campaign-card
+            [campaign]="campaign"
+            [showFavorite]="true"
+            [animationDelay]="i * 40"
+          ></app-campaign-card>
+        }
+      </div>
+
+    }
+
+    <!-- Empty state -->
+    @if (!isLoading() && !error() && campaigns().length === 0) {
+      <div class="flex flex-col items-center justify-center py-28 text-center">
+
+        <!-- Illustration -->
+        <div class="relative mb-8">
+          <!-- Outer glow ring -->
+          <div class="w-32 h-32 rounded-full flex items-center justify-center" style="background: radial-gradient(circle, #fff3ee 0%, #fdfbf7 70%);">
+            <!-- Icon circle -->
+            <div class="w-20 h-20 rounded-full bg-white shadow-md border border-orange-100 flex items-center justify-center">
+              <svg class="w-9 h-9 text-[#FF7A59]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+              </svg>
+            </div>
+          </div>
+          <!-- Floating dots -->
+          <span class="absolute top-2 right-2 w-2.5 h-2.5 rounded-full bg-orange-200 opacity-70"></span>
+          <span class="absolute bottom-3 left-1 w-1.5 h-1.5 rounded-full bg-orange-300 opacity-50"></span>
+        </div>
+
+        <h3 class="text-2xl font-bold text-gray-800 mb-2">No campaigns found</h3>
+        <p class="text-sm text-gray-400 leading-relaxed mb-8">
+          We couldn't find anything matching your search.<br>Try different keywords or clear your filters.
+        </p>
+
+        <button (click)="onFiltersCleared()"
+          class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold text-white transition-all active:scale-95 shadow-sm hover:shadow-md"
+          style="background: linear-gradient(135deg, #FF7A59, #FF594B);">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+          Reset filters
+        </button>
+
+      </div>
+    }
+
+    <!-- Sentinel (always in DOM for IntersectionObserver) -->
+    <div #sentinel class="h-4 mt-4"></div>
+
+    <!-- Loading more spinner -->
+    @if (isLoadingMore()) {
+      <div class="flex justify-center py-8">
+        <div class="w-6 h-6 border-2 border-gray-200 border-t-[#FF594B] rounded-full animate-spin"></div>
+      </div>
+    }
+
+    <!-- End of results -->
+    @if (!isLoading() && !isLoadingMore() && !hasMore() && campaigns().length > 0) {
+      <p class="text-center text-[12px] font-semibold text-gray-300 py-8">All campaigns loaded</p>
+    }
+
+  </div>
+</div>

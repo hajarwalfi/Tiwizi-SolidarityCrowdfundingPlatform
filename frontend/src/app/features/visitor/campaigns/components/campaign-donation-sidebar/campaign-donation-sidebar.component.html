@@ -1,0 +1,196 @@
+<div class="flex flex-col gap-3">
+
+  <!-- Main Donation Card -->
+  <div class="bg-white rounded-[1.75rem] shadow-sm border border-gray-50 overflow-hidden">
+
+    <div class="p-5 flex flex-col gap-4">
+
+      <!-- Amount Raised -->
+      <div>
+        <p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-0.5">Amount raised</p>
+        <p class="text-2xl font-extrabold text-[#1c1c1c] leading-none">{{ formatAmount(campaign.amountCollected) }}</p>
+        <p class="text-[11px] text-gray-400 mt-1">
+          on <span class="font-bold text-gray-600">{{ formatAmount(campaign.goalAmount) }}</span> goal
+        </p>
+      </div>
+
+      <!-- Circular Progress -->
+      <div class="flex justify-center">
+        <div class="relative w-28 h-28">
+          <svg viewBox="0 0 100 100" class="w-full h-full">
+            <circle cx="50" cy="50" r="40" fill="none" stroke="#f3f4f6" stroke-width="8"/>
+            <circle
+              cx="50" cy="50" r="40"
+              fill="none"
+              stroke="#FF594B"
+              stroke-width="8"
+              stroke-linecap="round"
+              transform="rotate(-90 50 50)"
+              [attr.stroke-dasharray]="getCircumference()"
+              [attr.stroke-dashoffset]="getStrokeDashoffset()"
+              style="transition: stroke-dashoffset 0.6s ease"
+            />
+          </svg>
+          <div class="absolute inset-0 flex items-center justify-center">
+            <span class="text-xl font-extrabold text-[#1c1c1c]">{{ getProgressPercent() }}%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats Row -->
+      <div class="grid grid-cols-2 gap-2">
+        <div class="bg-gray-50 rounded-[1.25rem] p-3 border border-gray-100">
+          <div class="flex items-center gap-1.5 mb-0.5">
+            <svg class="w-3.5 h-3.5 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+            <p class="text-lg font-extrabold text-[#1c1c1c] leading-none">{{ campaign.donations?.length || 0 }}</p>
+          </div>
+          <p class="text-[10px] font-semibold text-gray-400 leading-tight">Donors</p>
+        </div>
+        <div class="bg-gray-50 rounded-[1.25rem] p-3 border border-gray-100">
+          <div class="flex items-center gap-1.5 mb-0.5">
+            <svg class="w-3.5 h-3.5 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <p class="text-lg font-extrabold text-[#1c1c1c] leading-none">{{ getDaysRemaining() }}</p>
+          </div>
+          <p class="text-[10px] font-semibold text-gray-400 leading-tight">Days left</p>
+        </div>
+      </div>
+
+      <!-- Donate Button -->
+      <button
+        (click)="donateClicked.emit()"
+        class="w-full py-3 bg-[#FF594B] text-white rounded-full font-bold text-[13px] transition-all hover:bg-[#e04a3d] shadow-md shadow-[#FF594B]/25 active:scale-95"
+      >
+        Donate now
+      </button>
+
+      <!-- Share Button -->
+      <button
+        (click)="shareClicked.emit()"
+        class="w-full py-2.5 bg-gray-50 hover:bg-gray-100 text-gray-600 rounded-full font-semibold text-[13px] transition-colors flex items-center justify-center gap-2 border border-gray-100"
+      >
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+          <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+        </svg>
+        Share
+      </button>
+
+    </div>
+
+    <!-- Organizer + Contact -->
+    <div class="border-t border-gray-100">
+      <div class="px-5 py-4 bg-gray-50 flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl overflow-hidden shrink-0">
+          @if (campaign.creatorProfilePicture) {
+            <img [src]="campaign.creatorProfilePicture" [alt]="campaign.creatorName" class="w-full h-full object-cover" />
+          } @else {
+            <div class="w-full h-full flex items-center justify-center text-[11px] font-extrabold" [ngClass]="getAvatarColor(campaign.creatorName)">
+              {{ getInitials(campaign.creatorName) }}
+            </div>
+          }
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Organized by</p>
+          <p class="text-[13px] font-bold text-[#1c1c1c] truncate">{{ campaign.creatorName }}</p>
+        </div>
+      </div>
+
+      @if (campaign.phone || campaign.contactEmail || campaign.ribNumber || campaign.facebook || campaign.instagram || campaign.twitter || campaign.website) {
+        <div class="px-5 pb-5 bg-gray-50 flex flex-col gap-3">
+          <div class="h-px bg-gray-200 mb-1"></div>
+
+          @if (campaign.phone) {
+            <a [href]="'tel:' + campaign.phone" class="flex items-center gap-3 group">
+              <div class="w-8 h-8 rounded-xl bg-[#FFF1EE] flex items-center justify-center shrink-0">
+                <svg class="w-3.5 h-3.5 text-[#FF594B]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.07 12a19.79 19.79 0 0 1-3-8.59A2 2 0 0 1 3 1.18h3a2 2 0 0 1 2 1.72c.13 1 .36 1.98.69 2.92a2 2 0 0 1-.45 2.11L7.09 9a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.94.33 1.93.56 2.92.69A2 2 0 0 1 21 16z"/>
+                </svg>
+              </div>
+              <span class="text-[13px] font-semibold text-gray-700 group-hover:text-[#FF594B] transition-colors">{{ campaign.phone }}</span>
+            </a>
+          }
+
+          @if (campaign.contactEmail) {
+            <a [href]="'mailto:' + campaign.contactEmail" class="flex items-center gap-3 group">
+              <div class="w-8 h-8 rounded-xl bg-[#FFF1EE] flex items-center justify-center shrink-0">
+                <svg class="w-3.5 h-3.5 text-[#FF594B]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
+                </svg>
+              </div>
+              <span class="text-[13px] font-semibold text-gray-700 group-hover:text-[#FF594B] transition-colors truncate">{{ campaign.contactEmail }}</span>
+            </a>
+          }
+
+          @if (campaign.ribNumber) {
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-xl bg-[#FFF1EE] flex items-center justify-center shrink-0">
+                <svg class="w-3.5 h-3.5 text-[#FF594B]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/>
+                </svg>
+              </div>
+              <div class="flex flex-col min-w-0">
+                <span class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">RIB</span>
+                <span class="text-[12px] font-bold text-gray-700 truncate font-mono">{{ campaign.ribNumber }}</span>
+              </div>
+            </div>
+          }
+
+          @if (campaign.facebook || campaign.instagram || campaign.twitter || campaign.website) {
+            <div class="flex gap-2 pt-1 justify-center">
+              @if (campaign.facebook) {
+                <a [href]="campaign.facebook" target="_blank"
+                  class="w-8 h-8 rounded-xl bg-[#FFF1EE] flex items-center justify-center transition-opacity hover:opacity-70">
+                  <svg class="w-3.5 h-3.5 text-[#FF594B]" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
+                  </svg>
+                </a>
+              }
+              @if (campaign.instagram) {
+                <a [href]="campaign.instagram" target="_blank"
+                  class="w-8 h-8 rounded-xl bg-[#FFF1EE] flex items-center justify-center transition-opacity hover:opacity-70">
+                  <svg class="w-3.5 h-3.5 text-[#FF594B]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+                  </svg>
+                </a>
+              }
+              @if (campaign.twitter) {
+                <a [href]="campaign.twitter" target="_blank"
+                  class="w-8 h-8 rounded-xl bg-[#FFF1EE] flex items-center justify-center transition-opacity hover:opacity-70">
+                  <svg class="w-3.5 h-3.5 text-[#FF594B]" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.259 5.632zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                  </svg>
+                </a>
+              }
+              @if (campaign.website) {
+                <a [href]="campaign.website" target="_blank"
+                  class="w-8 h-8 rounded-xl bg-[#FFF1EE] flex items-center justify-center transition-opacity hover:opacity-70">
+                  <svg class="w-3.5 h-3.5 text-[#FF594B]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                  </svg>
+                </a>
+              }
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Report Button -->
+  <button
+    (click)="reportClicked.emit()"
+    class="w-full py-2.5 text-[12px] font-bold text-red-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors flex items-center justify-center gap-1.5 border border-red-100"
+  >
+    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/>
+    </svg>
+    Report this campaign
+  </button>
+
+</div>

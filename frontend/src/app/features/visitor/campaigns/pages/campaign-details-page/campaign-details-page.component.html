@@ -1,0 +1,206 @@
+<div class="min-h-screen bg-[#FDFCF5] pt-[65px]">
+
+  <!-- Loading State -->
+  @if (isLoading()) {
+    <div class="flex flex-col items-center justify-center min-h-[80vh]">
+      <app-loading-spinner message="Loading..."></app-loading-spinner>
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (!isLoading() && error()) {
+    <div class="flex flex-col items-center justify-center min-h-[80vh] px-6 text-center">
+      <div class="text-7xl mb-8">💔</div>
+      <h1 class="text-2xl font-bold text-[#1c1c1c] mb-4">{{ error() }}</h1>
+      <button
+        routerLink="/campaigns"
+        class="px-6 py-2.5 bg-[#FF594B] text-white rounded-full font-bold text-sm hover:bg-[#e04a3d] transition-all shadow-md shadow-[#FF594B]/25 active:scale-95"
+      >
+        Return to campaigns
+      </button>
+    </div>
+  }
+
+  <!-- Main Content -->
+  @if (!isLoading() && campaign()) {
+    <div class="w-full max-w-6xl mx-auto px-4 py-8 lg:py-10 animate-fade-in">
+
+      <!-- Back link -->
+      <a
+        routerLink="/campaigns"
+        class="inline-flex items-center gap-1.5 mb-6 text-[13px] font-semibold text-gray-400 hover:text-[#FF594B] transition-colors group"
+      >
+        <svg class="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m15 18-6-6 6-6"/>
+        </svg>
+        Back to campaigns
+      </a>
+
+      <!-- Archived State -->
+      @if (campaign()!.status === 'ARCHIVED') {
+        <div class="flex flex-col items-center justify-center min-h-[50vh] text-center px-6">
+          <div class="w-20 h-20 bg-slate-100 rounded-[1.5rem] flex items-center justify-center mb-6">
+            <svg class="w-9 h-9 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
+            </svg>
+          </div>
+          <h2 class="text-xl font-extrabold text-[#1c1c1c] mb-3">This campaign is no longer available</h2>
+          <p class="text-[14px] text-gray-400 font-medium max-w-sm leading-relaxed">
+            The organizer has chosen to keep this campaign private. Your support was meaningful and is still recorded in your history.
+          </p>
+          <a
+            routerLink="/campaigns"
+            class="mt-8 px-6 py-2.5 bg-[#FF594B] text-white rounded-full font-bold text-sm hover:bg-[#e04a3d] transition-all shadow-md shadow-[#FF594B]/25 active:scale-95"
+          >
+            Discover other campaigns
+          </a>
+        </div>
+      }
+
+      <!-- Normal campaign content (not archived) -->
+      @if (campaign()!.status !== 'ARCHIVED') {
+      <div class="flex gap-6 items-start">
+        <!-- Left: Campaign Info Panel -->
+        <app-campaign-info-panel
+          class="flex-1 min-w-0"
+          [campaign]="campaign()!"
+          [updates]="updates()"
+          [activeTab]="activeTab()"
+          [isLoadingUpdates]="isLoadingUpdates()"
+          (tabChanged)="activeTab.set($event)"
+        >
+        </app-campaign-info-panel>
+
+        <!-- Right: Donation Sidebar -->
+        <div class="w-[280px] shrink-0 sticky top-6">
+          <app-campaign-donation-sidebar
+            [campaign]="campaign()!"
+            (donateClicked)="isDonationModalOpen.set(true)"
+            (reportClicked)="isReportModalOpen.set(true)"
+            (shareClicked)="isShareModalOpen.set(true)"
+          >
+          </app-campaign-donation-sidebar>
+        </div>
+      </div>
+      }
+    </div>
+  }
+
+  <!-- Donation Modal -->
+  @if (campaign()) {
+    <app-donation-modal
+      [campaign]="campaign()!"
+      [isOpen]="isDonationModalOpen()"
+      (close)="isDonationModalOpen.set(false)"
+      (donationSuccess)="onDonationSuccess()"
+    >
+    </app-donation-modal>
+  }
+
+  <!-- Report Modal -->
+  @if (campaign()) {
+    <app-report-modal
+      [campaignId]="campaign()!.id"
+      [isOpen]="isReportModalOpen()"
+      (close)="isReportModalOpen.set(false)"
+      (reportSuccess)="(null)"
+    >
+    </app-report-modal>
+  }
+
+  <!-- Share Modal -->
+  @if (isShareModalOpen()) {
+    <div
+      class="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center p-4"
+      (click)="isShareModalOpen.set(false)"
+    >
+      <div class="absolute inset-0 bg-black/30 backdrop-blur-sm"></div>
+
+      <div
+        class="relative bg-white rounded-[1.75rem] w-full max-w-sm shadow-2xl animate-slide-up"
+        (click)="$event.stopPropagation()"
+      >
+        <div class="flex items-center justify-between px-6 pt-6 pb-4 border-b border-gray-50">
+          <p class="text-[15px] font-extrabold text-[#1c1c1c]">Share this campaign</p>
+          <button
+            (click)="isShareModalOpen.set(false)"
+            class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
+          >
+            <svg class="w-4 h-4 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="p-4 flex flex-col gap-2">
+          <button
+            (click)="shareCampaign('facebook')"
+            class="flex items-center gap-4 px-4 py-3.5 rounded-[1.25rem] hover:bg-blue-50 transition-colors text-left group"
+          >
+            <div class="w-10 h-10 rounded-xl bg-blue-50 group-hover:bg-blue-100 flex items-center justify-center shrink-0 transition-colors">
+              <svg class="w-5 h-5 text-blue-600" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+              </svg>
+            </div>
+            <div>
+              <p class="text-[13px] font-bold text-[#1c1c1c]">Facebook</p>
+              <p class="text-[11px] text-gray-400">Share on your timeline</p>
+            </div>
+          </button>
+
+          <button
+            (click)="shareCampaign('twitter')"
+            class="flex items-center gap-4 px-4 py-3.5 rounded-[1.25rem] hover:bg-gray-50 transition-colors text-left group"
+          >
+            <div class="w-10 h-10 rounded-xl bg-gray-100 group-hover:bg-gray-200 flex items-center justify-center shrink-0 transition-colors">
+              <svg class="w-5 h-5 text-[#1c1c1c]" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+              </svg>
+            </div>
+            <div>
+              <p class="text-[13px] font-bold text-[#1c1c1c]">X (Twitter)</p>
+              <p class="text-[11px] text-gray-400">Post to your followers</p>
+            </div>
+          </button>
+
+          <button
+            (click)="shareCampaign('whatsapp')"
+            class="flex items-center gap-4 px-4 py-3.5 rounded-[1.25rem] hover:bg-green-50 transition-colors text-left group"
+          >
+            <div class="w-10 h-10 rounded-xl bg-green-50 group-hover:bg-green-100 flex items-center justify-center shrink-0 transition-colors">
+              <svg class="w-5 h-5 text-green-600" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/>
+              </svg>
+            </div>
+            <div>
+              <p class="text-[13px] font-bold text-[#1c1c1c]">WhatsApp</p>
+              <p class="text-[11px] text-gray-400">Send to contacts</p>
+            </div>
+          </button>
+
+          <button
+            (click)="shareCampaign('copy')"
+            class="flex items-center gap-4 px-4 py-3.5 rounded-[1.25rem] hover:bg-gray-50 transition-colors text-left group"
+          >
+            <div class="w-10 h-10 rounded-xl bg-gray-100 group-hover:bg-gray-200 flex items-center justify-center shrink-0 transition-colors">
+              @if (copySuccess()) {
+                <svg class="w-5 h-5 text-[#FF594B]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+              } @else {
+                <svg class="w-5 h-5 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                </svg>
+              }
+            </div>
+            <div>
+              <p class="text-[13px] font-bold text-[#1c1c1c]">{{ copySuccess() ? 'Copied!' : 'Copy link' }}</p>
+              <p class="text-[11px] text-gray-400">{{ copySuccess() ? 'Link is in your clipboard' : 'Copy campaign URL' }}</p>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

@@ -1,0 +1,290 @@
+<!-- ===== SCROLL-SNAP CONTAINER ===== -->
+<div
+  #scrollContainer
+  class="h-screen overflow-y-scroll [scroll-snap-type:y_mandatory] [scroll-behavior:smooth] hide-scrollbar"
+  (scroll)="onScroll($event)"
+>
+  <!-- ===== SECTION 1: HERO ===== -->
+  <section class="h-screen [scroll-snap-align:start] relative">
+    <app-hero-section></app-hero-section>
+
+    <!-- Scroll hint -->
+    <div
+      class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce"
+    >
+      <span class="text-white/40 text-xs font-medium uppercase tracking-widest">Scroll</span>
+      <svg class="w-4 h-4 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+      </svg>
+    </div>
+  </section>
+
+  <!-- ===== SECTION 2: MISSION / ABOUT ===== -->
+  <section class="h-screen [scroll-snap-align:start] bg-[#FFF3EC] flex flex-col overflow-hidden">
+    <div class="max-w-[1200px] mx-auto px-6 lg:px-8 w-full h-full flex flex-col justify-center pt-[72px] pb-10 gap-2">
+
+      <!-- Top row: headline left + description right -->
+      <div class="flex items-start ">
+
+        <!-- Left: Big headline -->
+        <div class="w-[42%] mt-8">
+          <h2 class="text-[clamp(2.2rem,3.8vw,3.2rem)] font-extrabold text-[#0D1117] leading-[1.1]">
+            Spread love.<br>
+            <span class="text-[#FF7A59]">Change lives.</span>
+          </h2>
+        </div>
+
+        <!-- Right: description + stats + CTA -->
+        <div class="flex-1 pt-4 mt-8">
+          <p class="text-slate-500 text-md leading-relaxed mb-5 max-w-md">
+            Tiwizi is a space where every cause finds its champion. Whether it's a roof, a meal,
+            an education, or simply hope. We believe no one should face their hardest moments alone.
+          </p>
+          <div class="flex items-center gap-6 mb-6">
+            <div>
+              <p class="text-xl font-extrabold text-[#0D1117] leading-none">500+</p>
+              <p class="text-[0.65rem] text-slate-400 font-semibold uppercase tracking-wider mt-0.5">Campaigns</p>
+            </div>
+            <div class="w-px h-7 bg-slate-200"></div>
+            <div>
+              <p class="text-xl font-extrabold text-[#0D1117] leading-none">12k+</p>
+              <p class="text-[0.65rem] text-slate-400 font-semibold uppercase tracking-wider mt-0.5">Donors</p>
+            </div>
+            <div class="w-px h-7 bg-slate-200"></div>
+            <div>
+              <p class="text-xl font-extrabold text-[#FF7A59] leading-none">10</p>
+              <p class="text-[0.65rem] text-slate-400 font-semibold uppercase tracking-wider mt-0.5">Categories</p>
+            </div>
+          </div>
+          <a
+            routerLink="/register"
+            class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#0D1117] text-white font-bold text-xs no-underline hover:bg-[#FF7A59] hover:shadow-[0_6px_20px_rgba(255,122,89,0.35)] transition-all duration-300"
+          >
+            Start making a difference
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- Bottom row: 3 image cards -->
+      <div class="flex items-end gap-4  min-h-0">
+
+        <!-- Housing -->
+        <div class="flex-1 rounded-2xl overflow-hidden relative shadow-md group cursor-pointer" style="height: 82%">
+          <img src="home.png" alt="Housing" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+          <div class="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent"></div>
+          <div class="absolute bottom-4 left-4">
+            <span class="text-white/60 text-[0.6rem] font-bold uppercase tracking-widest block mb-1">Category</span>
+            <span class="text-white text-sm font-bold">Housing</span>
+          </div>
+        </div>
+
+        <!-- Education -->
+        <div class="flex-1 rounded-2xl overflow-hidden relative shadow-md group cursor-pointer" style="height: 82%">
+          <img src="school.png" alt="Education" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+          <div class="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent"></div>
+          <div class="absolute bottom-4 left-4">
+            <span class="text-white/60 text-[0.6rem] font-bold uppercase tracking-widest block mb-1">Category</span>
+            <span class="text-white text-sm font-bold">Education</span>
+          </div>
+        </div>
+
+        <!-- Health — with a question-style title like the reference -->
+        <div class="flex-1 rounded-2xl overflow-hidden relative shadow-md group cursor-pointer" style="height: 82%">
+          <img src="hospital.png" alt="Health" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+          <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
+          <div class="absolute bottom-4 left-4 right-4">
+            <span class="text-white/60 text-[0.6rem] font-bold uppercase tracking-widest block mb-1">Category</span>
+            <span class="text-white text-sm font-bold">Health</span>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ===== SECTION 3: URGENT CAMPAIGNS ===== -->
+  <section class="h-screen [scroll-snap-align:start] bg-[#0D1117] flex flex-col overflow-hidden">
+    <div class="max-w-[1200px] mx-auto px-6 lg:px-8 w-full h-full flex flex-col justify-center py-10  mt-6">
+
+      <!-- Header -->
+      <div class="flex items-end justify-between mb-5">
+        <div>
+          
+          <h2 class="text-[clamp(1.6rem,2.5vw,2.2rem)] mt-4 font-extrabold text-white">
+            Campaigns that need you <span class="text-[#FF7A59]">right now</span>
+          </h2>
+        </div>
+        <a
+          routerLink="/campaigns"
+          [queryParams]="{ isUrgent: true }"
+          class="hidden sm:inline-flex items-center gap-2 text-sm font-semibold text-white/40 no-underline border border-white/10 hover:border-white/30 hover:text-white py-2 px-4 rounded-full transition-all"
+        >
+          See all
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+          </svg>
+        </a>
+      </div>
+
+      <!-- Has urgent campaigns — newspaper layout -->
+      @if (urgentCampaigns().length > 0) {
+        <div class="grid grid-cols-[1.1fr_1fr] gap-4 flex-1 min-h-0">
+
+          <!-- LEFT: Large featured card -->
+          @if (featuredUrgentCampaign) {
+            <div
+              [routerLink]="['/campaigns', featuredUrgentCampaign.id]"
+              class="group relative rounded-2xl overflow-hidden cursor-pointer h-full"
+            >
+              <!-- Background -->
+              <div class="absolute inset-0 bg-gradient-to-br from-slate-800 via-slate-900 to-[#0D1117]"></div>
+              <div class="absolute inset-0" style="background: radial-gradient(ellipse at 30% 25%, rgba(255,122,89,0.18) 0%, transparent 60%)"></div>
+              <!-- Large icon -->
+              <div class="absolute inset-0 flex items-center justify-center">
+                <div
+                  class="w-36 h-36 text-white/[0.06] group-hover:text-white/[0.11] transition-colors duration-500"
+                  [innerHTML]="getCategoryIconSvg(featuredUrgentCampaign.category)"
+                ></div>
+              </div>
+              <!-- Top badges -->
+              <div class="absolute top-5 left-5 right-5 flex items-center justify-between">
+                <span class="bg-white/10 backdrop-blur-sm text-white/70 text-[0.6rem] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full border border-white/10">
+                  {{ getCategoryLabel(featuredUrgentCampaign.category) }}
+                </span>
+                <span class="bg-red-500 text-white text-[0.6rem] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full flex items-center gap-1.5">
+                  <svg class="w-2 h-2" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>
+                  Urgent
+                </span>
+              </div>
+              <!-- Bottom content overlay -->
+              <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/95 via-black/65 to-transparent p-6 pt-24">
+                <h3 class="text-[1.3rem] font-extrabold text-white leading-snug line-clamp-3 mb-2 group-hover:text-[#FF7A59] transition-colors duration-200">
+                  {{ featuredUrgentCampaign.title }}
+                </h3>
+                <p class="text-white/40 text-xs mb-4">by {{ featuredUrgentCampaign.creatorName }}</p>
+                <div class="h-1 bg-white/10 rounded-full overflow-hidden mb-2">
+                  <div
+                    class="h-full rounded-full"
+                    style="background: linear-gradient(90deg, #FF7A59, #ffaa8a)"
+                    [style.width.%]="getProgress(featuredUrgentCampaign)"
+                  ></div>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span class="text-white font-bold text-sm">{{ featuredUrgentCampaign.amountCollected | currencyMad }}</span>
+                  <span class="text-white/40 text-xs">{{ getProgress(featuredUrgentCampaign) | number:'1.0-0' }}% of {{ featuredUrgentCampaign.goalAmount | currencyMad }}</span>
+                </div>
+              </div>
+            </div>
+          }
+
+          <!-- RIGHT: 2×2 grid of smaller cards -->
+          <div class="grid grid-cols-2 gap-3">
+            @for (campaign of sideUrgentCampaigns; track campaign.id) {
+              <div
+                [routerLink]="['/campaigns', campaign.id]"
+                class="group relative rounded-xl overflow-hidden cursor-pointer bg-white/[0.04] border border-white/[0.08] hover:border-white/20 hover:-translate-y-0.5 transition-all duration-200 flex flex-col"
+              >
+                <!-- Image area -->
+                <div class="relative flex-none overflow-hidden" style="height: 44%">
+                  <div class="absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-900"></div>
+                  <div class="absolute inset-0" style="background: radial-gradient(circle at 40% 40%, rgba(255,122,89,0.12) 0%, transparent 65%)"></div>
+                  <div class="absolute inset-0 flex items-center justify-center">
+                    <div
+                      class="w-10 h-10 text-white/15 group-hover:text-white/30 transition-colors duration-300"
+                      [innerHTML]="getCategoryIconSvg(campaign.category)"
+                    ></div>
+                  </div>
+                  <!-- Category + urgent badge -->
+                  <div class="absolute top-2.5 left-3 right-3 flex items-center justify-between">
+                    <span class="text-[#FF7A59] text-[0.55rem] font-bold uppercase tracking-widest">
+                      {{ getCategoryLabel(campaign.category) }}
+                    </span>
+                    @if (campaign.isUrgent) {
+                      <span class="bg-red-500/80 text-white text-[0.5rem] font-bold px-1.5 py-0.5 rounded-sm">URGENT</span>
+                    }
+                  </div>
+                </div>
+                <!-- Card body -->
+                <div class="p-3 flex flex-col flex-1">
+                  <h4 class="text-[0.8rem] font-bold text-white line-clamp-2 mb-auto group-hover:text-[#FF7A59] transition-colors duration-150 leading-snug">
+                    {{ campaign.title }}
+                  </h4>
+                  <div class="mt-2 pt-2 border-t border-white/[0.06]">
+                    <p class="text-white/35 text-[0.6rem] mb-1.5">{{ campaign.creatorName }}</p>
+                    <div class="h-0.5 bg-white/10 rounded-full overflow-hidden mb-1">
+                      <div class="h-full rounded-full bg-[#FF7A59]/70" [style.width.%]="getProgress(campaign)"></div>
+                    </div>
+                    <span class="text-white/35 text-[0.6rem]">{{ getProgress(campaign) | number:'1.0-0' }}% funded</span>
+                  </div>
+                </div>
+              </div>
+            }
+
+            <!-- "View all" placeholder card when fewer than 4 side campaigns -->
+            @if (sideUrgentCampaigns.length < 4) {
+              <a
+                routerLink="/campaigns"
+                [queryParams]="{ isUrgent: true }"
+                class="group rounded-xl border border-dashed border-white/10 flex flex-col items-center justify-center gap-2 p-4 no-underline hover:border-[#FF7A59]/40 hover:bg-[#FF7A59]/5 transition-all duration-200"
+              >
+                <svg class="w-5 h-5 text-white/20 group-hover:text-[#FF7A59] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                </svg>
+                <span class="text-white/25 text-xs font-semibold group-hover:text-[#FF7A59] transition-colors">View all</span>
+              </a>
+            }
+          </div>
+
+        </div>
+      }
+
+      <!-- No urgent campaigns -->
+      @if (urgentCampaigns().length === 0) {
+        <div class="flex flex-col items-center justify-center py-20 text-center">
+          <div class="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-white/20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </div>
+          <p class="font-semibold text-white/50 mb-1">No urgent campaigns at the moment</p>
+          <p class="text-white/30 text-sm">Check back soon — every campaign matters.</p>
+        </div>
+      }
+
+    </div>
+  </section>
+
+  <!-- ===== SECTION 5: HOW IT WORKS ===== -->
+  <section class="h-screen [scroll-snap-align:start] bg-[#FFF3EC]">
+    <app-how-it-works-section></app-how-it-works-section>
+  </section>
+
+  <!-- ===== SECTION 6: CATEGORIES + FOOTER ===== -->
+  <section class="h-screen flex flex-col [scroll-snap-align:start] bg-white">
+    <app-categories-section></app-categories-section>
+    <app-footer class="h-full flex flex-col w-full"></app-footer>
+  </section>
+</div>
+
+<!-- ===== SECTION DOT NAVIGATION ===== -->
+<div
+  class="fixed right-5 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-2.5 bg-black/20 backdrop-blur-md rounded-full px-2.5 py-3"
+>
+  @for (i of sectionIndices; track i) {
+    <button
+      (click)="scrollToSection(i)"
+      [attr.aria-label]="sectionLabels[i]"
+      [title]="sectionLabels[i]"
+      class="w-2 h-2 rounded-full transition-all duration-300"
+      [class]="
+        currentSection() === i
+          ? 'bg-[#FF7A59] scale-150 shadow-[0_0_8px_rgba(255,122,89,0.6)]'
+          : 'bg-white/50 hover:bg-white/80'
+      "
+    ></button>
+  }
+</div>

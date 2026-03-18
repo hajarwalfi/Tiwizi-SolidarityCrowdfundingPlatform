@@ -1,0 +1,209 @@
+@if (isOpen) {
+  <div
+    class="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center p-4"
+    (click)="closeModal()"
+  >
+    <div class="absolute inset-0 bg-black/30 backdrop-blur-sm"></div>
+
+    <div
+      class="relative bg-white rounded-[1.75rem] w-full max-w-md shadow-2xl animate-slide-up"
+      (click)="$event.stopPropagation()"
+    >
+      <!-- Header -->
+      <div class="flex items-center justify-between px-6 pt-6 pb-4 border-b border-gray-50">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-red-50 flex items-center justify-center shrink-0">
+            <svg class="w-4 h-4 text-red-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/>
+            </svg>
+          </div>
+          <p class="text-[15px] font-extrabold text-[#1c1c1c]">Report campaign</p>
+        </div>
+        <button
+          (click)="closeModal()"
+          class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
+        >
+          <svg class="w-4 h-4 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Body -->
+      <div class="p-5">
+
+        <!-- Success State -->
+        @if (success()) {
+          <div class="flex flex-col items-center text-center py-6">
+            <div class="w-16 h-16 rounded-full bg-emerald-50 flex items-center justify-center mb-4">
+              <svg class="w-7 h-7 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+            </div>
+            <p class="text-[15px] font-extrabold text-[#1c1c1c] mb-1">Report submitted</p>
+            <p class="text-[12px] text-gray-400">We'll review this campaign and take action if needed.</p>
+          </div>
+        }
+
+        <!-- Form -->
+        @if (!success()) {
+          <form (ngSubmit)="submitReport()" class="flex flex-col gap-3">
+
+            @if (error()) {
+              <div class="flex items-center gap-2.5 bg-red-50 border border-red-100 rounded-[1rem] px-4 py-3">
+                <svg class="w-4 h-4 text-red-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                <p class="text-[12px] text-red-600 font-semibold">{{ error() }}</p>
+              </div>
+            }
+
+            <!-- Reason Options -->
+            <div class="flex flex-col gap-1 max-h-[260px] overflow-y-auto pr-1">
+              <p class="text-[11px] font-extrabold text-gray-400 uppercase tracking-wider px-1 mb-1">Select a reason</p>
+
+              <!-- Spam -->
+              <button type="button" (click)="selectedReason = 'SPAM'"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-[1.25rem] transition-colors text-left group"
+                [class]="selectedReason === 'SPAM' ? 'bg-red-50 border border-red-100' : 'hover:bg-gray-50 border border-transparent'"
+              >
+                <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-colors"
+                  [class]="selectedReason === 'SPAM' ? 'bg-red-100' : 'bg-gray-100 group-hover:bg-gray-200'">
+                  <svg class="w-4 h-4" [class]="selectedReason === 'SPAM' ? 'text-red-500' : 'text-gray-400'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>
+                  </svg>
+                </div>
+                <span class="text-[13px] font-semibold flex-1" [class]="selectedReason === 'SPAM' ? 'text-red-600' : 'text-[#1c1c1c]'">Spam or unwanted content</span>
+                @if (selectedReason === 'SPAM') {
+                  <svg class="w-4 h-4 text-red-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                }
+              </button>
+
+              <!-- Fraud -->
+              <button type="button" (click)="selectedReason = 'FRAUD'"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-[1.25rem] transition-colors text-left group"
+                [class]="selectedReason === 'FRAUD' ? 'bg-red-50 border border-red-100' : 'hover:bg-gray-50 border border-transparent'"
+              >
+                <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-colors"
+                  [class]="selectedReason === 'FRAUD' ? 'bg-red-100' : 'bg-gray-100 group-hover:bg-gray-200'">
+                  <svg class="w-4 h-4" [class]="selectedReason === 'FRAUD' ? 'text-red-500' : 'text-gray-400'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                  </svg>
+                </div>
+                <span class="text-[13px] font-semibold flex-1" [class]="selectedReason === 'FRAUD' ? 'text-red-600' : 'text-[#1c1c1c]'">Fraud or scam</span>
+                @if (selectedReason === 'FRAUD') {
+                  <svg class="w-4 h-4 text-red-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                }
+              </button>
+
+              <!-- Inappropriate -->
+              <button type="button" (click)="selectedReason = 'INAPPROPRIATE'"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-[1.25rem] transition-colors text-left group"
+                [class]="selectedReason === 'INAPPROPRIATE' ? 'bg-red-50 border border-red-100' : 'hover:bg-gray-50 border border-transparent'"
+              >
+                <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-colors"
+                  [class]="selectedReason === 'INAPPROPRIATE' ? 'bg-red-100' : 'bg-gray-100 group-hover:bg-gray-200'">
+                  <svg class="w-4 h-4" [class]="selectedReason === 'INAPPROPRIATE' ? 'text-red-500' : 'text-gray-400'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                  </svg>
+                </div>
+                <span class="text-[13px] font-semibold flex-1" [class]="selectedReason === 'INAPPROPRIATE' ? 'text-red-600' : 'text-[#1c1c1c]'">Inappropriate content</span>
+                @if (selectedReason === 'INAPPROPRIATE') {
+                  <svg class="w-4 h-4 text-red-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                }
+              </button>
+
+              <!-- Duplicate -->
+              <button type="button" (click)="selectedReason = 'DUPLICATE'"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-[1.25rem] transition-colors text-left group"
+                [class]="selectedReason === 'DUPLICATE' ? 'bg-red-50 border border-red-100' : 'hover:bg-gray-50 border border-transparent'"
+              >
+                <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-colors"
+                  [class]="selectedReason === 'DUPLICATE' ? 'bg-red-100' : 'bg-gray-100 group-hover:bg-gray-200'">
+                  <svg class="w-4 h-4" [class]="selectedReason === 'DUPLICATE' ? 'text-red-500' : 'text-gray-400'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                  </svg>
+                </div>
+                <span class="text-[13px] font-semibold flex-1" [class]="selectedReason === 'DUPLICATE' ? 'text-red-600' : 'text-[#1c1c1c]'">Duplicate campaign</span>
+                @if (selectedReason === 'DUPLICATE') {
+                  <svg class="w-4 h-4 text-red-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                }
+              </button>
+
+              <!-- False info -->
+              <button type="button" (click)="selectedReason = 'FALSE_INFO'"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-[1.25rem] transition-colors text-left group"
+                [class]="selectedReason === 'FALSE_INFO' ? 'bg-red-50 border border-red-100' : 'hover:bg-gray-50 border border-transparent'"
+              >
+                <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-colors"
+                  [class]="selectedReason === 'FALSE_INFO' ? 'bg-red-100' : 'bg-gray-100 group-hover:bg-gray-200'">
+                  <svg class="w-4 h-4" [class]="selectedReason === 'FALSE_INFO' ? 'text-red-500' : 'text-gray-400'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
+                </div>
+                <span class="text-[13px] font-semibold flex-1" [class]="selectedReason === 'FALSE_INFO' ? 'text-red-600' : 'text-[#1c1c1c]'">False or misleading information</span>
+                @if (selectedReason === 'FALSE_INFO') {
+                  <svg class="w-4 h-4 text-red-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                }
+              </button>
+
+              <!-- Other -->
+              <button type="button" (click)="selectedReason = 'OTHER'"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-[1.25rem] transition-colors text-left group"
+                [class]="selectedReason === 'OTHER' ? 'bg-red-50 border border-red-100' : 'hover:bg-gray-50 border border-transparent'"
+              >
+                <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-colors"
+                  [class]="selectedReason === 'OTHER' ? 'bg-red-100' : 'bg-gray-100 group-hover:bg-gray-200'">
+                  <svg class="w-4 h-4" [class]="selectedReason === 'OTHER' ? 'text-red-500' : 'text-gray-400'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>
+                  </svg>
+                </div>
+                <span class="text-[13px] font-semibold flex-1" [class]="selectedReason === 'OTHER' ? 'text-red-600' : 'text-[#1c1c1c]'">Other reason</span>
+                @if (selectedReason === 'OTHER') {
+                  <svg class="w-4 h-4 text-red-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                }
+              </button>
+            </div>
+
+            <!-- Description (shown when a reason is selected) -->
+            @if (selectedReason) {
+              <textarea
+                [(ngModel)]="description"
+                name="description"
+                rows="5"
+                placeholder="Add more context (optional)..."
+                class="w-full bg-gray-50 border border-gray-100 rounded-[1rem] px-4 py-3 text-[13px] text-gray-700 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#FF594B]/20 focus:border-[#FF594B]/40 transition-all resize-none"
+              ></textarea>
+            }
+
+            <!-- Actions -->
+            <div class="flex gap-2.5">
+              <button
+                type="button"
+                (click)="closeModal()"
+                [disabled]="isSubmitting()"
+                class="flex-1 py-3 bg-gray-50 hover:bg-gray-100 border border-gray-100 rounded-full text-[13px] font-bold text-gray-500 transition-colors disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                [disabled]="isSubmitting() || !selectedReason"
+                class="flex-1 py-3 bg-red-500 hover:bg-red-600 text-white rounded-full text-[13px] font-bold transition-all shadow-md shadow-red-500/20 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 active:scale-95"
+              >
+                @if (isSubmitting()) {
+                  <div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  Submitting...
+                } @else {
+                  Submit report
+                }
+              </button>
+            </div>
+
+          </form>
+        }
+
+      </div>
+    </div>
+  </div>
+}

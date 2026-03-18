@@ -1,0 +1,79 @@
+<section class="relative h-full flex items-center bg-[#0D1117] overflow-hidden">
+
+  <!-- Background video -->
+  <video #bgVideo
+    src="/Landing.mp4"
+    autoplay
+    muted
+    loop
+    playsinline
+    class="absolute inset-0 w-full h-full object-cover pointer-events-none"
+    style="z-index:0">
+  </video>
+
+  <!-- Dark overlay so text stays readable -->
+  <div class="absolute inset-0 bg-black/60 pointer-events-none" style="z-index:1"></div>
+
+  <!-- Subtle orange glow accents on top of video -->
+  <div class="absolute inset-0 pointer-events-none" style="z-index:2">
+    <div class="absolute top-[-10%] left-[-5%] w-[600px] h-[600px] bg-[#FF7A59]/10 rounded-full blur-[140px]"></div>
+    <div class="absolute bottom-[-10%] right-[-5%] w-[500px] h-[500px] bg-indigo-600/10 rounded-full blur-[120px]"></div>
+  </div>
+
+  <div class="relative w-full max-w-[1200px] mx-auto px-6 lg:px-8" style="z-index:3">
+    <div class="grid grid-cols-1 items-center max-w-2xl">
+
+      <!-- LEFT: Text -->
+      <div class="animate-fade-in">
+
+        <!-- Headline -->
+        <h1 class="text-[clamp(3rem,6vw,5.5rem)] font-extrabold leading-[1.05] text-white mb-7 tracking-tight">
+          Unite for<br>
+          those who<br>
+          need you <span class="text-[#FF7A59] relative">most<span class="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#FF7A59]/40 rounded-full"></span></span>.
+        </h1>
+
+        <!-- Subtext -->
+        <p class="text-white/50 text-lg leading-relaxed max-w-md mb-10">
+          Discover verified campaigns across Morocco. Every donation is transparent, traceable, and goes directly to people who need it.
+        </p>
+
+        <!-- CTA row -->
+        <div class="flex flex-wrap gap-4 mb-14">
+          <a routerLink="/campaigns"
+             class="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-[#FF7A59] text-white font-bold text-base no-underline shadow-[0_8px_32px_rgba(255,122,89,0.4)] hover:bg-[#e8684a] hover:-translate-y-0.5 hover:shadow-[0_12px_40px_rgba(255,122,89,0.5)] transition-all">
+            Explore Campaigns
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+            </svg>
+          </a>
+          <a routerLink="/register"
+             class="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-white/5 border border-white/15 text-white font-bold text-base no-underline hover:bg-white/10 hover:border-white/30 transition-all">
+            Start a Campaign
+          </a>
+        </div>
+
+        <!-- Stats -->
+        <div class="flex items-center gap-8">
+          <div>
+            <div class="text-3xl font-extrabold text-white">500+</div>
+            <div class="text-white/40 text-xs font-medium mt-0.5">Campaigns</div>
+          </div>
+          <div class="h-10 w-px bg-white/10"></div>
+          <div>
+            <div class="text-3xl font-extrabold text-white">12k+</div>
+            <div class="text-white/40 text-xs font-medium mt-0.5">Donors</div>
+          </div>
+          <div class="h-10 w-px bg-white/10"></div>
+          <div>
+            <div class="text-3xl font-extrabold text-white">2M+</div>
+            <div class="text-white/40 text-xs font-medium mt-0.5">MAD raised</div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+</section>
