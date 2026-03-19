@@ -1,0 +1,262 @@
+<nav
+  class="sticky top-6 self-start shrink-0 h-[calc(100vh-140px)] min-h-[550px] max-h-[800px] bg-[#F2EFEA] rounded-[2.5rem] py-6 px-[12px] flex flex-col items-start gap-5 shadow-[inset_0_2px_10px_rgba(255,255,255,0.8),_0_5px_15px_rgba(0,0,0,0.03)] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:w-[200px] w-[68px] overflow-hidden z-40 group"
+>
+  <!-- Logo -->
+  <div
+    class="w-11 h-11 flex items-center justify-center text-[#FF594B] shrink-0 mb-6 cursor-pointer self-start pl-[1px]"
+  >
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+      <path
+        d="M12 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-2.8 0-5.4 1.1-7.4 3.1l-1.4-1.4C5.6 7.3 8.7 6 12 6s6.4 1.3 8.8 3.7l-1.4 1.4C17.4 9.1 14.8 8 12 8zm0 4c-1.7 0-3.2.7-4.4 1.8l-1.4-1.4C8 10.9 9.9 10 12 10s4 .9 5.8 2.4l-1.4 1.4C15.2 12.7 13.7 12 12 12zm0 4c-.6 0-1.1.2-1.5.6l-1.4-1.4C10 14.1 11 14 12 14s2 .1 2.9 1.2l-1.4 1.4c-.4-.4-.9-.6-1.5-.6z"
+      />
+    </svg>
+  </div>
+
+  <!-- Nav Items -->
+  <div
+    class="flex flex-col gap-4 w-full items-start flex-1 overflow-y-auto overflow-x-hidden"
+    style="scrollbar-width: none"
+  >
+    <!-- Notifications -->
+    <a
+      routerLink="/dashboard/notifications"
+      routerLinkActive
+      #rlaNotifications="routerLinkActive"
+      class="flex items-center gap-4 w-[180px] p-0 rounded-full cursor-pointer text-[#1c1c1c]"
+    >
+      <div
+        class="w-11 h-11 rounded-full flex items-center justify-center shrink-0 relative transition-all duration-200"
+        [class]="
+          rlaNotifications.isActive
+            ? 'bg-[#FF594B] text-white shadow-[0_4px_12px_rgba(255,89,75,0.3)] hover:scale-110'
+            : 'bg-white shadow-[0_2px_10px_rgba(0,0,0,0.03)] hover:bg-[#FFF0EE] hover:scale-110 hover:shadow-[0_3px_10px_rgba(255,89,75,0.15)]'
+        "
+      >
+        <svg
+          class="w-[20px] h-[20px]"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+        </svg>
+        @if (unreadCount() > 0) {
+          <span
+            class="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] bg-[#FF594B] border-2 border-[#F2EFEA] rounded-full flex items-center justify-center text-[10px] font-bold text-white px-1"
+          >
+            {{ unreadCount() > 99 ? '99+' : unreadCount() }}
+          </span>
+        }
+      </div>
+      <span
+        class="font-bold text-[14px] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+        >Notifications</span
+      >
+    </a>
+
+    <!-- Vue d'ensemble -->
+    <a
+      routerLink="/dashboard/overview"
+      routerLinkActive
+      #rlaOverview="routerLinkActive"
+      class="flex items-center gap-4 w-[180px] p-0 rounded-full cursor-pointer text-[#1c1c1c]"
+    >
+      <div
+        class="w-11 h-11 rounded-full flex items-center justify-center shrink-0 transition-all duration-200"
+        [class]="
+          rlaOverview.isActive
+            ? 'bg-[#FF594B] text-white shadow-[0_4px_12px_rgba(255,89,75,0.3)] hover:scale-110'
+            : 'bg-white shadow-[0_2px_10px_rgba(0,0,0,0.03)] hover:bg-[#FFF0EE] hover:scale-110 hover:shadow-[0_3px_10px_rgba(255,89,75,0.15)]'
+        "
+      >
+        <svg
+          class="w-[20px] h-[20px]"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+          <polyline points="9 22 9 12 15 12 15 22" />
+        </svg>
+      </div>
+      <span
+        class="font-bold text-[14px] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+        >Overview</span
+      >
+    </a>
+
+    <!-- Campaigns -->
+    <a
+      routerLink="/dashboard/campaigns"
+      routerLinkActive
+      #rlaCampaigns="routerLinkActive"
+      class="flex items-center gap-4 w-[180px] p-0 rounded-full cursor-pointer text-[#1c1c1c]"
+    >
+      <div
+        class="w-11 h-11 rounded-full flex items-center justify-center shrink-0 transition-all duration-200"
+        [class]="
+          rlaCampaigns.isActive
+            ? 'bg-[#FF594B] text-white shadow-[0_4px_12px_rgba(255,89,75,0.3)] hover:scale-110'
+            : 'bg-white shadow-[0_2px_10px_rgba(0,0,0,0.03)] hover:bg-[#FFF0EE] hover:scale-110 hover:shadow-[0_3px_10px_rgba(255,89,75,0.15)]'
+        "
+      >
+        <svg
+          class="w-[20px] h-[20px]"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="m3 11 18-5v12L3 13v-2z" />
+          <path d="M11.6 16.8a3 3 0 1 1-5.8-1.6" />
+        </svg>
+      </div>
+      <span
+        class="font-bold text-[14px] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+        >Campaigns</span
+      >
+    </a>
+
+    <!-- Mes Paiements -->
+    <a
+      routerLink="/dashboard/payments"
+      routerLinkActive
+      #rlaPayments="routerLinkActive"
+      class="flex items-center gap-4 w-[180px] p-0 rounded-full cursor-pointer text-[#1c1c1c]"
+    >
+      <div
+        class="w-11 h-11 rounded-full flex items-center justify-center shrink-0 transition-all duration-200"
+        [class]="
+          rlaPayments.isActive
+            ? 'bg-[#FF594B] text-white shadow-[0_4px_12px_rgba(255,89,75,0.3)] hover:scale-110'
+            : 'bg-white shadow-[0_2px_10px_rgba(0,0,0,0.03)] hover:bg-[#FFF0EE] hover:scale-110 hover:shadow-[0_3px_10px_rgba(255,89,75,0.15)]'
+        "
+      >
+        <svg
+          class="w-[20px] h-[20px]"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
+          <line x1="1" y1="10" x2="23" y2="10" />
+        </svg>
+      </div>
+      <span
+        class="font-bold text-[14px] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+        >My Payments</span
+      >
+    </a>
+
+    <!-- Favoris -->
+    <a
+      routerLink="/dashboard/favorites"
+      routerLinkActive
+      #rlaFavorites="routerLinkActive"
+      class="flex items-center gap-4 w-[180px] p-0 rounded-full cursor-pointer text-[#1c1c1c]"
+    >
+      <div
+        class="w-11 h-11 rounded-full flex items-center justify-center shrink-0 transition-all duration-200"
+        [class]="
+          rlaFavorites.isActive
+            ? 'bg-[#FF594B] text-white shadow-[0_4px_12px_rgba(255,89,75,0.3)] hover:scale-110'
+            : 'bg-white shadow-[0_2px_10px_rgba(0,0,0,0.03)] hover:bg-[#FFF0EE] hover:scale-110 hover:shadow-[0_3px_10px_rgba(255,89,75,0.15)]'
+        "
+      >
+        <svg
+          class="w-[20px] h-[20px]"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path
+            d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
+          ></path>
+        </svg>
+      </div>
+      <span
+        class="font-bold text-[14px] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+        >My Favorites</span
+      >
+    </a>
+  </div>
+
+  <!-- Bottom -->
+  <div class="mt-auto flex flex-col gap-4 w-full items-start pb-2">
+    <!-- Paramètres -->
+    <a
+      routerLink="/dashboard/settings"
+      routerLinkActive
+      #rlaSettings="routerLinkActive"
+      class="flex items-center gap-4 w-[180px] p-0 rounded-full cursor-pointer text-[#1c1c1c]"
+    >
+      <div
+        class="w-11 h-11 rounded-full flex items-center justify-center shrink-0 transition-all duration-200"
+        [class]="
+          rlaSettings.isActive
+            ? 'bg-[#FF594B] text-white shadow-[0_4px_12px_rgba(255,89,75,0.3)] hover:scale-110'
+            : 'bg-white shadow-[0_2px_10px_rgba(0,0,0,0.03)] hover:bg-[#FFF0EE] hover:scale-110 hover:shadow-[0_3px_10px_rgba(255,89,75,0.15)]'
+        "
+      >
+        <svg
+          class="w-[20px] h-[20px]"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <circle cx="12" cy="12" r="3" />
+          <path
+            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"
+          />
+        </svg>
+      </div>
+      <span
+        class="font-bold text-[14px] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+        >Settings</span
+      >
+    </a>
+
+    <!-- Avatar -->
+    <a
+      [routerLink]="profile()?.id ? ['/profile', profile()!.id] : ['/dashboard/overview']"
+      class="flex items-center gap-4 w-[180px] p-0 rounded-full cursor-pointer text-[#1c1c1c]"
+    >
+      <div
+        class="w-11 h-11 rounded-full border-[2.5px] border-white overflow-hidden shrink-0 shadow-[0_2px_8px_rgba(0,0,0,0.1)] bg-[#a3e635]"
+      >
+        <img
+          [src]="
+            profile()?.profilePictureUrl ||
+            'https://ui-avatars.com/api/?name=' +
+              (profile()?.displayName || profile()?.fullName || 'User') +
+              '&background=random'
+          "
+          alt="Avatar"
+          class="w-full h-full object-cover"
+        />
+      </div>
+      <span
+        class="font-bold text-[14px] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+        >{{
+          profile()?.displayName?.split(' ')?.[0] ||
+            profile()?.fullName?.split(' ')?.[0] ||
+            'Profile'
+        }}</span
+      >
+    </a>
+  </div>
+</nav>

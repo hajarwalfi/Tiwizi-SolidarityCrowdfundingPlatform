@@ -1,0 +1,422 @@
+@if (campaign) {
+  <!-- Backdrop -->
+  <div
+    class="fixed inset-0 bg-black/30 backdrop-blur-sm z-40"
+    (click)="closed.emit()"
+  ></div>
+
+  <!-- Panel -->
+  <div class="fixed right-0 top-0 h-full w-full max-w-[480px] bg-white z-50 flex flex-col shadow-2xl">
+
+    <!-- Header -->
+    <div class="flex items-start gap-3 px-5 pt-5 pb-4 border-b border-gray-100">
+      <div class="flex-1 min-w-0">
+        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-extrabold tracking-wider uppercase mb-2"
+          [ngClass]="getStatusColor(campaign.status)">
+          {{ getStatusLabel(campaign.status) }}
+        </span>
+        <h2 class="text-[17px] font-extrabold text-gray-900 leading-snug line-clamp-2">{{ campaign.title }}</h2>
+      </div>
+      <button
+        (click)="closed.emit()"
+        class="shrink-0 w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors text-gray-400"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Tab Bar -->
+    <div class="flex border-b border-gray-100 px-5 gap-1">
+      <button
+        (click)="switchTab('overview')"
+        class="px-3 py-3 text-[13px] font-semibold transition-colors border-b-2 -mb-px"
+        [class]="activeTab === 'overview' ? 'border-[#FF594B] text-[#FF594B]' : 'border-transparent text-gray-400 hover:text-gray-600'"
+      >Overview</button>
+
+      @if (campaign.status !== 'REJECTED') {
+        <button
+          (click)="switchTab('updates')"
+          class="px-3 py-3 text-[13px] font-semibold transition-colors border-b-2 -mb-px flex items-center gap-1.5"
+          [class]="activeTab === 'updates' ? 'border-[#FF594B] text-[#FF594B]' : 'border-transparent text-gray-400 hover:text-gray-600'"
+        >
+          Updates
+          @if (campaign.updateCount > 0) {
+            <span class="px-1.5 py-0.5 rounded-full bg-orange-100 text-[#FF594B] text-[10px] font-extrabold">{{ campaign.updateCount }}</span>
+          }
+        </button>
+      }
+    </div>
+
+    <!-- Content -->
+    <div class="flex-1 overflow-y-auto p-5">
+
+      <!-- ── OVERVIEW TAB ── -->
+      @if (activeTab === 'overview') {
+        <div class="space-y-4">
+
+          @if (campaign.status === 'REJECTED' && campaign.rejectionReason) {
+            <div class="bg-red-50 border border-red-100 rounded-2xl p-4">
+              <p class="text-[10px] font-extrabold text-red-500 uppercase tracking-wider mb-1">Rejection Reason</p>
+              <p class="text-sm text-red-700 leading-relaxed break-words">{{ campaign.rejectionReason }}</p>
+            </div>
+          }
+
+          @if (campaign.status === 'SUSPENDED') {
+            <div class="bg-orange-50 border border-orange-100 rounded-2xl p-4">
+              <div class="flex items-center gap-2 mb-1">
+                <svg class="w-3.5 h-3.5 text-orange-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"/><line x1="10" y1="9" x2="10" y2="15"/><line x1="14" y1="9" x2="14" y2="15"/>
+                </svg>
+                <p class="text-[10px] font-extrabold text-orange-500 uppercase tracking-wider">Campaign Suspended</p>
+              </div>
+              <p class="text-sm text-orange-700 leading-relaxed break-words">
+                {{ campaign.rejectionReason ?? 'Your campaign has been temporarily suspended by an administrator.' }}
+              </p>
+            </div>
+          }
+
+          <!-- Progress -->
+          <div class="rounded-2xl p-4 border border-gray-100 bg-white">
+            <div class="flex justify-between items-center mb-3">
+              <span class="text-[10px] font-extrabold text-gray-400 uppercase tracking-wider">Funding Progress</span>
+              <span class="text-sm font-extrabold text-[#FF594B]">
+                {{ campaign.progressPercentage }}%
+              </span>
+            </div>
+            <div class="h-1.5 bg-gray-100 rounded-full overflow-hidden mb-3">
+              <div
+                class="h-full rounded-full transition-all duration-700 bg-gradient-to-r from-[#FF594B] to-[#ff8a50]"
+                [style.width.%]="campaign.progressPercentage > 100 ? 100 : campaign.progressPercentage"
+              ></div>
+            </div>
+            <div class="flex items-center justify-between">
+              <p class="text-[11px] text-gray-400 font-semibold">
+                <span class="text-gray-700 font-extrabold">{{ formatAmount(campaign.amountCollected) }}</span> / {{ formatAmount(campaign.goalAmount) }} MAD
+              </p>
+              @if (campaign.progressPercentage >= 100) {
+                <span class="text-[10px] font-extrabold text-[#FF594B] bg-orange-50 px-2 py-0.5 rounded-full">Fully Funded</span>
+              }
+            </div>
+          </div>
+
+          <!-- Stats -->
+          <div class="grid grid-cols-3 gap-2">
+            <div class="bg-white rounded-xl px-3 py-2.5 border border-gray-100 text-center shadow-sm">
+              <div class="w-6 h-6 rounded-lg bg-blue-50 flex items-center justify-center mx-auto mb-1.5">
+                <svg class="w-3.5 h-3.5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                </svg>
+              </div>
+              <p class="text-lg font-extrabold text-gray-900 leading-none">{{ campaign.donorCount }}</p>
+              <p class="text-[10px] font-semibold text-gray-400 mt-0.5">Donors</p>
+            </div>
+            <div class="bg-white rounded-xl px-3 py-2.5 border border-gray-100 text-center shadow-sm">
+              <div class="w-6 h-6 rounded-lg bg-orange-50 flex items-center justify-center mx-auto mb-1.5">
+                <svg class="w-3.5 h-3.5 text-[#FF594B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+              </div>
+              <p class="text-lg font-extrabold text-gray-900 leading-none">{{ campaign.donationCount }}</p>
+              <p class="text-[10px] font-semibold text-gray-400 mt-0.5">Donations</p>
+            </div>
+            <div class="bg-white rounded-xl px-3 py-2.5 border border-gray-100 text-center shadow-sm">
+              <div class="w-6 h-6 rounded-lg bg-violet-50 flex items-center justify-center mx-auto mb-1.5">
+                <svg class="w-3.5 h-3.5 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/>
+                </svg>
+              </div>
+              <p class="text-lg font-extrabold text-gray-900 leading-none">{{ campaign.updateCount }}</p>
+              <p class="text-[10px] font-semibold text-gray-400 mt-0.5">Updates</p>
+            </div>
+          </div>
+
+          <!-- Details -->
+          <div class="bg-white rounded-2xl border border-gray-100 divide-y divide-gray-50 shadow-sm">
+            <div class="flex justify-between items-center px-4 py-3">
+              <span class="flex items-center gap-2 text-xs font-semibold text-gray-400">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a2 2 0 012-2z"/></svg>
+                Category
+              </span>
+              <span class="text-xs font-bold text-gray-700 bg-gray-50 px-2.5 py-1 rounded-full">{{ campaign.category }}</span>
+            </div>
+            <div class="flex justify-between items-center px-4 py-3">
+              <span class="flex items-center gap-2 text-xs font-semibold text-gray-400">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                Location
+              </span>
+              <span class="text-xs font-bold text-gray-700">{{ campaign.location }}</span>
+            </div>
+            @if (campaign.deadline) {
+              <div class="flex justify-between items-center px-4 py-3">
+                <span class="flex items-center gap-2 text-xs font-semibold text-gray-400">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                  Deadline
+                </span>
+                <span class="text-xs font-bold text-gray-700">{{ formatDate(campaign.deadline) }}</span>
+              </div>
+            }
+            <div class="flex justify-between items-center px-4 py-3">
+              <span class="flex items-center gap-2 text-xs font-semibold text-gray-400">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                Urgent
+              </span>
+              @if (campaign.isUrgent) {
+                <span class="text-[10px] font-extrabold text-red-500 bg-red-50 px-2.5 py-1 rounded-full border border-red-100">Yes</span>
+              } @else {
+                <span class="text-xs font-semibold text-gray-400">No</span>
+              }
+            </div>
+            <div class="flex justify-between items-center px-4 py-3">
+              <span class="flex items-center gap-2 text-xs font-semibold text-gray-400">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                Created
+              </span>
+              <span class="text-xs font-bold text-gray-700">{{ formatDate(campaign.createdAt) }}</span>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          @if (canEdit || canArchive || canUnarchive || canDelete) {
+            <div class="flex flex-col gap-2 pt-1">
+
+              <!-- Archive button (ACTIVE / CLOSED / COMPLETED) -->
+              @if (canArchive) {
+                @if (!showArchiveConfirm) {
+                  <button
+                    (click)="showArchiveConfirm = true"
+                    class="w-full py-2.5 bg-slate-50 border border-slate-200 text-slate-600 font-bold rounded-xl text-sm hover:bg-slate-100 hover:border-slate-300 hover:text-slate-700 transition-all active:scale-[0.99] flex items-center justify-center gap-2"
+                  >
+                    <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
+                    </svg>
+                    Archive Campaign
+                  </button>
+                } @else {
+                  <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4">
+                    <p class="text-sm font-bold text-slate-700 mb-1">Archive this campaign?</p>
+                    <p class="text-xs text-slate-500 font-medium mb-3 leading-relaxed">It will be hidden from the public. Donors who funded it will still see their contribution, but the campaign page will show a privacy notice.</p>
+                    @if (archiveError) {
+                      <p class="text-xs text-red-500 font-semibold mb-2">{{ archiveError }}</p>
+                    }
+                    <div class="flex gap-2">
+                      <button
+                        (click)="showArchiveConfirm = false"
+                        class="flex-1 py-2 border border-gray-200 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-50 transition-colors"
+                      >Cancel</button>
+                      <button
+                        (click)="onArchiveCampaign()"
+                        [disabled]="archiveLoading"
+                        class="flex-1 py-2 bg-slate-700 text-white rounded-xl text-sm font-bold hover:bg-slate-800 disabled:opacity-50 transition-colors"
+                      >{{ archiveLoading ? 'Archiving...' : 'Yes, archive' }}</button>
+                    </div>
+                  </div>
+                }
+              }
+
+              <!-- Unarchive button (ARCHIVED only) -->
+              @if (canUnarchive) {
+                <button
+                  (click)="onUnarchiveCampaign()"
+                  [disabled]="unarchiveLoading"
+                  class="w-full py-2.5 border border-purple-200 text-purple-600 font-bold rounded-xl text-sm hover:bg-purple-50 hover:border-purple-300 transition-all active:scale-[0.99] flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"/>
+                  </svg>
+                  {{ unarchiveLoading ? 'Restoring...' : 'Unarchive Campaign' }}
+                </button>
+                @if (unarchiveError) {
+                  <p class="text-xs text-red-500 font-semibold text-center">{{ unarchiveError }}</p>
+                }
+              }
+
+              <!-- Delete button (PENDING / REJECTED only) -->
+              @if (canDelete) {
+                @if (!showDeleteConfirm) {
+                  <button
+                    (click)="showDeleteConfirm = true"
+                    class="w-full py-2.5 border border-red-100 text-red-400 font-bold rounded-xl text-sm hover:bg-red-50 hover:text-red-500 hover:border-red-200 transition-all active:scale-[0.99] flex items-center justify-center gap-2"
+                  >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                    Delete Campaign
+                  </button>
+                } @else {
+                  <div class="bg-red-50 border border-red-100 rounded-2xl p-4">
+                    <p class="text-sm text-red-700 font-semibold mb-3">Are you sure? This cannot be undone.</p>
+                    @if (deleteError) {
+                      <p class="text-xs text-red-500 font-semibold mb-2">{{ deleteError }}</p>
+                    }
+                    <div class="flex gap-2">
+                      <button
+                        (click)="showDeleteConfirm = false"
+                        class="flex-1 py-2 border border-gray-200 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-50 transition-colors"
+                      >Cancel</button>
+                      <button
+                        (click)="onDeleteCampaign()"
+                        [disabled]="deleteLoading"
+                        class="flex-1 py-2 bg-red-500 text-white rounded-xl text-sm font-bold hover:bg-red-600 disabled:opacity-50 transition-colors"
+                      >{{ deleteLoading ? 'Deleting...' : 'Yes, delete' }}</button>
+                    </div>
+                  </div>
+                }
+              }
+
+            </div>
+          }
+
+        </div>
+      }
+
+      <!-- ── UPDATES TAB ── -->
+      @if (activeTab === 'updates') {
+        <div class="space-y-4">
+
+          <!-- Add update form (only for ACTIVE campaigns) -->
+          @if (canAddUpdates) {
+            <div class="bg-gray-50 border border-gray-200 rounded-2xl p-4">
+              <label class="block text-[10px] font-extrabold text-gray-400 uppercase tracking-wider mb-2">Post an Update</label>
+
+              <!-- Rich text toolbar -->
+              <div class="flex items-center flex-wrap gap-0.5 mb-1.5 px-1 py-1 bg-white border border-gray-200 rounded-xl">
+
+                <!-- Text formatting -->
+                <button type="button" (click)="applyFormat('bold')" title="Bold"
+                  class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-600 font-bold text-sm transition-colors select-none">B</button>
+                <button type="button" (click)="applyFormat('italic')" title="Italic"
+                  class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-600 italic text-sm transition-colors select-none">I</button>
+                <button type="button" (click)="applyFormat('underline')" title="Underline"
+                  class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-600 underline text-sm transition-colors select-none">U</button>
+                <button type="button" (click)="applyFormat('strikeThrough')" title="Strikethrough"
+                  class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-600 line-through text-sm transition-colors select-none">S</button>
+
+                <div class="w-px h-4 bg-gray-200 mx-1"></div>
+
+                <!-- Lists -->
+                <button type="button" (click)="applyFormat('insertUnorderedList')" title="Bullet list"
+                  class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-500 transition-colors">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/>
+                    <circle cx="4" cy="6" r="1.2" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1.2" fill="currentColor" stroke="none"/><circle cx="4" cy="18" r="1.2" fill="currentColor" stroke="none"/>
+                  </svg>
+                </button>
+                <button type="button" (click)="applyFormat('insertOrderedList')" title="Numbered list"
+                  class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-500 transition-colors">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/>
+                    <path d="M4 6h1v4" stroke-width="1.5"/><path d="M4 10h2" stroke-width="1.5"/>
+                    <path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1" stroke-width="1.5"/>
+                  </svg>
+                </button>
+
+                <div class="w-px h-4 bg-gray-200 mx-1"></div>
+
+                <!-- Image upload -->
+                <button type="button" (click)="triggerImageUpload()" [disabled]="imageUploadLoading" title="Add photo"
+                  class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-500 transition-colors disabled:opacity-40">
+                  @if (imageUploadLoading) {
+                    <div class="w-3 h-3 rounded-full border-2 border-gray-400 border-t-transparent animate-spin"></div>
+                  } @else {
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2" stroke-width="1.5"/>
+                      <circle cx="8.5" cy="8.5" r="1.5" stroke-width="1.5"/>
+                      <polyline points="21 15 16 10 5 21" stroke-width="1.5"/>
+                    </svg>
+                  }
+                </button>
+                <input #imageInput type="file" accept="image/*" class="hidden" (change)="onImageSelect($event)" />
+              </div>
+
+              <!-- Contenteditable editor -->
+              <div
+                #editor
+                contenteditable="true"
+                (input)="onEditorInput($event)"
+                data-placeholder="Share news with your donors..."
+                class="editor-field min-h-[80px] max-h-[280px] overflow-y-auto w-full px-3 py-2.5 bg-white border border-gray-200 rounded-xl text-sm text-gray-900 focus:outline-none focus:border-gray-300 transition-all"
+              ></div>
+
+              @if (addUpdateError) {
+                <p class="text-[11px] text-red-500 font-semibold mt-1.5">{{ addUpdateError }}</p>
+              }
+              <button
+                (click)="onAddUpdate()"
+                [disabled]="addUpdateLoading || imageUploadLoading || isEditorEmpty"
+                class="mt-3 w-full py-2.5 bg-[#FF594B] text-white font-bold rounded-xl text-sm hover:bg-[#e04535] disabled:opacity-40 transition-all active:scale-[0.99]"
+              >
+                {{ addUpdateLoading ? 'Posting...' : 'Post Update' }}
+              </button>
+            </div>
+          }
+
+          <!-- Existing updates -->
+          @if (updatesLoading) {
+            <div class="flex justify-center py-8">
+              <div class="animate-spin w-8 h-8 rounded-full border-b-2 border-[#FF594B]"></div>
+            </div>
+          }
+
+          @if (!updatesLoading && updates.length === 0) {
+            <div class="text-center py-8">
+              <p class="text-sm text-gray-400 font-semibold">No updates posted yet</p>
+            </div>
+          }
+
+          @for (update of pagedUpdates; track update.id) {
+            <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm">
+              <div class="flex items-start gap-3">
+                <div class="flex-1 text-sm text-gray-700 leading-relaxed update-content break-words min-w-0" [innerHTML]="update.content"></div>
+                <button
+                  (click)="onDeleteUpdate(update.id)"
+                  class="shrink-0 w-7 h-7 flex items-center justify-center rounded-full hover:bg-red-50 text-gray-300 hover:text-red-400 transition-colors"
+                  title="Delete update"
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                  </svg>
+                </button>
+              </div>
+              <p class="text-[10px] text-gray-400 font-semibold mt-2">{{ formatDate(update.createdAt) }}</p>
+            </div>
+          }
+
+          <!-- Pagination -->
+          @if (totalUpdatesPages > 1) {
+            <div class="flex items-center justify-between pt-1">
+              <button
+                (click)="updatesPage = updatesPage - 1"
+                [disabled]="updatesPage === 1"
+                class="w-8 h-8 flex items-center justify-center rounded-full border border-gray-200 text-gray-400 hover:bg-gray-50 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                </svg>
+              </button>
+              <span class="text-[11px] font-semibold text-gray-400">{{ updatesPage }} / {{ totalUpdatesPages }}</span>
+              <button
+                (click)="updatesPage = updatesPage + 1"
+                [disabled]="updatesPage === totalUpdatesPages"
+                class="w-8 h-8 flex items-center justify-center rounded-full border border-gray-200 text-gray-400 hover:bg-gray-50 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                </svg>
+              </button>
+            </div>
+          }
+
+        </div>
+      }
+
+    </div>
+
+  </div>
+}

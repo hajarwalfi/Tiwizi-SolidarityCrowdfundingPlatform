@@ -1,0 +1,38 @@
+# =============================================================================
+# TIWIZI Backend - .dockerignore
+# =============================================================================
+# Ce fichier indique à Docker quels fichiers NE PAS copier dans l'image
+# Cela réduit la taille de l'image et accélère le build
+# =============================================================================
+
+# Dossier target (sera régénéré par Maven dans le container)
+target/
+
+# Fichiers IDE
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+
+# Git
+.git/
+.gitignore
+
+# Documentation (pas nécessaire dans l'image)
+*.md
+docs/
+README*
+
+# Logs
+*.log
+logs/
+
+# Fichiers de test locaux
+*.env.local
+.env
+
+# Docker files (pas besoin de les copier dans l'image)
+Dockerfile
+docker-compose*.yml
+.dockerignore

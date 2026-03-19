@@ -1,0 +1,196 @@
+<div class="flex flex-col gap-6">
+  <!-- Header -->
+  <div>
+    <h1 class="text-2xl font-bold text-[#1c1c1c]">Reports</h1>
+    <p class="text-sm text-gray-400 mt-1">Review reported campaigns and users — suspend or ban, or dismiss if nothing found.</p>
+  </div>
+
+  <!-- Filters row -->
+  <div class="flex flex-wrap gap-3 items-center">
+    <!-- Type pills -->
+    <div class="flex gap-2 overflow-x-auto" style="scrollbar-width: none">
+      @for (f of typeFilters; track f.value) {
+        <button
+          (click)="setTypeFilter(f.value)"
+          [class]="activeTypeFilter() === f.value
+            ? 'shrink-0 px-4 py-2 rounded-full text-[13px] font-bold bg-[#1c1c1c] text-white shadow-sm transition-all'
+            : 'shrink-0 px-4 py-2 rounded-full text-[13px] font-bold bg-white text-gray-600 border border-gray-100 hover:border-gray-200 hover:bg-gray-50 transition-all'"
+        >{{ f.label }}</button>
+      }
+    </div>
+
+    <div class="w-px h-5 bg-gray-200 shrink-0"></div>
+
+    <!-- Status pills -->
+    <div class="flex gap-2 overflow-x-auto" style="scrollbar-width: none">
+      @for (f of statusFilters; track f.value) {
+        <button
+          (click)="setFilter(f.value)"
+          [class]="activeFilter() === f.value
+            ? 'shrink-0 px-4 py-2 rounded-full text-[13px] font-bold bg-[#FF594B] text-white shadow-sm transition-all'
+            : 'shrink-0 px-4 py-2 rounded-full text-[13px] font-bold bg-white text-gray-600 border border-gray-100 hover:border-gray-200 hover:bg-gray-50 transition-all'"
+        >{{ f.label }}</button>
+      }
+    </div>
+  </div>
+
+  @if (isLoading()) {
+    <div class="flex items-center justify-center py-20">
+      <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-[#FF594B]"></div>
+    </div>
+  } @else if (filteredReports().length === 0) {
+    <div class="flex flex-col items-center justify-center py-20 text-center bg-white rounded-2xl shadow-sm border border-gray-100">
+      <div class="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mb-5">
+        <svg class="w-7 h-7 text-red-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/>
+        </svg>
+      </div>
+      <h3 class="text-lg font-bold text-gray-800 mb-1.5">No reports found</h3>
+      <p class="text-sm text-gray-400 font-medium">No reports match the current filters.</p>
+    </div>
+  } @else {
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+      <table class="w-full text-left">
+        <thead>
+          <tr class="border-b border-gray-100">
+            <th class="px-5 py-4 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Target</th>
+            <th class="px-5 py-4 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Reporter</th>
+            <th class="px-5 py-4 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Reason</th>
+            <th class="px-5 py-4 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Description</th>
+            <th class="px-5 py-4 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Status</th>
+            <th class="px-5 py-4 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Date</th>
+            <th class="px-5 py-4 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (report of paginatedReports(); track report.id) {
+            <tr class="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
+
+              <!-- Target (campaign or user) -->
+              <td class="px-5 py-4">
+                @if (report.reportType === 'CAMPAIGN') {
+                  <div class="flex items-center gap-2">
+                    <span class="inline-flex items-center justify-center w-5 h-5 rounded bg-purple-100 shrink-0">
+                      <svg class="w-3 h-3 text-purple-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 21V9"/></svg>
+                    </span>
+                    <div>
+                      <a [href]="'/campaigns/' + report.campaignId" target="_blank"
+                        class="font-bold text-[13px] text-[#1c1c1c] hover:text-[#FF594B] transition-colors line-clamp-1 max-w-[140px] block">
+                        {{ report.campaignTitle }}
+                      </a>
+                      <span class="text-[10px] font-bold text-purple-500 uppercase tracking-wider">Campaign</span>
+                    </div>
+                  </div>
+                } @else {
+                  <div class="flex items-center gap-2">
+                    <span class="inline-flex items-center justify-center w-5 h-5 rounded bg-blue-100 shrink-0">
+                      <svg class="w-3 h-3 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                    </span>
+                    <div>
+                      <p class="font-bold text-[13px] text-[#1c1c1c] line-clamp-1 max-w-[140px]">{{ report.reportedUserName }}</p>
+                      <span class="text-[10px] font-bold text-blue-500 uppercase tracking-wider">User</span>
+                    </div>
+                  </div>
+                }
+              </td>
+
+              <td class="px-5 py-4">
+                <p class="text-[13px] font-semibold text-gray-700">{{ report.reporterName }}</p>
+                <p class="text-[11px] text-gray-400">{{ report.reporterEmail }}</p>
+              </td>
+
+              <td class="px-5 py-4">
+                <span class="inline-flex px-2 py-0.5 rounded-md bg-gray-100 text-[11px] font-bold text-gray-600">
+                  {{ getReasonLabel(report.reason) }}
+                </span>
+              </td>
+
+              <td class="px-5 py-4">
+                <p class="text-[12px] text-gray-500 max-w-[160px] line-clamp-2">{{ report.description || '—' }}</p>
+              </td>
+
+              <td class="px-5 py-4">
+                <span class="inline-flex px-2.5 py-1 rounded-full text-[11px] font-bold" [class]="getStatusColor(report.status)">
+                  {{ report.status }}
+                </span>
+              </td>
+
+              <td class="px-5 py-4">
+                <p class="text-[12px] text-gray-500">{{ report.createdAt | date: 'mediumDate' }}</p>
+              </td>
+
+              <!-- Actions -->
+              <td class="px-5 py-4">
+                @if (report.status === 'PENDING' || report.status === 'REVIEWED') {
+                  <div class="flex items-center gap-2">
+                    @if (report.reportType === 'CAMPAIGN') {
+                      <button
+                        (click)="suspendCampaign(report)"
+                        class="px-3 py-1.5 rounded-full bg-orange-50 text-orange-700 text-[11px] font-bold hover:bg-orange-100 transition-colors border border-orange-200 whitespace-nowrap"
+                      >
+                        Suspend Campaign
+                      </button>
+                    } @else {
+                      <button
+                        (click)="banUser(report)"
+                        class="px-3 py-1.5 rounded-full bg-red-50 text-red-700 text-[11px] font-bold hover:bg-red-100 transition-colors border border-red-200 whitespace-nowrap"
+                      >
+                        Ban User
+                      </button>
+                    }
+                    <button
+                      (click)="dismiss(report.id)"
+                      class="px-3 py-1.5 rounded-full bg-gray-100 text-gray-600 text-[11px] font-bold hover:bg-gray-200 transition-colors border border-gray-200 whitespace-nowrap"
+                    >
+                      Dismiss
+                    </button>
+                  </div>
+                }
+              </td>
+
+            </tr>
+          }
+        </tbody>
+      </table>
+
+    <!-- Pagination -->
+    @if (totalPages() > 1) {
+      <div class="flex items-center justify-between px-5 py-3 border-t border-gray-100">
+        <p class="text-[12px] text-gray-400">
+          {{ (currentPage() - 1) * pageSize + 1 }}–{{ currentPage() * pageSize < filteredReports().length ? currentPage() * pageSize : filteredReports().length }} of {{ filteredReports().length }} reports
+        </p>
+        <div class="flex items-center gap-1">
+          <button
+            (click)="currentPage.set(currentPage() - 1)"
+            [disabled]="currentPage() === 1"
+            class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          >
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+
+          @for (p of pageNumbers(); track $index) {
+            @if (p === '...') {
+              <span class="w-8 h-8 flex items-center justify-center text-[12px] text-gray-400">…</span>
+            } @else {
+              <button
+                (click)="currentPage.set(+p)"
+                [class]="currentPage() === p
+                  ? 'w-8 h-8 flex items-center justify-center rounded-lg text-[12px] font-bold bg-[#FF594B] text-white'
+                  : 'w-8 h-8 flex items-center justify-center rounded-lg text-[12px] font-semibold text-gray-600 hover:bg-gray-100 transition-colors'"
+              >{{ p }}</button>
+            }
+          }
+
+          <button
+            (click)="currentPage.set(currentPage() + 1)"
+            [disabled]="currentPage() === totalPages()"
+            class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          >
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </div>
+      </div>
+    }
+    </div>
+  }
+</div>

@@ -1,0 +1,735 @@
+<!-- ========== SUCCESS STATE ========== -->
+<div *ngIf="submitSuccess()" class="min-h-[80vh] flex items-center justify-center px-6">
+  <div class="text-center max-w-md">
+    <div class="w-24 h-24 bg-[#ECFCCB] rounded-full flex items-center justify-center mx-auto mb-8 shadow-[0_8px_30px_rgba(101,163,13,0.15)]">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#65A30D" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="20 6 9 17 4 12"></polyline>
+      </svg>
+    </div>
+    <h2 class="text-3xl font-bold font-display text-[#1c1c1c] mb-3">{{ editMode() ? 'Campaign Updated!' : 'Campaign Created!' }}</h2>
+    <p class="text-gray-500 mb-2 leading-relaxed">{{ editMode() ? 'Your changes have been saved and the campaign is back under review.' : 'Your campaign has been submitted and is now pending review. You\'ll be notified once it\'s approved.' }}</p>
+    <p class="text-sm text-gray-400 mb-10">This usually takes less than 24 hours.</p>
+    <button (click)="navigateToProfile()" class="px-8 py-3.5 bg-[#1c1c1c] text-white rounded-full font-bold hover:bg-[#333] transition-all active:scale-95 shadow-md">
+      Back to Dashboard
+    </button>
+  </div>
+</div>
+
+<!-- ========== LOADING STATE ========== -->
+<div *ngIf="isLoadingCampaign()" class="max-w-[720px] mx-auto py-6 flex items-center justify-center min-h-[60vh]">
+  <div class="flex flex-col items-center gap-3">
+    <span class="w-8 h-8 border-2 border-[#FF594B]/20 border-t-[#FF594B] rounded-full animate-spin"></span>
+    <p class="text-sm text-gray-400 font-medium">Loading campaign…</p>
+  </div>
+</div>
+
+<!-- ========== FORM ========== -->
+<div *ngIf="!submitSuccess() && !isLoadingCampaign()" class="max-w-[720px] mx-auto py-6">
+
+  <!-- Back Button -->
+  <button (click)="goBack()" class="flex items-center gap-2 text-gray-400 hover:text-[#1c1c1c] transition-colors mb-6 group">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover:-translate-x-1 transition-transform">
+      <path d="M19 12H5"></path>
+      <polyline points="12 19 5 12 12 5"></polyline>
+    </svg>
+    <span class="font-bold text-sm">Back</span>
+  </button>
+
+  <!-- Error Banner -->
+  <div *ngIf="submitError()" class="mb-5 bg-red-50 border border-red-200 rounded-2xl p-4 text-red-700 font-medium shadow-sm flex items-center gap-3">
+    <svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+      <line x1="12" y1="9" x2="12" y2="13"></line>
+      <line x1="12" y1="17" x2="12.01" y2="17"></line>
+    </svg>
+    {{ submitError() }}
+  </div>
+
+  <form [formGroup]="campaignForm" (ngSubmit)="onSubmit()">
+
+    <!-- ===== Single Card ===== -->
+    <div class="bg-white rounded-[2rem] shadow-[0_4px_30px_rgba(0,0,0,0.05)] border border-gray-100 overflow-hidden">
+
+      <!-- Tab Bar -->
+      <div class="px-5 pt-5 pb-0">
+        <div class="flex p-1.5 bg-[#F5F3EF] rounded-2xl gap-0.5">
+          <ng-container *ngFor="let step of [
+            { n: 1, label: 'Basics' },
+            { n: 2, label: 'Story' },
+            { n: 3, label: 'Goal' },
+            { n: 4, label: 'Media' },
+            { n: 5, label: 'Contact' },
+            { n: 6, label: 'Proof' },
+            { n: 7, label: 'Review' },
+          ]">
+            <button
+              type="button"
+              (click)="goToStep(step.n)"
+              [disabled]="!editMode() && step.n > currentStep()"
+              [class]="
+                'flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ' +
+                (currentStep() === step.n
+                  ? 'bg-white text-[#FF594B] shadow-sm'
+                  : (editMode() || currentStep() > step.n)
+                    ? 'text-[#1c1c1c]/50 hover:bg-white/60 hover:text-[#FF594B] cursor-pointer'
+                    : 'text-gray-300 cursor-default')
+              "
+            >
+              {{ step.label }}
+            </button>
+          </ng-container>
+        </div>
+      </div>
+
+      <!-- Step Content -->
+      <div class="p-6 sm:p-8">
+
+        <!-- ==================== STEP 1: Basics ==================== -->
+        <div *ngIf="currentStep() === 1">
+          <h2 class="text-xl font-bold font-display text-[#1c1c1c] mb-1">What's your campaign about?</h2>
+          <p class="text-gray-400 text-sm mb-7">Give it a clear title and pick a category.</p>
+
+          <div class="mb-8">
+            <label class="block text-sm font-bold text-gray-700 mb-2">Campaign Title</label>
+            <input type="text" formControlName="title" placeholder="e.g. Rebuild the Atlas Mountain School"
+              class="w-full px-5 py-3.5 bg-[#F9F7F4] border-2 border-transparent rounded-[1rem] focus:bg-white focus:border-[#FF594B] focus:ring-0 transition-all text-[15px] outline-none placeholder:text-gray-400"/>
+            <div class="flex justify-between items-center mt-2">
+              <p *ngIf="getFieldError('title')" class="text-sm text-red-500 font-medium">{{ getFieldError('title') }}</p>
+              <p class="text-xs text-gray-400 font-semibold ml-auto">{{ campaignForm.get('title')?.value?.length || 0 }} / 200</p>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-3">Category</label>
+            <div class="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
+              <button *ngFor="let cat of categories" type="button" (click)="selectCategory(cat.value)"
+                [class]="'p-3.5 rounded-[1.25rem] border-2 flex flex-col items-center gap-2.5 transition-all duration-200 cursor-pointer hover:scale-[1.03] active:scale-95 ' +
+                  (campaignForm.get('category')?.value === cat.value
+                    ? 'border-[#1c1c1c] bg-white shadow-[0_4px_15px_rgba(0,0,0,0.08)]'
+                    : 'border-transparent bg-[#F9F7F4] hover:bg-white hover:border-gray-100 hover:shadow-sm')">
+                <div [class]="'w-9 h-9 rounded-xl flex items-center justify-center transition-colors ' + (campaignForm.get('category')?.value === cat.value ? cat.activeBg : cat.iconBg)">
+                  <ng-container [ngSwitch]="cat.iconId">
+                    <svg *ngSwitchCase="'health'" class="w-5 h-5" [class]="cat.iconColor" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                    <svg *ngSwitchCase="'education'" class="w-5 h-5" [class]="cat.iconColor" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+                    <svg *ngSwitchCase="'housing'" class="w-5 h-5" [class]="cat.iconColor" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                    <svg *ngSwitchCase="'food'" class="w-5 h-5" [class]="cat.iconColor" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></svg>
+                    <svg *ngSwitchCase="'emergency'" class="w-5 h-5" [class]="cat.iconColor" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                    <svg *ngSwitchCase="'environment'" class="w-5 h-5" [class]="cat.iconColor" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8C8 10 5.9 16.17 3.82 22c0 0 8.07-3.17 10.07-5.5s3.11-6 3.11-6.5z"></path><path d="M3.82 22c0 0 2-7.5 8.18-10.5"></path></svg>
+                    <svg *ngSwitchCase="'community'" class="w-5 h-5" [class]="cat.iconColor" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                    <svg *ngSwitchCase="'disability'" class="w-5 h-5" [class]="cat.iconColor" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                    <svg *ngSwitchCase="'children'" class="w-5 h-5" [class]="cat.iconColor" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                    <svg *ngSwitchDefault class="w-5 h-5" [class]="cat.iconColor" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                  </ng-container>
+                </div>
+                <span class="text-[11px] font-bold text-[#1c1c1c] text-center leading-tight">{{ cat.label }}</span>
+              </button>
+            </div>
+            <p *ngIf="getFieldError('category')" class="mt-3 text-sm text-red-500 font-medium">{{ getFieldError('category') }}</p>
+          </div>
+        </div>
+
+        <!-- ==================== STEP 2: Story ==================== -->
+        <div *ngIf="currentStep() === 2">
+          <h2 class="text-xl font-bold font-display text-[#1c1c1c] mb-1">Tell your story</h2>
+          <p class="text-gray-400 text-sm mb-7">Explain why this campaign matters. Be honest, personal, and detailed.</p>
+
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-2">Campaign Description</label>
+            <textarea formControlName="description" rows="10"
+              placeholder="Describe your situation, who will benefit, how the funds will be used, and what impact the donations will have..."
+              class="w-full px-5 py-4 bg-[#F9F7F4] border-2 border-transparent rounded-[1rem] focus:bg-white focus:border-[#FF594B] focus:ring-0 transition-all text-[15px] outline-none resize-none placeholder:text-gray-400 leading-relaxed"></textarea>
+            <div class="flex justify-between items-center mt-2">
+              <p *ngIf="getFieldError('description')" class="text-sm text-red-500 font-medium">{{ getFieldError('description') }}</p>
+              <p [class]="'text-xs font-semibold ml-auto ' + (descriptionLength > 4500 ? 'text-orange-400' : 'text-gray-400')">{{ descriptionLength }} / 5000</p>
+            </div>
+          </div>
+
+          <div class="mt-5 bg-[#FFFBEB] rounded-[1.25rem] p-4 border border-[#FDE68A]/50 flex gap-3">
+            <svg class="w-4 h-4 text-[#A16207] shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+            <p class="text-[12px] text-[#A16207] leading-relaxed">Campaigns with detailed descriptions raise <strong>3x more funds</strong>. Be specific about who benefits and how funds will be used.</p>
+          </div>
+        </div>
+
+        <!-- ==================== STEP 3: Goal & Location ==================== -->
+        <div *ngIf="currentStep() === 3">
+          <h2 class="text-xl font-bold font-display text-[#1c1c1c] mb-1">Set your goal</h2>
+          <p class="text-gray-400 text-sm mb-7">How much do you need? Be realistic — you can always surpass your target!</p>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div>
+              <label class="block text-sm font-bold text-gray-700 mb-2">Funding Goal (MAD)</label>
+              <div class="relative">
+                <input type="number" formControlName="goalAmount" placeholder="25000" min="100" max="1000000"
+                  class="w-full px-5 py-3.5 pr-16 bg-[#F9F7F4] border-2 border-transparent rounded-[1rem] focus:bg-white focus:border-[#FF594B] focus:ring-0 transition-all text-[15px] outline-none placeholder:text-gray-400 font-medium"/>
+                <span class="absolute right-5 top-1/2 -translate-y-1/2 text-sm font-bold text-gray-400">MAD</span>
+              </div>
+              <p *ngIf="getFieldError('goalAmount')" class="mt-2 text-sm text-red-500 font-medium">{{ getFieldError('goalAmount') }}</p>
+              <p *ngIf="campaignForm.get('goalAmount')?.value" class="mt-2 text-xs text-gray-400 font-medium">≈ {{ formattedGoal }} MAD</p>
+            </div>
+            <div>
+              <label class="block text-sm font-bold text-gray-700 mb-2">Location</label>
+              <div class="relative">
+                <svg class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                <input type="text" formControlName="location" placeholder="e.g. Ouarzazate, Morocco"
+                  class="w-full pl-11 pr-5 py-3.5 bg-[#F9F7F4] border-2 border-transparent rounded-[1rem] focus:bg-white focus:border-[#FF594B] focus:ring-0 transition-all text-[15px] outline-none placeholder:text-gray-400"/>
+              </div>
+              <p *ngIf="getFieldError('location')" class="mt-2 text-sm text-red-500 font-medium">{{ getFieldError('location') }}</p>
+            </div>
+          </div>
+
+          <!-- Deadline (optional) -->
+          <div class="mb-6">
+            <label class="block text-sm font-bold text-gray-700 mb-2">
+              Deadline <span class="text-gray-400 font-normal">(optional)</span>
+            </label>
+            <app-date-picker formControlName="deadline"></app-date-picker>
+          </div>
+
+          <div class="p-5 bg-[#FFF5F5] rounded-[1.25rem] border border-red-100 flex items-center gap-4">
+            <div class="relative inline-block w-12 h-7 shrink-0">
+              <input type="checkbox" id="urgentToggle" formControlName="isUrgent" aria-label="Mark campaign as urgent" class="peer sr-only"/>
+              <label for="urgentToggle" class="block w-full h-full bg-gray-200 rounded-full cursor-pointer transition-colors duration-300 peer-checked:bg-[#FF594B] after:content-[''] after:absolute after:top-[3px] after:left-[3px] after:w-[22px] after:h-[22px] after:bg-white after:rounded-full after:shadow-md after:transition-transform after:duration-300 peer-checked:after:translate-x-[20px]"></label>
+            </div>
+            <div>
+              <span class="font-bold text-[14px] text-[#1c1c1c]">Mark as Urgent</span>
+              <p class="text-[12px] text-gray-500 mt-0.5">Urgent campaigns get priority visibility and quicker review.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== STEP 4: Media ==================== -->
+        <div *ngIf="currentStep() === 4">
+          <h2 class="text-xl font-bold font-display text-[#1c1c1c] mb-1">Media & Documents</h2>
+          <p class="text-gray-400 text-sm mb-7">Add photos and documents to make your campaign more compelling. All optional.</p>
+
+          <!-- Cover Photo -->
+          <div class="mb-8">
+            <label class="block text-sm font-bold text-gray-700 mb-2">
+              Cover Photo <span class="text-gray-400 font-normal">(optional)</span>
+            </label>
+            <div (click)="coverInput.click()" class="cursor-pointer rounded-2xl overflow-hidden border-2 border-dashed border-gray-200 hover:border-[#FF594B] hover:bg-[#FFF8F7] transition-all">
+              <input #coverInput type="file" accept="image/*" class="hidden" (change)="onCoverImageChange($event)"/>
+              <div *ngIf="!coverImagePreview()" class="flex flex-col items-center justify-center gap-2 py-10 px-6 text-center">
+                <div class="w-12 h-12 bg-[#F9F7F4] rounded-2xl flex items-center justify-center mb-1">
+                  <svg class="w-6 h-6 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                </div>
+                <p class="font-bold text-[14px] text-[#1c1c1c]">Click to upload a cover photo</p>
+                <p class="text-[12px] text-gray-400">JPG, PNG, WEBP — max 10MB</p>
+              </div>
+              <div *ngIf="coverImagePreview()" class="relative">
+                <img [src]="coverImagePreview()" class="w-full h-52 object-cover" alt="Cover"/>
+                <button (click)="clearCoverImage($event)" class="absolute top-3 right-3 w-8 h-8 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center transition-colors">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Additional Photos -->
+          <div class="mb-8">
+            <label class="block text-sm font-bold text-gray-700 mb-2">
+              Additional Photos <span class="text-gray-400 font-normal">(optional)</span>
+            </label>
+            <div class="grid grid-cols-3 sm:grid-cols-5 gap-2.5">
+              <!-- Existing photos from server -->
+              <div *ngFor="let img of existingCampaignImages()" class="relative aspect-square">
+                <img [src]="img.fileUrl" class="w-full h-full object-cover rounded-xl" alt=""/>
+                <div class="absolute inset-0 rounded-xl bg-black/0 hover:bg-black/10 transition-colors"></div>
+                <button (click)="removeExistingCampaignImage(img); $event.stopPropagation()" class="absolute -top-1.5 -right-1.5 w-6 h-6 bg-[#1c1c1c] text-white rounded-full flex items-center justify-center shadow-md hover:bg-red-500 transition-colors">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+              </div>
+              <!-- New photos (not yet saved) -->
+              <div *ngFor="let img of campaignImages(); let i = index" class="relative aspect-square">
+                <img [src]="img.preview" class="w-full h-full object-cover rounded-xl" alt=""/>
+                <div class="absolute bottom-1 left-1 bg-[#FF594B] text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full">New</div>
+                <button (click)="removeCampaignImage(i)" class="absolute -top-1.5 -right-1.5 w-6 h-6 bg-[#1c1c1c] text-white rounded-full flex items-center justify-center shadow-md hover:bg-red-500 transition-colors">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+              </div>
+              <div (click)="imagesInput.click()" class="aspect-square border-2 border-dashed border-gray-200 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:border-[#FF594B] hover:bg-[#FFF8F7] transition-all gap-1">
+                <input #imagesInput type="file" accept="image/*" multiple class="hidden" (change)="onCampaignImagesChange($event)"/>
+                <svg class="w-5 h-5 text-gray-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                <span class="text-[10px] font-bold text-gray-300">Add</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Documents -->
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-2">
+              Campaign Documents <span class="text-gray-400 font-normal">(optional)</span>
+            </label>
+            <div class="space-y-2 mb-2">
+              <!-- Existing docs from server -->
+              <div *ngFor="let doc of existingCampaignDocs()" class="flex items-center gap-3 p-3.5 bg-[#F0FDF4] rounded-xl border border-green-100">
+                <svg class="w-4 h-4 text-green-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                <a [href]="doc.fileUrl" target="_blank" class="flex-1 text-sm font-medium text-[#1c1c1c] truncate hover:underline">{{ doc.fileUrl.split('/').pop() }}</a>
+                <span class="text-[10px] text-green-600 font-bold bg-green-100 px-2 py-0.5 rounded-full shrink-0">Saved</span>
+                <button (click)="removeExistingCampaignDoc(doc)" class="w-6 h-6 flex items-center justify-center text-gray-300 hover:text-red-500 transition-colors shrink-0">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+              </div>
+              <!-- New docs (not yet saved) -->
+              <div *ngFor="let doc of campaignDocFiles(); let i = index" class="flex items-center gap-3 p-3.5 bg-[#F9F7F4] rounded-xl">
+                <svg class="w-4 h-4 text-gray-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                <span class="flex-1 text-sm font-medium text-[#1c1c1c] truncate">{{ doc.name }}</span>
+                <span class="text-[10px] text-[#FF594B] font-bold bg-orange-50 px-2 py-0.5 rounded-full shrink-0">New</span>
+                <button (click)="removeCampaignDoc(i)" class="w-6 h-6 flex items-center justify-center text-gray-300 hover:text-red-500 transition-colors shrink-0">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+              </div>
+            </div>
+            <div (click)="docsInput.click()" class="flex items-center gap-3 p-4 border-2 border-dashed border-gray-200 rounded-xl cursor-pointer hover:border-[#FF594B] hover:bg-[#FFF8F7] transition-all">
+              <input #docsInput type="file" multiple accept=".pdf,.doc,.docx,.xls,.xlsx" class="hidden" (change)="onCampaignDocChange($event)"/>
+              <svg class="w-5 h-5 text-gray-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+              <span class="text-sm text-gray-400 font-medium">Add documents (PDF, Word, Excel)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== STEP 5: Contact ==================== -->
+        <div *ngIf="currentStep() === 5">
+          <h2 class="text-xl font-bold font-display text-[#1c1c1c] mb-1">Contact Information</h2>
+          <p class="text-gray-400 text-sm mb-7">Help donors reach you directly. Only your RIB is required.</p>
+
+          <!-- Phone + Email -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5">
+            <div>
+              <label class="block text-sm font-bold text-gray-700 mb-2">Phone <span class="text-gray-400 font-normal text-xs">(optional)</span></label>
+              <div class="relative">
+                <svg class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2.18h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                <input type="tel" formControlName="phone" placeholder="+212 6XX XXX XXX"
+                  class="w-full pl-10 pr-5 py-3.5 bg-[#F9F7F4] border-2 border-transparent rounded-[1rem] focus:bg-white focus:border-[#FF594B] focus:ring-0 transition-all text-[15px] outline-none placeholder:text-gray-400"/>
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-bold text-gray-700 mb-2">Email <span class="text-gray-400 font-normal text-xs">(optional)</span></label>
+              <div class="relative">
+                <svg class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                <input type="email" formControlName="contactEmail" placeholder="contact@example.com"
+                  class="w-full pl-10 pr-5 py-3.5 bg-[#F9F7F4] border-2 border-transparent rounded-[1rem] focus:bg-white focus:border-[#FF594B] focus:ring-0 transition-all text-[15px] outline-none placeholder:text-gray-400"/>
+              </div>
+              <p *ngIf="getFieldError('contactEmail')" class="mt-2 text-sm text-red-500 font-medium">{{ getFieldError('contactEmail') }}</p>
+            </div>
+          </div>
+
+          <!-- RIB -->
+          <div class="mb-7 p-5 bg-[#FFF8F7] rounded-2xl border border-orange-100">
+            <label class="flex items-center gap-2 text-sm font-bold text-gray-700 mb-2">
+              RIB Number
+              <span class="text-[10px] bg-[#FF594B] text-white px-2 py-0.5 rounded-full font-bold uppercase tracking-wide">Required</span>
+            </label>
+            <input type="text" formControlName="ribNumber" placeholder="MA12 3456 7890 1234 5678 9012 34"
+              class="w-full px-5 py-3.5 bg-white border-2 border-transparent rounded-[1rem] focus:border-[#FF594B] focus:ring-0 transition-all text-[15px] outline-none placeholder:text-gray-400 font-mono tracking-wide"/>
+            <p *ngIf="getFieldError('ribNumber')" class="mt-2 text-sm text-red-500 font-medium">{{ getFieldError('ribNumber') }}</p>
+            <p class="mt-2 text-[12px] text-gray-400">Your bank account number where donations will be transferred.</p>
+          </div>
+
+          <!-- Social Media -->
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-3">Social Media <span class="text-gray-400 font-normal text-xs">(optional)</span></label>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <!-- Facebook -->
+              <div class="relative">
+                <div class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 flex items-center justify-center">
+                  <svg class="w-4 h-4 text-blue-500" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+                </div>
+                <input type="url" formControlName="facebook" placeholder="facebook.com/yourpage"
+                  class="w-full pl-10 pr-5 py-3 bg-[#F9F7F4] border-2 border-transparent rounded-[1rem] focus:bg-white focus:border-[#FF594B] focus:ring-0 transition-all text-[14px] outline-none placeholder:text-gray-400"/>
+              </div>
+              <!-- Instagram -->
+              <div class="relative">
+                <div class="absolute left-4 top-1/2 -translate-y-1/2">
+                  <svg class="w-4 h-4 text-pink-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                </div>
+                <input type="text" formControlName="instagram" placeholder="@yourhandle"
+                  class="w-full pl-10 pr-5 py-3 bg-[#F9F7F4] border-2 border-transparent rounded-[1rem] focus:bg-white focus:border-[#FF594B] focus:ring-0 transition-all text-[14px] outline-none placeholder:text-gray-400"/>
+              </div>
+              <!-- Twitter/X -->
+              <div class="relative">
+                <div class="absolute left-4 top-1/2 -translate-y-1/2">
+                  <svg class="w-4 h-4 text-gray-700" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                </div>
+                <input type="text" formControlName="twitter" placeholder="@yourhandle"
+                  class="w-full pl-10 pr-5 py-3 bg-[#F9F7F4] border-2 border-transparent rounded-[1rem] focus:bg-white focus:border-[#FF594B] focus:ring-0 transition-all text-[14px] outline-none placeholder:text-gray-400"/>
+              </div>
+              <!-- Website -->
+              <div class="relative">
+                <div class="absolute left-4 top-1/2 -translate-y-1/2">
+                  <svg class="w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                </div>
+                <input type="url" formControlName="website" placeholder="yourwebsite.com"
+                  class="w-full pl-10 pr-5 py-3 bg-[#F9F7F4] border-2 border-transparent rounded-[1rem] focus:bg-white focus:border-[#FF594B] focus:ring-0 transition-all text-[14px] outline-none placeholder:text-gray-400"/>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== STEP 6: Proof ==================== -->
+        <div *ngIf="currentStep() === 6">
+          <h2 class="text-xl font-bold font-display text-[#1c1c1c] mb-1">Verification Documents</h2>
+          <p class="text-gray-400 text-sm mb-6">These documents are for admin review only and won't be visible to donors.</p>
+
+          <!-- Privacy note -->
+          <div class="mb-7 bg-[#EFF6FF] rounded-2xl p-4 border border-blue-100 flex gap-3">
+            <svg class="w-4 h-4 text-blue-500 shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+            <p class="text-[12px] text-blue-700 leading-relaxed">Your documents are encrypted and only accessible by our verification team. They are never shared with donors or made public.</p>
+          </div>
+
+          <!-- ID Card -->
+          <div class="mb-7">
+            <label class="flex items-center gap-2 text-sm font-bold text-gray-700 mb-3">
+              National ID Card
+              <span class="text-[10px] bg-[#FF594B] text-white px-2 py-0.5 rounded-full font-bold uppercase tracking-wide">Required</span>
+            </label>
+            <input #idInput type="file" accept="image/*,.pdf" class="hidden" (change)="onIdCardChange($event)"/>
+
+            <!-- Preview: existing (edit mode) -->
+            <ng-container *ngIf="existingIdCard() && !idCardFile()">
+              <div class="relative rounded-2xl overflow-hidden border border-gray-100 bg-[#F9F7F4] mb-2" style="height:160px">
+                <img [src]="existingIdCard()!.fileUrl" class="w-full h-full object-contain" alt="ID Card"/>
+                <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                <div class="absolute bottom-3 left-3 right-3 flex items-center justify-between">
+                  <span class="text-white text-xs font-bold truncate max-w-[60%]">{{ existingIdCard()!.fileUrl.split('/').pop() }}</span>
+                  <div class="flex gap-2">
+                    <button (click)="idInput.click(); $event.stopPropagation()" class="text-xs font-bold bg-white/90 text-[#FF594B] px-2.5 py-1 rounded-lg hover:bg-white transition-colors">Replace</button>
+                    <button (click)="removeExistingIdCard(); $event.stopPropagation()" class="w-7 h-7 flex items-center justify-center bg-white/90 rounded-lg hover:bg-white text-gray-500 transition-colors">
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+
+            <!-- Preview: new file selected -->
+            <ng-container *ngIf="idCardFile()">
+              <div class="relative rounded-2xl overflow-hidden border border-gray-100 bg-[#F9F7F4] mb-2" style="height:160px">
+                <ng-container *ngIf="idCardPreview(); else idPdfPreview">
+                  <img [src]="idCardPreview()!" class="w-full h-full object-contain" alt="ID Card preview"/>
+                </ng-container>
+                <ng-template #idPdfPreview>
+                  <div class="w-full h-full flex flex-col items-center justify-center gap-2">
+                    <svg class="w-10 h-10 text-gray-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                    <span class="text-xs font-medium text-gray-500">PDF Document</span>
+                  </div>
+                </ng-template>
+                <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                <div class="absolute bottom-3 left-3 right-3 flex items-center justify-between">
+                  <span class="text-white text-xs font-bold truncate max-w-[60%]">{{ idCardFile()!.name }}</span>
+                  <button (click)="idInput.click(); $event.stopPropagation()" class="text-xs font-bold bg-white/90 text-[#FF594B] px-2.5 py-1 rounded-lg hover:bg-white transition-colors">Replace</button>
+                </div>
+              </div>
+            </ng-container>
+
+            <!-- Upload zone (no file yet) -->
+            <div *ngIf="!existingIdCard() && !idCardFile()" (click)="idInput.click()"
+              [class]="'cursor-pointer rounded-2xl border-2 border-dashed p-6 flex flex-col items-center gap-2 transition-all ' + (proofStepAttempted() && !idCardFile() && !existingIdCard() ? 'border-red-300 bg-red-50' : 'border-gray-200 hover:border-[#FF594B] hover:bg-[#FFF8F7]')">
+              <svg class="w-8 h-8 text-gray-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+              <p class="font-bold text-[13px] text-[#1c1c1c]">Upload your ID card</p>
+              <p class="text-[11px] text-gray-400">JPG, PNG or PDF</p>
+            </div>
+            <p *ngIf="proofStepAttempted() && !idCardFile() && !existingIdCard()" class="mt-2 text-sm text-red-500 font-medium">ID card is required to proceed</p>
+          </div>
+
+          <!-- RIB Document -->
+          <div class="mb-7">
+            <label class="flex items-center gap-2 text-sm font-bold text-gray-700 mb-3">
+              RIB Document
+              <span class="text-[10px] text-orange-500 font-bold border border-orange-200 px-2 py-0.5 rounded-full">Recommended</span>
+            </label>
+            <input #ribDocInput type="file" accept="image/*,.pdf" class="hidden" (change)="onRibDocChange($event)"/>
+
+            <!-- Preview: existing (edit mode) -->
+            <ng-container *ngIf="existingRibDoc() && !ribDocFile()">
+              <div class="relative rounded-2xl overflow-hidden border border-gray-100 bg-[#F9F7F4] mb-2" style="height:160px">
+                <img [src]="existingRibDoc()!.fileUrl" class="w-full h-full object-contain" alt="RIB Document"/>
+                <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                <div class="absolute bottom-3 left-3 right-3 flex items-center justify-between">
+                  <span class="text-white text-xs font-bold truncate max-w-[60%]">{{ existingRibDoc()!.fileUrl.split('/').pop() }}</span>
+                  <div class="flex gap-2">
+                    <button (click)="ribDocInput.click(); $event.stopPropagation()" class="text-xs font-bold bg-white/90 text-[#FF594B] px-2.5 py-1 rounded-lg hover:bg-white transition-colors">Replace</button>
+                    <button (click)="removeExistingRibDoc(); $event.stopPropagation()" class="w-7 h-7 flex items-center justify-center bg-white/90 rounded-lg hover:bg-white text-gray-500 transition-colors">
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+
+            <!-- Preview: new file selected -->
+            <ng-container *ngIf="ribDocFile()">
+              <div class="relative rounded-2xl overflow-hidden border border-gray-100 bg-[#F9F7F4] mb-2" style="height:160px">
+                <ng-container *ngIf="ribDocPreview(); else ribPdfPreview">
+                  <img [src]="ribDocPreview()!" class="w-full h-full object-contain" alt="RIB preview"/>
+                </ng-container>
+                <ng-template #ribPdfPreview>
+                  <div class="w-full h-full flex flex-col items-center justify-center gap-2">
+                    <svg class="w-10 h-10 text-gray-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                    <span class="text-xs font-medium text-gray-500">PDF Document</span>
+                  </div>
+                </ng-template>
+                <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                <div class="absolute bottom-3 left-3 right-3 flex items-center justify-between">
+                  <span class="text-white text-xs font-bold truncate max-w-[60%]">{{ ribDocFile()!.name }}</span>
+                  <button (click)="ribDocInput.click(); $event.stopPropagation()" class="text-xs font-bold bg-white/90 text-[#FF594B] px-2.5 py-1 rounded-lg hover:bg-white transition-colors">Replace</button>
+                </div>
+              </div>
+            </ng-container>
+
+            <!-- Upload zone (no file yet) -->
+            <div *ngIf="!existingRibDoc() && !ribDocFile()" (click)="ribDocInput.click()"
+              class="cursor-pointer rounded-2xl border-2 border-dashed border-gray-200 hover:border-[#FF594B] hover:bg-[#FFF8F7] p-6 flex flex-col items-center gap-2 transition-all">
+              <svg class="w-8 h-8 text-gray-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              <p class="font-bold text-[13px] text-[#1c1c1c]">Upload your RIB document</p>
+              <p class="text-[11px] text-gray-400">Bank statement or RIB slip — JPG, PNG or PDF</p>
+            </div>
+          </div>
+
+          <!-- Additional proof docs -->
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-3">
+              Additional Supporting Documents <span class="text-gray-400 font-normal text-xs">(optional)</span>
+            </label>
+
+            <!-- Image grid for additional docs -->
+            <div *ngIf="existingProofDocs().length || additionalProofFiles().length" class="grid grid-cols-3 gap-3 mb-3">
+              <!-- Existing proof docs from server -->
+              <div *ngFor="let doc of existingProofDocs()" class="relative rounded-xl overflow-hidden border border-gray-100 bg-[#F9F7F4]" style="height:90px">
+                <img [src]="doc.fileUrl" class="w-full h-full object-cover" alt="proof doc" (error)="$any($event.target).style.display='none'"/>
+                <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                <span class="absolute bottom-1.5 left-1.5 right-7 text-[9px] text-white font-medium truncate">{{ doc.fileUrl.split('/').pop() }}</span>
+                <button (click)="removeExistingProofDoc(doc)" class="absolute top-1.5 right-1.5 w-5 h-5 flex items-center justify-center bg-white/90 rounded-full text-gray-500 hover:text-red-500 transition-colors">
+                  <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+              </div>
+              <!-- New proof docs -->
+              <div *ngFor="let item of additionalProofFiles(); let i = index" class="relative rounded-xl overflow-hidden border border-gray-100 bg-[#F9F7F4]" style="height:90px">
+                <ng-container *ngIf="item.preview; else proofPdfThumb">
+                  <img [src]="item.preview" class="w-full h-full object-cover" alt="proof"/>
+                </ng-container>
+                <ng-template #proofPdfThumb>
+                  <div class="w-full h-full flex flex-col items-center justify-center gap-1">
+                    <svg class="w-6 h-6 text-gray-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                    <span class="text-[9px] text-gray-400">PDF</span>
+                  </div>
+                </ng-template>
+                <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                <span class="absolute bottom-1.5 left-1.5 right-7 text-[9px] text-white font-medium truncate">{{ item.file.name }}</span>
+                <button (click)="removeAdditionalProof(i)" class="absolute top-1.5 right-1.5 w-5 h-5 flex items-center justify-center bg-white/90 rounded-full text-gray-500 hover:text-red-500 transition-colors">
+                  <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+              </div>
+            </div>
+            <div (click)="proofDocsInput.click()" class="flex items-center gap-3 p-4 border-2 border-dashed border-gray-200 rounded-xl cursor-pointer hover:border-[#FF594B] hover:bg-[#FFF8F7] transition-all">
+              <input #proofDocsInput type="file" multiple accept=".pdf,.doc,.docx,image/*" class="hidden" (change)="onAdditionalProofChange($event)"/>
+              <svg class="w-5 h-5 text-gray-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+              <span class="text-sm text-gray-400 font-medium">Add supporting documents</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== STEP 7: Review ==================== -->
+        <div *ngIf="currentStep() === 7">
+          <h2 class="text-xl font-bold font-display text-[#1c1c1c] mb-1">Review your campaign</h2>
+          <p class="text-gray-400 text-sm mb-6">Here's exactly how donors will see your campaign.</p>
+
+          <!-- ── Photo Carousel ── -->
+          <div class="relative w-full rounded-2xl overflow-hidden mb-6 bg-[#F5F3EF]" style="height: 240px;">
+            <ng-container *ngIf="allCarouselImages.length > 0; else noImages">
+              <img [src]="allCarouselImages[carouselIndex()]" class="w-full h-full object-cover" alt=""/>
+
+              <!-- Prev / Next arrows -->
+              <ng-container *ngIf="allCarouselImages.length > 1">
+                <button type="button" (click)="prevSlide()"
+                  class="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center shadow-md hover:bg-white transition-all active:scale-95">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1c1c1c" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                </button>
+                <button type="button" (click)="nextSlide()"
+                  class="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center shadow-md hover:bg-white transition-all active:scale-95">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1c1c1c" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                </button>
+                <!-- Dots -->
+                <div class="absolute bottom-3 left-0 right-0 flex justify-center gap-1.5">
+                  <button *ngFor="let img of allCarouselImages; let i = index" type="button" (click)="goToSlide(i)"
+                    [class]="'h-1.5 rounded-full transition-all duration-200 ' + (i === carouselIndex() ? 'w-5 bg-white' : 'w-1.5 bg-white/50')">
+                  </button>
+                </div>
+                <!-- Counter badge -->
+                <div class="absolute top-3 right-3 bg-black/40 backdrop-blur-sm text-white text-[11px] font-bold px-2.5 py-1 rounded-full">
+                  {{ carouselIndex() + 1 }} / {{ allCarouselImages.length }}
+                </div>
+              </ng-container>
+
+              <!-- Edit media button -->
+              <button type="button" (click)="goToStep(4)"
+                class="absolute top-3 left-3 bg-white/90 backdrop-blur-sm text-[#FF594B] text-[11px] font-bold px-3 py-1.5 rounded-full shadow-sm hover:bg-white transition-colors">
+                Edit photos
+              </button>
+            </ng-container>
+
+            <ng-template #noImages>
+              <div class="w-full h-full flex flex-col items-center justify-center gap-2.5">
+                <svg class="w-12 h-12 text-gray-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                <p class="text-sm text-gray-300 font-medium">No photos added</p>
+                <button type="button" (click)="goToStep(4)" class="text-[#FF594B] text-sm font-bold hover:underline">Add photos →</button>
+              </div>
+            </ng-template>
+          </div>
+
+          <!-- ── Title ── -->
+          <div class="flex items-start justify-between gap-3 mb-2">
+            <h3 class="text-2xl font-bold font-display text-[#1c1c1c] leading-snug">{{ campaignForm.get('title')?.value }}</h3>
+            <button type="button" (click)="goToStep(1)" class="shrink-0 text-[#FF594B] text-xs font-bold hover:underline mt-1">Edit</button>
+          </div>
+
+          <!-- ── Location + Category + Urgent ── -->
+          <div class="flex items-center gap-2 flex-wrap mb-5">
+            <span class="flex items-center gap-1 text-sm text-gray-500 font-medium">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#FF594B" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              {{ campaignForm.get('location')?.value }}
+            </span>
+            <div *ngIf="selectedCategory" class="flex items-center gap-1.5 bg-[#F5F3EF] text-[#1c1c1c] text-xs font-bold px-3 py-1.5 rounded-full">
+              <div class="w-2 h-2 rounded-full" [class]="selectedCategory.dotColor"></div>
+              {{ selectedCategory.label }}
+            </div>
+            <div *ngIf="campaignForm.get('isUrgent')?.value" class="flex items-center gap-1 bg-red-500 text-white text-xs font-bold px-3 py-1.5 rounded-full">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              Urgent
+            </div>
+            <button type="button" (click)="goToStep(3)" class="ml-auto text-[#FF594B] text-xs font-bold hover:underline">Edit</button>
+          </div>
+
+          <!-- ── Funding Goal + Deadline ── -->
+          <div class="grid grid-cols-2 gap-4 mb-6">
+            <div class="bg-[#F9F7F4] rounded-2xl p-5">
+              <p class="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">Funding Goal</p>
+              <p class="text-3xl font-bold font-display text-[#1c1c1c]">{{ formattedGoal }} <span class="text-base font-semibold text-gray-400">MAD</span></p>
+            </div>
+            <div class="bg-[#F9F7F4] rounded-2xl p-5">
+              <p class="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">Deadline</p>
+              <p class="text-lg font-bold font-display text-[#1c1c1c]">
+                {{ campaignForm.get('deadline')?.value ? (campaignForm.get('deadline')?.value | date:'dd MMM yyyy':'UTC') : '—' }}
+              </p>
+            </div>
+          </div>
+
+          <!-- ── Story ── -->
+          <div class="mb-6">
+            <div class="flex items-center justify-between mb-3">
+              <h4 class="font-bold text-[15px] text-[#1c1c1c]">Campaign Story</h4>
+              <button type="button" (click)="goToStep(2)" class="text-[#FF594B] text-xs font-bold hover:underline">Edit</button>
+            </div>
+            <p class="text-sm text-gray-600 leading-relaxed whitespace-pre-line break-words">{{ campaignForm.get('description')?.value }}</p>
+          </div>
+
+          <!-- ── Verification Documents ── -->
+          <div class="border-t border-gray-100 pt-6 mb-5">
+            <div class="flex items-center justify-between mb-4">
+              <h4 class="font-bold text-[15px] text-[#1c1c1c]">Verification Documents</h4>
+              <button type="button" (click)="goToStep(6)" class="text-[#FF594B] text-xs font-bold hover:underline">Edit</button>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+              <!-- ID Card -->
+              <div [class]="'rounded-xl p-4 flex items-center gap-3 ' + (idCardFile() || existingIdCard() ? 'bg-green-50 border border-green-100' : 'bg-red-50 border border-red-100')">
+                <div [class]="'w-10 h-10 rounded-full flex items-center justify-center shrink-0 ' + (idCardFile() || existingIdCard() ? 'bg-green-100' : 'bg-red-100')">
+                  <svg class="w-5 h-5" [class]="idCardFile() || existingIdCard() ? 'text-green-600' : 'text-red-500'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline *ngIf="idCardFile() || existingIdCard()" points="20 6 9 17 4 12"/>
+                    <ng-container *ngIf="!idCardFile() && !existingIdCard()"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></ng-container>
+                  </svg>
+                </div>
+                <div class="min-w-0">
+                  <p class="text-sm font-bold" [class]="idCardFile() || existingIdCard() ? 'text-green-700' : 'text-red-600'">ID Card</p>
+                  <p class="text-[11px] text-gray-400 truncate">{{ idCardFile() ? idCardFile()!.name : existingIdCard() ? 'Already uploaded' : 'Required — not uploaded' }}</p>
+                </div>
+              </div>
+              <!-- RIB Doc -->
+              <div [class]="'rounded-xl p-4 flex items-center gap-3 ' + (ribDocFile() || existingRibDoc() ? 'bg-green-50 border border-green-100' : 'bg-[#F9F7F4] border border-gray-100')">
+                <div [class]="'w-10 h-10 rounded-full flex items-center justify-center shrink-0 ' + (ribDocFile() || existingRibDoc() ? 'bg-green-100' : 'bg-gray-100')">
+                  <svg class="w-5 h-5" [class]="ribDocFile() || existingRibDoc() ? 'text-green-600' : 'text-gray-400'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline *ngIf="ribDocFile() || existingRibDoc()" points="20 6 9 17 4 12"/>
+                    <line *ngIf="!ribDocFile() && !existingRibDoc()" x1="5" y1="12" x2="19" y2="12"/>
+                  </svg>
+                </div>
+                <div class="min-w-0">
+                  <p class="text-sm font-bold" [class]="ribDocFile() || existingRibDoc() ? 'text-green-700' : 'text-gray-500'">RIB Document <span class="text-[10px] font-normal text-gray-400">(optional)</span></p>
+                  <p class="text-[11px] text-gray-400 truncate">{{ ribDocFile() ? ribDocFile()!.name : existingRibDoc() ? 'Already uploaded' : 'Not uploaded' }}</p>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="additionalProofFiles().length" class="mt-2 text-xs text-gray-400 font-medium">
+              + {{ additionalProofFiles().length }} additional supporting document{{ additionalProofFiles().length !== 1 ? 's' : '' }}
+            </div>
+          </div>
+
+          <!-- ── Contact Info ── -->
+          <div class="border-t border-gray-100 pt-5 mb-6">
+            <div class="flex items-center justify-between mb-4">
+              <h4 class="font-bold text-[15px] text-[#1c1c1c]">Contact Information</h4>
+              <button type="button" (click)="goToStep(5)" class="text-[#FF594B] text-xs font-bold hover:underline">Edit</button>
+            </div>
+            <div class="space-y-2.5">
+              <div class="flex items-center gap-3">
+                <span class="w-28 text-xs font-semibold text-gray-400 shrink-0">RIB Number</span>
+                <span class="font-mono font-bold text-sm text-[#1c1c1c]">{{ campaignForm.get('ribNumber')?.value }}</span>
+              </div>
+              <div *ngIf="campaignForm.get('phone')?.value" class="flex items-center gap-3">
+                <span class="w-28 text-xs font-semibold text-gray-400 shrink-0">Phone</span>
+                <span class="text-sm text-[#1c1c1c]">{{ campaignForm.get('phone')?.value }}</span>
+              </div>
+              <div *ngIf="campaignForm.get('contactEmail')?.value" class="flex items-center gap-3">
+                <span class="w-28 text-xs font-semibold text-gray-400 shrink-0">Email</span>
+                <span class="text-sm text-[#1c1c1c]">{{ campaignForm.get('contactEmail')?.value }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── What happens next ── -->
+          <div class="bg-[#F0FDF4] rounded-2xl p-4 border border-[#DCFCE7] flex gap-3">
+            <svg class="w-4 h-4 text-[#166534] shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            <p class="text-[12px] text-[#15803D] leading-relaxed">Your campaign will be reviewed by our team (usually under 24h). Once approved, it goes live and is visible to all donors.</p>
+          </div>
+        </div>
+
+        <!-- ==================== BOTTOM NAV ==================== -->
+        <div *ngIf="submitError() && currentStep() === totalSteps" class="mt-4 bg-red-50 border border-red-200 rounded-xl p-3 text-sm text-red-600 font-medium flex items-center gap-2">
+          <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          {{ submitError() }}
+        </div>
+        <div *ngIf="campaignForm.invalid && currentStep() === totalSteps" class="mt-4 bg-amber-50 border border-amber-200 rounded-xl p-3 text-sm text-amber-700 font-medium flex items-center gap-2">
+          <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Some required fields are incomplete. Go back and check steps with errors.
+        </div>
+        <div class="flex justify-between items-center mt-8 pt-6 border-t border-gray-100">
+          <button *ngIf="currentStep() > 1; else spacer" type="button" (click)="prevStep()"
+            class="text-sm font-semibold text-[#FF594B] hover:text-[#e04a3e] transition-colors flex items-center gap-1.5">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"></path><polyline points="12 19 5 12 12 5"></polyline></svg>
+            Previous
+          </button>
+          <ng-template #spacer><div></div></ng-template>
+
+          <button *ngIf="currentStep() < totalSteps" type="button" (click)="nextStep()"
+            class="text-sm font-semibold text-[#FF594B] hover:text-[#e04a3e] transition-colors flex items-center gap-1.5">
+            Continue
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </button>
+
+          <button *ngIf="currentStep() === totalSteps" type="submit"
+            [disabled]="isSubmitting() || campaignForm.invalid || (!editMode() && !idCardFile())"
+            class="px-5 py-2 bg-[#FF594B] text-white rounded-full text-sm font-semibold hover:bg-[#e04a3e] transition-all flex items-center gap-2 active:scale-95 disabled:opacity-50 disabled:active:scale-100">
+            <ng-container *ngIf="!isSubmitting()">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+              {{ editMode() ? 'Save Changes' : 'Submit Campaign' }}
+            </ng-container>
+            <ng-container *ngIf="isSubmitting()">
+              <span class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+              Submitting...
+            </ng-container>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+  </form>
+</div>

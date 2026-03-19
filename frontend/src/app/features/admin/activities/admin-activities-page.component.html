@@ -1,0 +1,153 @@
+<div class="flex flex-col gap-6">
+
+  <!-- Header -->
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-[20px] font-extrabold text-[#1c1c1c]">Activities</h1>
+      <p class="text-[12px] text-gray-400 mt-0.5">All platform activities, newest to oldest</p>
+    </div>
+    @if (!isLoading() && total() > 0) {
+      <span class="text-[12px] font-semibold text-gray-400">
+        {{ total() }} activit{{ total() > 1 ? 'ies' : 'y' }}
+      </span>
+    }
+  </div>
+
+  <!-- Loading -->
+  @if (isLoading()) {
+    <div class="bg-white rounded-[1.75rem] p-12 shadow-sm border border-gray-50 flex items-center justify-center">
+      <div class="flex flex-col items-center gap-3">
+        <div class="w-8 h-8 rounded-full border-2 border-[#FF594B] border-t-transparent animate-spin"></div>
+        <p class="text-[12px] text-gray-400">Loading activities…</p>
+      </div>
+    </div>
+  }
+
+  <!-- Error state -->
+  @if (!isLoading() && error()) {
+    <div class="bg-red-50 border border-red-100 rounded-[1.75rem] p-6 flex items-center gap-3">
+      <svg class="w-5 h-5 text-red-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <p class="text-[13px] font-semibold text-red-500">{{ error() }}</p>
+    </div>
+  }
+
+  <!-- Empty state -->
+  @if (!isLoading() && !error() && total() === 0) {
+    <div class="bg-white rounded-[1.75rem] p-12 shadow-sm border border-gray-50 flex flex-col items-center justify-center gap-3 text-center">
+      <div class="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center">
+        <svg class="w-6 h-6 text-gray-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+      </div>
+      <p class="text-[13px] font-semibold text-gray-400">No activity yet</p>
+    </div>
+  }
+
+  <!-- Activity groups -->
+  @if (!isLoading() && !error() && groupedActivities().length > 0) {
+    <div class="flex flex-col gap-5">
+      @for (group of groupedActivities(); track group.dateLabel) {
+
+        <!-- Date label -->
+        <p class="text-[12px] font-bold text-gray-400 px-1">{{ group.dateLabel }}</p>
+
+        <!-- Items card -->
+        <div class="bg-white rounded-[1.75rem] shadow-sm border border-gray-50 overflow-hidden -mt-3">
+          @for (act of group.items; track act.id; let last = $last) {
+            <div class="flex items-start gap-4 px-5 py-4" [class.border-b]="!last" [class.border-gray-50]="!last">
+
+              <!-- Icon -->
+              <div class="w-9 h-9 rounded-xl shrink-0 flex items-center justify-center mt-0.5"
+                [ngClass]="getActivityColors(act.type).bg">
+                @if (act.type === 'NEW_CAMPAIGN') {
+                  <svg class="w-4 h-4" [ngClass]="getActivityColors(act.type).text" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m3 11 18-5v12L3 13v-2z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/>
+                  </svg>
+                }
+                @if (act.type === 'REPORT') {
+                  <svg class="w-4 h-4" [ngClass]="getActivityColors(act.type).text" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                  </svg>
+                }
+                @if (act.type === 'NEW_USER') {
+                  <svg class="w-4 h-4" [ngClass]="getActivityColors(act.type).text" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                  </svg>
+                }
+                @if (act.type === 'CAMPAIGN_CLOSING') {
+                  <svg class="w-4 h-4" [ngClass]="getActivityColors(act.type).text" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                  </svg>
+                }
+                @if (act.type === 'CAMPAIGN_FUNDED') {
+                  <svg class="w-4 h-4" [ngClass]="getActivityColors(act.type).text" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"/>
+                  </svg>
+                }
+              </div>
+
+              <!-- Content -->
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <p class="text-[13px] font-bold text-[#1c1c1c]">{{ act.title }}</p>
+                  <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full" [ngClass]="getBadgeColors(act.type)">
+                    {{ getTypeLabel(act.type) }}
+                  </span>
+                </div>
+                <p class="text-[12px] text-gray-500 mt-0.5">{{ act.description }}</p>
+              </div>
+
+              <!-- Date & Time -->
+              <div class="flex flex-col items-end shrink-0 mt-0.5 gap-0.5">
+                <span class="text-[11px] text-gray-400 font-medium">{{ formatDate(act.createdAt) }}</span>
+                <span class="text-[10px] text-gray-300">{{ formatTime(act.createdAt) }}</span>
+              </div>
+
+            </div>
+          }
+        </div>
+
+      }
+    </div>
+
+    <!-- Pagination -->
+    @if (totalPages() > 1) {
+      <div class="flex items-center justify-center gap-1.5 mt-2">
+        <button
+          (click)="goToPage(currentPage() - 1)"
+          [disabled]="currentPage() === 0"
+          class="w-8 h-8 rounded-xl flex items-center justify-center text-gray-400 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+        >
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"/>
+          </svg>
+        </button>
+
+        @for (page of pages(); track page) {
+          <button
+            (click)="goToPage(page)"
+            [class]="page === currentPage()
+              ? 'w-8 h-8 rounded-xl flex items-center justify-center text-[12px] font-bold bg-[#FF594B] text-white shadow-sm shadow-[#FF594B]/25'
+              : 'w-8 h-8 rounded-xl flex items-center justify-center text-[12px] font-semibold text-gray-400 hover:bg-gray-100 transition-colors'"
+          >
+            {{ page + 1 }}
+          </button>
+        }
+
+        <button
+          (click)="goToPage(currentPage() + 1)"
+          [disabled]="currentPage() === totalPages() - 1"
+          class="w-8 h-8 rounded-xl flex items-center justify-center text-gray-400 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+        >
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"/>
+          </svg>
+        </button>
+      </div>
+    }
+
+  }
+
+</div>

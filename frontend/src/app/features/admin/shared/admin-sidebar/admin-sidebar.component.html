@@ -1,0 +1,144 @@
+<nav class="fixed top-0 left-0 h-screen w-[220px] bg-white border-r border-gray-100 flex flex-col py-6 px-4 z-40">
+  <!-- Logo -->
+  <div class="flex items-center gap-2 px-2 mb-8">
+    <div class="w-8 h-8 flex items-center justify-center text-[#FF594B]">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-2.8 0-5.4 1.1-7.4 3.1l-1.4-1.4C5.6 7.3 8.7 6 12 6s6.4 1.3 8.8 3.7l-1.4 1.4C17.4 9.1 14.8 8 12 8zm0 4c-1.7 0-3.2.7-4.4 1.8l-1.4-1.4C8 10.9 9.9 10 12 10s4 .9 5.8 2.4l-1.4 1.4C15.2 12.7 13.7 12 12 12zm0 4c-.6 0-1.1.2-1.5.6l-1.4-1.4C10 14.1 11 14 12 14s2 .1 2.9 1.2l-1.4 1.4c-.4-.4-.9-.6-1.5-.6z"/>
+      </svg>
+    </div>
+    <span class="font-bold text-[16px] text-gray-900">Tiwizi</span>
+  </div>
+
+  <!-- Nav Items -->
+  <div class="flex flex-col gap-1 flex-1">
+    <a
+      routerLink="/admin/overview"
+      routerLinkActive
+      #rlaOverview="routerLinkActive"
+      [class]="
+        rlaOverview.isActive
+          ? 'flex items-center gap-3 px-3 py-2.5 rounded-xl bg-[#FFF0EE] text-[#FF594B] font-semibold text-[13.5px]'
+          : 'flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 font-medium text-[13.5px] hover:bg-gray-50 hover:text-gray-900 transition-colors'
+      "
+    >
+      <svg class="w-[18px] h-[18px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+        <polyline points="9 22 9 12 15 12 15 22" />
+      </svg>
+      <span>Overview</span>
+    </a>
+
+    <a
+      routerLink="/admin/campaigns"
+      routerLinkActive
+      #rlaCampaigns="routerLinkActive"
+      [class]="
+        rlaCampaigns.isActive
+          ? 'flex items-center gap-3 px-3 py-2.5 rounded-xl bg-[#FFF0EE] text-[#FF594B] font-semibold text-[13.5px]'
+          : 'flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 font-medium text-[13.5px] hover:bg-gray-50 hover:text-gray-900 transition-colors'
+      "
+    >
+      <svg class="w-[18px] h-[18px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="m3 11 18-5v12L3 13v-2z" />
+        <path d="M11.6 16.8a3 3 0 1 1-5.8-1.6" />
+      </svg>
+      <span>Campaigns</span>
+    </a>
+
+    <a
+      routerLink="/admin/users"
+      routerLinkActive
+      #rlaUsers="routerLinkActive"
+      [class]="
+        rlaUsers.isActive
+          ? 'flex items-center gap-3 px-3 py-2.5 rounded-xl bg-[#FFF0EE] text-[#FF594B] font-semibold text-[13.5px]'
+          : 'flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 font-medium text-[13.5px] hover:bg-gray-50 hover:text-gray-900 transition-colors'
+      "
+    >
+      <svg class="w-[18px] h-[18px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+        <circle cx="9" cy="7" r="4" />
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+      </svg>
+      <span>Users</span>
+    </a>
+
+    <a
+      routerLink="/admin/reports"
+      routerLinkActive
+      #rlaReports="routerLinkActive"
+      [class]="
+        rlaReports.isActive
+          ? 'flex items-center gap-3 px-3 py-2.5 rounded-xl bg-[#FFF0EE] text-[#FF594B] font-semibold text-[13.5px]'
+          : 'flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 font-medium text-[13.5px] hover:bg-gray-50 hover:text-gray-900 transition-colors'
+      "
+    >
+      <svg class="w-[18px] h-[18px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
+        <line x1="4" y1="22" x2="4" y2="15" />
+      </svg>
+      <span>Reports</span>
+    </a>
+
+    <a
+      routerLink="/admin/activities"
+      routerLinkActive
+      #rlaActivities="routerLinkActive"
+      [class]="
+        rlaActivities.isActive
+          ? 'flex items-center gap-3 px-3 py-2.5 rounded-xl bg-[#FFF0EE] text-[#FF594B] font-semibold text-[13.5px]'
+          : 'flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 font-medium text-[13.5px] hover:bg-gray-50 hover:text-gray-900 transition-colors'
+      "
+    >
+      <svg class="w-[18px] h-[18px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+      </svg>
+      <span>Activities</span>
+    </a>
+  </div>
+
+  <!-- Bottom: Profile + Logout -->
+  <div class="pt-4 border-t border-gray-100 flex flex-col gap-1">
+    <div class="flex items-center gap-3 px-3 py-2 mb-1">
+      <div class="w-8 h-8 rounded-full overflow-hidden shrink-0 bg-[#FF594B]">
+        <img
+          [src]="
+            profile()?.profilePictureUrl ||
+            'https://ui-avatars.com/api/?name=' + (profile()?.fullName || 'Admin') + '&background=FF594B&color=fff'
+          "
+          alt="Avatar"
+          class="w-full h-full object-cover"
+        />
+      </div>
+      <div class="flex flex-col min-w-0 flex-1">
+        <span class="font-semibold text-[12.5px] text-gray-900 truncate">
+          {{ profile()?.fullName?.split(' ')?.[0] || 'Admin' }}
+        </span>
+        <span class="text-[11px] text-gray-400">Administrator</span>
+      </div>
+      <a
+        routerLink="/dashboard/settings"
+        class="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-colors shrink-0"
+        title="Settings"
+      >
+        <svg class="w-[15px] h-[15px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+      </a>
+    </div>
+
+    <button
+      (click)="logout()"
+      class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 font-medium text-[13.5px] hover:bg-red-50 hover:text-red-600 transition-colors w-full text-left"
+    >
+      <svg class="w-[18px] h-[18px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+        <polyline points="16 17 21 12 16 7"/>
+        <line x1="21" y1="12" x2="9" y2="12"/>
+      </svg>
+      <span>Logout</span>
+    </button>
+  </div>
+</nav>

@@ -1,0 +1,1218 @@
+<div
+  class="flex-1 min-w-0 flex flex-col lg:flex-row gap-5 lg:gap-6"
+  *ngIf="profile() && !isLoading()"
+>
+  <!-- ═══════════════════════════════════ -->
+  <!-- LEFT COLUMN - Scrollable Form      -->
+  <!-- ═══════════════════════════════════ -->
+  <div class="w-full lg:flex-1 lg:max-w-[680px] xl:max-w-[740px] flex flex-col gap-4 min-w-0">
+    <!-- Alerts -->
+    <div
+      *ngIf="successMessage()"
+      class="flex items-center gap-2.5 bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-3 text-emerald-700 text-[13px] font-semibold shadow-sm"
+    >
+      <div class="w-7 h-7 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
+        <svg
+          class="w-3.5 h-3.5 text-emerald-600"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+      </div>
+      {{ successMessage() }}
+    </div>
+    <div
+      *ngIf="errorMessage()"
+      class="flex items-center gap-2.5 bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-red-700 text-[13px] font-semibold shadow-sm"
+    >
+      <div class="w-7 h-7 rounded-full bg-red-100 flex items-center justify-center shrink-0">
+        <svg
+          class="w-3.5 h-3.5 text-red-600"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+      </div>
+      {{ errorMessage() }}
+    </div>
+
+    <!-- ════════════════════════════ -->
+    <!-- EDIT FORM -->
+    <!-- ════════════════════════════ -->
+    <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-4">
+      <!-- ── Tab Navigation ── -->
+      <div
+        class="bg-white rounded-xl p-1 shadow-[0_1px_3px_rgba(0,0,0,0.04),_0_4px_16px_rgba(0,0,0,0.02)] border border-gray-100/60 flex gap-0.5"
+      >
+        <button
+          type="button"
+          (click)="activeTab = 'info'"
+          class="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-[12px] font-bold transition-all border-none cursor-pointer"
+          [ngClass]="
+            activeTab === 'info'
+              ? 'bg-[#D14D1E] text-white shadow-[0_2px_8px_rgba(209,77,30,0.25)]'
+              : 'bg-transparent text-gray-500 hover:bg-gray-50 hover:text-gray-700'
+          "
+        >
+          <svg
+            class="w-3.5 h-3.5"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          <span class="hidden sm:inline">Information</span>
+          <span class="sm:hidden">Info</span>
+        </button>
+        <button
+          type="button"
+          (click)="activeTab = 'social'"
+          class="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-[12px] font-bold transition-all border-none cursor-pointer"
+          [ngClass]="
+            activeTab === 'social'
+              ? 'bg-[#D14D1E] text-white shadow-[0_2px_8px_rgba(209,77,30,0.25)]'
+              : 'bg-transparent text-gray-500 hover:bg-gray-50 hover:text-gray-700'
+          "
+        >
+          <svg
+            class="w-3.5 h-3.5"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+          </svg>
+          <span>Social</span>
+        </button>
+        <button
+          type="button"
+          (click)="activeTab = 'payment'"
+          class="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-[12px] font-bold transition-all border-none cursor-pointer"
+          [ngClass]="
+            activeTab === 'payment'
+              ? 'bg-[#D14D1E] text-white shadow-[0_2px_8px_rgba(209,77,30,0.25)]'
+              : 'bg-transparent text-gray-500 hover:bg-gray-50 hover:text-gray-700'
+          "
+        >
+          <svg
+            class="w-3.5 h-3.5"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+            <line x1="1" y1="10" x2="23" y2="10"></line>
+          </svg>
+          <span>Payment</span>
+        </button>
+        <button
+          type="button"
+          (click)="activeTab = 'security'"
+          class="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-[12px] font-bold transition-all border-none cursor-pointer"
+          [ngClass]="
+            activeTab === 'security'
+              ? 'bg-[#D14D1E] text-white shadow-[0_2px_8px_rgba(209,77,30,0.25)]'
+              : 'bg-transparent text-gray-500 hover:bg-gray-50 hover:text-gray-700'
+          "
+        >
+          <svg
+            class="w-3.5 h-3.5"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+          <span>Security</span>
+        </button>
+      </div>
+
+      <!-- ── Tab: Informations personnelles ── -->
+      <section
+        *ngIf="activeTab === 'info'"
+        class="bg-white rounded-xl p-5 sm:p-6 shadow-[0_1px_3px_rgba(0,0,0,0.04),_0_4px_16px_rgba(0,0,0,0.02)] border border-gray-100/60"
+      >
+        <!-- Display Name + Profile Picture -->
+        <div class="flex items-center gap-4 mb-4">
+          <!-- Profile Picture -->
+          <div class="shrink-0 flex items-center gap-2">
+            <!-- Has Photo -->
+            <div
+              *ngIf="profileForm.get('profilePictureUrl')?.value && !uploading()"
+              class="flex items-center gap-2"
+            >
+              <div
+                class="w-20 h-20 rounded-full overflow-hidden border-2 border-white shadow-[0_4px_12px_rgba(0,0,0,0.08)]"
+              >
+                <img
+                  [src]="profileForm.get('profilePictureUrl')?.value"
+                  alt="Profile picture"
+                  class="w-full h-full object-cover"
+                />
+              </div>
+              <div class="flex flex-col gap-1.5">
+                <label
+                  class="w-7 h-7 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center cursor-pointer transition-colors"
+                  title="Change photo"
+                >
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#6B7280"
+                    stroke-width="2.5"
+                  >
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="17 8 12 3 7 8" />
+                    <line x1="12" y1="3" x2="12" y2="15" />
+                  </svg>
+                  <input
+                    type="file"
+                    class="hidden"
+                    accept="image/*"
+                    (change)="onFileSelected($event)"
+                  />
+                </label>
+                <button
+                  type="button"
+                  (click)="removeProfilePicture()"
+                  class="w-7 h-7 rounded-full bg-red-50 hover:bg-red-100 flex items-center justify-center transition-colors text-red-400 border-none cursor-pointer"
+                  title="Delete photo"
+                >
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                  >
+                    <path d="M18 6L6 18M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Uploading -->
+            <div
+              *ngIf="uploading()"
+              class="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center"
+            >
+              <div
+                class="w-6 h-6 border-2 border-gray-200 border-t-[#D14D1E] rounded-full animate-spin"
+              ></div>
+            </div>
+
+            <!-- No Photo -->
+            <label
+              *ngIf="!profileForm.get('profilePictureUrl')?.value && !uploading()"
+              class="w-20 h-20 rounded-full bg-gray-100 border-2 border-dashed border-gray-300 hover:border-[#D14D1E] hover:bg-orange-50/50 flex items-center justify-center cursor-pointer transition-all"
+              title="Add a photo"
+            >
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#9CA3AF"
+                stroke-width="1.5"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="16" />
+                <line x1="8" y1="12" x2="16" y2="12" />
+              </svg>
+              <input
+                type="file"
+                class="hidden"
+                accept="image/*"
+                (change)="onFileSelected($event)"
+              />
+            </label>
+          </div>
+
+          <!-- Display Name -->
+          <div class="flex-1 flex flex-col">
+            <label
+              for="displayName"
+              class="text-[11px] font-semibold text-gray-500 mb-1.5 uppercase tracking-wider"
+              >Display name</label
+            >
+            <input
+              type="text"
+              id="displayName"
+              formControlName="displayName"
+              placeholder="What would you like to be called?"
+              class="w-full py-2.5 px-3.5 bg-gray-50 border border-gray-200/60 rounded-lg text-[13px] text-gray-900 font-medium transition-all focus:outline-none focus:border-[#D14D1E] focus:bg-white focus:ring-4 focus:ring-[#D14D1E]/5 placeholder:text-gray-300"
+            />
+          </div>
+        </div>
+
+        <!-- Bio -->
+        <div class="flex flex-col mb-4">
+          <label
+            for="bio"
+            class="text-[11px] font-semibold text-gray-500 mb-1.5 uppercase tracking-wider"
+            >Bio</label
+          >
+          <textarea
+            id="bio"
+            formControlName="bio"
+            placeholder="Tell us about yourself..."
+            rows="3"
+            maxlength="500"
+            class="w-full py-2.5 px-3.5 bg-gray-50 border border-gray-200/60 rounded-lg text-[13px] text-gray-900 font-medium transition-all focus:outline-none focus:border-[#D14D1E] focus:bg-white focus:ring-4 focus:ring-[#D14D1E]/5 placeholder:text-gray-300 resize-none"
+          ></textarea>
+          <span class="text-right text-[11px] text-gray-400 font-semibold mt-1.5"
+            >{{ bioLength() }} / 500</span
+          >
+        </div>
+
+        <!-- First Name + Last Name -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+          <div class="flex flex-col">
+            <label
+              for="firstName"
+              class="text-[11px] font-semibold text-gray-500 mb-1.5 uppercase tracking-wider"
+              >First name</label
+            >
+            <input
+              type="text"
+              id="firstName"
+              formControlName="firstName"
+              placeholder="Your first name"
+              class="w-full py-2.5 px-3.5 bg-gray-50 border border-gray-200/60 rounded-lg text-[13px] text-gray-900 font-medium transition-all focus:outline-none focus:border-[#D14D1E] focus:bg-white focus:ring-4 focus:ring-[#D14D1E]/5 placeholder:text-gray-300"
+            />
+          </div>
+          <div class="flex flex-col">
+            <label
+              for="lastName"
+              class="text-[11px] font-semibold text-gray-500 mb-1.5 uppercase tracking-wider"
+              >Last name</label
+            >
+            <input
+              type="text"
+              id="lastName"
+              formControlName="lastName"
+              placeholder="Your last name"
+              class="w-full py-2.5 px-3.5 bg-gray-50 border border-gray-200/60 rounded-lg text-[13px] text-gray-900 font-medium transition-all focus:outline-none focus:border-[#D14D1E] focus:bg-white focus:ring-4 focus:ring-[#D14D1E]/5 placeholder:text-gray-300"
+            />
+          </div>
+        </div>
+
+        <!-- Phone + Public Profile toggle -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+          <div class="flex flex-col">
+            <label
+              for="phoneNumber"
+              class="text-[11px] font-semibold text-gray-500 mb-1.5 uppercase tracking-wider"
+              >Phone</label
+            >
+            <input
+              type="text"
+              id="phoneNumber"
+              formControlName="phoneNumber"
+              placeholder="+212 6XX XXX XXX"
+              class="w-full py-2.5 px-3.5 bg-gray-50 border border-gray-200/60 rounded-lg text-[13px] text-gray-900 font-medium transition-all focus:outline-none focus:border-[#D14D1E] focus:bg-white focus:ring-4 focus:ring-[#D14D1E]/5 placeholder:text-gray-300"
+            />
+          </div>
+          <div class="flex flex-col">
+            <label
+              class="text-[11px] font-semibold text-gray-500 mb-1.5 uppercase tracking-wider"
+              for="email"
+              >E-mail</label
+            >
+            <input
+              type="email"
+              id="email"
+              formControlName="email"
+              placeholder="exemple@email.com"
+              [readonly]="profile()?.authProvider !== 'LOCAL'"
+              class="w-full py-2.5 px-3.5 bg-gray-50 border border-gray-200/60 rounded-lg text-[13px] text-gray-900 font-medium transition-all focus:outline-none focus:border-[#D14D1E] focus:bg-white focus:ring-4 focus:ring-[#D14D1E]/5 placeholder:text-gray-300"
+              [class.opacity-60]="profile()?.authProvider !== 'LOCAL'"
+              [class.cursor-not-allowed]="profile()?.authProvider !== 'LOCAL'"
+            />
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Tab: Liens sociaux ── -->
+      <section
+        *ngIf="activeTab === 'social'"
+        class="bg-white rounded-xl p-5 sm:p-6 shadow-[0_1px_3px_rgba(0,0,0,0.04),_0_4px_16px_rgba(0,0,0,0.02)] border border-gray-100/60"
+      >
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <!-- Facebook -->
+          <div class="flex flex-col">
+            <label
+              for="facebookUrl"
+              class="text-[11px] font-semibold text-gray-500 mb-1.5 uppercase tracking-wider flex items-center gap-1.5"
+            >
+              <span class="text-[#1877F2] text-[12px] font-extrabold">f</span>
+              Facebook
+            </label>
+            <input
+              type="url"
+              id="facebookUrl"
+              formControlName="facebookUrl"
+              placeholder="https://facebook.com/..."
+              class="w-full py-2.5 px-3.5 bg-gray-50 border rounded-lg text-[13px] text-gray-900 font-medium transition-all focus:outline-none focus:bg-white focus:ring-4 placeholder:text-gray-300"
+              [ngClass]="
+                profileForm.get('facebookUrl')?.invalid && profileForm.get('facebookUrl')?.touched
+                  ? 'border-red-400 focus:border-red-500 focus:ring-red-500/5'
+                  : 'border-gray-200/60 focus:border-[#1877F2] focus:ring-[#1877F2]/5'
+              "
+            />
+            <span
+              *ngIf="
+                profileForm.get('facebookUrl')?.invalid && profileForm.get('facebookUrl')?.touched
+              "
+              class="text-[11px] text-red-500 mt-1"
+              >Invalid Facebook URL (e.g., https://facebook.com/...)</span
+            >
+          </div>
+          <!-- LinkedIn -->
+          <div class="flex flex-col">
+            <label
+              for="linkedinUrl"
+              class="text-[11px] font-semibold text-gray-500 mb-1.5 uppercase tracking-wider flex items-center gap-1.5"
+            >
+              <span class="text-[#0A66C2] text-[12px] font-extrabold">in</span>
+              LinkedIn
+            </label>
+            <input
+              type="url"
+              id="linkedinUrl"
+              formControlName="linkedinUrl"
+              placeholder="https://linkedin.com/in/..."
+              class="w-full py-2.5 px-3.5 bg-gray-50 border rounded-lg text-[13px] text-gray-900 font-medium transition-all focus:outline-none focus:bg-white focus:ring-4 placeholder:text-gray-300"
+              [ngClass]="
+                profileForm.get('linkedinUrl')?.invalid && profileForm.get('linkedinUrl')?.touched
+                  ? 'border-red-400 focus:border-red-500 focus:ring-red-500/5'
+                  : 'border-gray-200/60 focus:border-[#0A66C2] focus:ring-[#0A66C2]/5'
+              "
+            />
+            <span
+              *ngIf="
+                profileForm.get('linkedinUrl')?.invalid && profileForm.get('linkedinUrl')?.touched
+              "
+              class="text-[11px] text-red-500 mt-1"
+              >Invalid LinkedIn URL (e.g., https://linkedin.com/in/...)</span
+            >
+          </div>
+          <!-- Instagram -->
+          <div class="flex flex-col">
+            <label
+              for="instagramUrl"
+              class="text-[11px] font-semibold text-gray-500 mb-1.5 uppercase tracking-wider flex items-center gap-1.5"
+            >
+              <svg
+                class="w-3.5 h-3.5 text-[#E4405F]"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+              </svg>
+              Instagram
+            </label>
+            <input
+              type="url"
+              id="instagramUrl"
+              formControlName="instagramUrl"
+              placeholder="https://instagram.com/..."
+              class="w-full py-2.5 px-3.5 bg-gray-50 border rounded-lg text-[13px] text-gray-900 font-medium transition-all focus:outline-none focus:bg-white focus:ring-4 placeholder:text-gray-300"
+              [ngClass]="
+                profileForm.get('instagramUrl')?.invalid && profileForm.get('instagramUrl')?.touched
+                  ? 'border-red-400 focus:border-red-500 focus:ring-red-500/5'
+                  : 'border-gray-200/60 focus:border-[#E4405F] focus:ring-[#E4405F]/5'
+              "
+            />
+            <span
+              *ngIf="
+                profileForm.get('instagramUrl')?.invalid && profileForm.get('instagramUrl')?.touched
+              "
+              class="text-[11px] text-red-500 mt-1"
+              >Invalid Instagram URL (e.g., https://instagram.com/...)</span
+            >
+          </div>
+          <!-- Twitter / X -->
+          <div class="flex flex-col">
+            <label
+              for="twitterUrl"
+              class="text-[11px] font-semibold text-gray-500 mb-1.5 uppercase tracking-wider flex items-center gap-1.5"
+            >
+              <span class="text-gray-800 text-[12px] font-extrabold">𝕏</span>
+              Twitter / X
+            </label>
+            <input
+              type="url"
+              id="twitterUrl"
+              formControlName="twitterUrl"
+              placeholder="https://x.com/..."
+              class="w-full py-2.5 px-3.5 bg-gray-50 border rounded-lg text-[13px] text-gray-900 font-medium transition-all focus:outline-none focus:bg-white focus:ring-4 placeholder:text-gray-300"
+              [ngClass]="
+                profileForm.get('twitterUrl')?.invalid && profileForm.get('twitterUrl')?.touched
+                  ? 'border-red-400 focus:border-red-500 focus:ring-red-500/5'
+                  : 'border-gray-200/60 focus:border-gray-800 focus:ring-gray-800/5'
+              "
+            />
+            <span
+              *ngIf="
+                profileForm.get('twitterUrl')?.invalid && profileForm.get('twitterUrl')?.touched
+              "
+              class="text-[11px] text-red-500 mt-1"
+              >Invalid Twitter/X URL (e.g., https://x.com/...)</span
+            >
+          </div>
+          <!-- Website -->
+          <div class="flex flex-col sm:col-span-2">
+            <label
+              for="websiteUrl"
+              class="text-[11px] font-semibold text-gray-500 mb-1.5 uppercase tracking-wider flex items-center gap-1.5"
+            >
+              <svg
+                class="w-3.5 h-3.5 text-[#D14D1E]"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="2" y1="12" x2="22" y2="12"></line>
+                <path
+                  d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"
+                ></path>
+              </svg>
+              Website
+            </label>
+            <input
+              type="url"
+              id="websiteUrl"
+              formControlName="websiteUrl"
+              placeholder="https://mywebsite.com"
+              class="w-full py-2.5 px-3.5 bg-gray-50 border rounded-lg text-[13px] text-gray-900 font-medium transition-all focus:outline-none focus:bg-white focus:ring-4 placeholder:text-gray-300"
+              [ngClass]="
+                profileForm.get('websiteUrl')?.invalid && profileForm.get('websiteUrl')?.touched
+                  ? 'border-red-400 focus:border-red-500 focus:ring-red-500/5'
+                  : 'border-gray-200/60 focus:border-[#D14D1E] focus:ring-[#D14D1E]/5'
+              "
+            />
+            <span
+              *ngIf="
+                profileForm.get('websiteUrl')?.invalid && profileForm.get('websiteUrl')?.touched
+              "
+              class="text-[11px] text-red-500 mt-1"
+              >Invalid URL (e.g., https://mywebsite.com)</span
+            >
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Tab: Moyen de paiement ── -->
+      <section
+        *ngIf="activeTab === 'payment'"
+        class="bg-white rounded-xl p-5 sm:p-6 shadow-[0_1px_3px_rgba(0,0,0,0.04),_0_4px_16px_rgba(0,0,0,0.02)] border border-gray-100/60"
+      >
+        <!-- Saved card info -->
+        <div
+          *ngIf="savedCard()"
+          class="flex items-center justify-between py-3 px-4 bg-gray-50 border border-gray-100 rounded-lg"
+        >
+          <div class="flex items-center gap-3">
+            <div
+              class="w-10 h-7 bg-white rounded-md border border-gray-200 flex items-center justify-center text-[10px] font-bold uppercase text-gray-600 shadow-sm"
+            >
+              {{ savedCard()?.brand }}
+            </div>
+            <div>
+              <p class="text-[13px] font-bold text-gray-900 m-0">
+                •••• •••• •••• {{ savedCard()?.last4 }}
+              </p>
+              <p class="text-[10px] text-gray-400 font-medium m-0">
+                Expires {{ savedCard()?.expMonth }}/{{ savedCard()?.expYear }}
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            (click)="removeSavedCard()"
+            class="text-[12px] font-bold text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 py-2 px-4 rounded-full transition-all border-none cursor-pointer"
+            [disabled]="cardLoading()"
+          >
+            Remove
+          </button>
+        </div>
+
+        <!-- No saved card -->
+        <div
+          *ngIf="!savedCard() && !showCardForm()"
+          class="flex flex-col items-center py-6 gap-2.5"
+        >
+          <div class="w-11 h-11 rounded-full bg-gray-50 flex items-center justify-center mb-1">
+            <svg
+              class="w-6 h-6 text-gray-300"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+              <line x1="1" y1="10" x2="23" y2="10"></line>
+            </svg>
+          </div>
+          <p class="text-[12px] text-gray-400 font-medium m-0">No saved card</p>
+          <button
+            type="button"
+            (click)="showCardSetupForm()"
+            class="inline-flex items-center gap-2 py-2.5 px-5 bg-[#D14D1E] text-white rounded-lg text-[12px] font-bold hover:bg-[#b8421a] transition-all shadow-[0_4px_12px_rgba(209,77,30,0.15)] border-none cursor-pointer mt-1"
+            [disabled]="cardLoading()"
+          >
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Add a card
+          </button>
+        </div>
+
+        <!-- Stripe card element form -->
+        <div *ngIf="!savedCard() && showCardForm()" class="flex flex-col gap-4 mt-1">
+          <div
+            #setupCardElement
+            class="stripe-card-element p-3 border border-gray-200 rounded-lg bg-white min-h-[40px] transition-all hover:border-gray-300 focus-within:border-[#D14D1E] focus-within:ring-4 focus-within:ring-[#D14D1E]/5"
+          ></div>
+          <div class="flex items-center gap-2 text-[11px] text-gray-400 font-medium">
+            <svg
+              class="w-3.5 h-3.5 text-gray-300"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+            Your data is protected and secured by Stripe
+          </div>
+
+          <!-- Card alerts -->
+          <div
+            *ngIf="cardSuccessMessage()"
+            class="flex items-center gap-2.5 bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-3 text-emerald-700 font-semibold text-[13px]"
+          >
+            <svg
+              class="w-4 h-4 text-emerald-500 shrink-0"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            {{ cardSuccessMessage() }}
+          </div>
+          <div
+            *ngIf="cardErrorMessage()"
+            class="flex items-center gap-2.5 bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-red-700 font-semibold text-[13px]"
+          >
+            <svg
+              class="w-4 h-4 text-red-500 shrink-0"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            {{ cardErrorMessage() }}
+          </div>
+
+          <div class="flex gap-3">
+            <button
+              type="button"
+              (click)="saveCard()"
+              class="flex-1 py-2.5 bg-[#D14D1E] text-white rounded-lg text-[12px] font-bold hover:bg-[#b8421a] transition-all shadow-[0_4px_12px_rgba(209,77,30,0.15)] border-none cursor-pointer disabled:opacity-50"
+              [disabled]="cardLoading()"
+            >
+              <span *ngIf="!cardLoading()">Save card</span>
+              <span *ngIf="cardLoading()" class="flex items-center justify-center gap-2">
+                <span
+                  class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin inline-block"
+                ></span>
+                Processing...
+              </span>
+            </button>
+            <button
+              type="button"
+              (click)="cancelCardSetup()"
+              class="py-2.5 px-5 bg-white text-gray-500 border border-gray-200 rounded-lg text-[12px] font-bold hover:bg-gray-50 transition-all cursor-pointer"
+              [disabled]="cardLoading()"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Tab: Sécurité ── -->
+      <section *ngIf="activeTab === 'security'" class="flex flex-col gap-4">
+        <!-- Change Password (LOCAL users only) -->
+        <div
+          class="bg-white rounded-xl p-5 sm:p-6 shadow-[0_1px_3px_rgba(0,0,0,0.04),_0_4px_16px_rgba(0,0,0,0.02)] border border-gray-100/60"
+        >
+          <h3 class="text-[13px] font-bold text-gray-900 m-0 mb-4 flex items-center gap-2">
+            <svg
+              class="w-4 h-4 text-gray-400"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"
+              ></path>
+            </svg>
+            Password
+          </h3>
+
+          <div *ngIf="profile()?.authProvider === 'LOCAL'" class="flex flex-col gap-3">
+            <div>
+              <label
+                class="block text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-1"
+                >Current password</label
+              >
+              <input
+                type="password"
+                [(ngModel)]="currentPassword"
+                [ngModelOptions]="{ standalone: true }"
+                placeholder="••••••••"
+                class="w-full px-3 py-2 text-[13px] border border-gray-200 rounded-lg bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#D14D1E]/10 focus:border-[#D14D1E] transition-all placeholder:text-gray-300"
+              />
+            </div>
+            <div>
+              <label
+                class="block text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-1"
+                >New password</label
+              >
+              <input
+                type="password"
+                [(ngModel)]="newPassword"
+                [ngModelOptions]="{ standalone: true }"
+                placeholder="Minimum 8 characters"
+                class="w-full px-3 py-2 text-[13px] border border-gray-200 rounded-lg bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#D14D1E]/10 focus:border-[#D14D1E] transition-all placeholder:text-gray-300"
+              />
+            </div>
+            <div>
+              <label
+                class="block text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-1"
+                >Confirm password</label
+              >
+              <input
+                type="password"
+                [(ngModel)]="confirmPassword"
+                [ngModelOptions]="{ standalone: true }"
+                placeholder="••••••••"
+                class="w-full px-3 py-2 text-[13px] border border-gray-200 rounded-lg bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#D14D1E]/10 focus:border-[#D14D1E] transition-all placeholder:text-gray-300"
+              />
+              <p
+                *ngIf="newPassword && confirmPassword && newPassword !== confirmPassword"
+                class="text-[11px] text-red-500 mt-1 m-0"
+              >
+                Passwords do not match
+              </p>
+            </div>
+
+            <!-- Password alerts -->
+            <div
+              *ngIf="passwordSuccessMessage()"
+              class="flex items-center gap-2.5 bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-3 text-emerald-700 font-semibold text-[13px]"
+            >
+              <svg
+                class="w-4 h-4 text-emerald-500 shrink-0"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              {{ passwordSuccessMessage() }}
+            </div>
+            <div
+              *ngIf="passwordErrorMessage()"
+              class="flex items-center gap-2.5 bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-red-700 font-semibold text-[13px]"
+            >
+              <svg
+                class="w-4 h-4 text-red-500 shrink-0"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+              {{ passwordErrorMessage() }}
+            </div>
+
+            <div class="flex justify-end mt-1">
+              <button
+                type="button"
+                (click)="changePassword()"
+                class="px-5 py-2 bg-[#D14D1E] text-white rounded-lg text-[12px] font-semibold hover:bg-[#b8421a] transition-all active:scale-[0.98] disabled:opacity-50 border-none cursor-pointer"
+                [disabled]="
+                  passwordLoading() ||
+                  !currentPassword ||
+                  !newPassword ||
+                  !confirmPassword ||
+                  newPassword !== confirmPassword ||
+                  newPassword.length < 8
+                "
+              >
+                <span *ngIf="!passwordLoading()">Change password</span>
+                <span *ngIf="passwordLoading()" class="flex items-center justify-center gap-2">
+                  <span
+                    class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin inline-block"
+                  ></span>
+                  Processing...
+                </span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Non-LOCAL users -->
+          <div
+            *ngIf="profile()?.authProvider !== 'LOCAL'"
+            class="flex items-center gap-3 py-3 px-4 bg-gray-50 border border-gray-100 rounded-lg"
+          >
+            <svg
+              class="w-4 h-4 text-gray-400 shrink-0"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            <p class="text-[12px] text-gray-500 m-0">
+              You are logged in via
+              <strong>Google</strong
+              >. Password management is done from your Google account.
+            </p>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- Save Button -->
+      <div class="flex justify-end mb-3" *ngIf="activeTab !== 'security'">
+        <button
+          type="submit"
+          class="px-5 py-2 bg-[#D14D1E] text-white rounded-lg text-[12px] font-semibold hover:bg-[#b8421a] transition-all active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100 border-none cursor-pointer"
+          [disabled]="profileForm.invalid || loading()"
+        >
+          <span *ngIf="!loading()">Save changes</span>
+          <span *ngIf="loading()" class="flex items-center justify-center gap-2">
+            <span
+              class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin inline-block"
+            ></span>
+            Saving...
+          </span>
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- ═══════════════════════════════════ -->
+  <!-- RIGHT COLUMN - Live Preview        -->
+  <!-- ═══════════════════════════════════ -->
+  <div class="w-full lg:w-[280px] xl:w-[300px] shrink-0 mt-1">
+    <div class="lg:sticky lg:top-8 flex flex-col gap-4">
+      <!-- Preview Card -->
+      <div
+        class="bg-white rounded-xl p-4 shadow-[0_1px_3px_rgba(0,0,0,0.04),_0_4px_16px_rgba(0,0,0,0.02)] border border-gray-100/60 flex flex-col items-center"
+      >
+        <!-- Avatar -->
+        <div class="relative mb-3 group cursor-pointer inline-block">
+          <div
+            class="absolute inset-0 bg-[#D14D1E]/8 rounded-full blur-xl scale-[1.25] opacity-0 group-hover:opacity-100 transition-opacity"
+          ></div>
+          <div
+            class="relative w-[72px] h-[72px] rounded-full border-[3px] border-white overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.1)] bg-[#a3e635] z-10 transition-transform group-hover:scale-[1.03] duration-300"
+          >
+            <img
+              [src]="
+                profileForm.get('profilePictureUrl')?.value ||
+                'https://ui-avatars.com/api/?name=' +
+                  (profileForm.get('displayName')?.value ||
+                    profileForm.get('fullName')?.value ||
+                    'User') +
+                  '&background=D14D1E&color=fff&size=170'
+              "
+              alt="Profile preview"
+              class="w-full h-full object-cover"
+            />
+          </div>
+        </div>
+
+        <!-- Name -->
+        <h2 class="text-[1rem] font-bold text-gray-900 mb-0.5 text-center px-2">
+          {{
+            profileForm.get('displayName')?.value ||
+              profileForm.get('fullName')?.value ||
+              'Your name'
+          }}
+        </h2>
+
+        <!-- Bio -->
+        <p
+          *ngIf="profileForm.get('bio')?.value"
+          class="text-[11px] text-gray-400 font-medium text-center px-2 mb-3 line-clamp-3 leading-relaxed"
+        >
+          {{ profileForm.get('bio')?.value }}
+        </p>
+        <p
+          *ngIf="!profileForm.get('bio')?.value"
+          class="text-[11px] text-gray-300 italic font-medium text-center px-2 mb-3"
+        >
+          No bio yet...
+        </p>
+
+        <!-- Social Links Preview -->
+        <div
+          class="w-full px-1 flex flex-col gap-2"
+          *ngIf="
+            profileForm.get('linkedinUrl')?.value ||
+            profileForm.get('instagramUrl')?.value ||
+            profileForm.get('twitterUrl')?.value ||
+            profileForm.get('websiteUrl')?.value
+          "
+        >
+          <span class="text-[10px] font-extrabold uppercase tracking-[0.12em] text-gray-400 mb-1"
+            >Social networks</span
+          >
+          <a
+            *ngIf="profileForm.get('linkedinUrl')?.value"
+            [href]="profileForm.get('linkedinUrl')?.value"
+            target="_blank"
+            class="flex items-center gap-2.5 py-2.5 px-3.5 bg-gray-50 rounded-xl text-[12px] font-semibold text-gray-700 no-underline hover:bg-gray-100 transition-colors truncate"
+          >
+            <span class="text-[#0A66C2] font-extrabold text-[14px]">in</span> LinkedIn
+          </a>
+          <a
+            *ngIf="profileForm.get('instagramUrl')?.value"
+            [href]="profileForm.get('instagramUrl')?.value"
+            target="_blank"
+            class="flex items-center gap-2.5 py-2.5 px-3.5 bg-gray-50 rounded-xl text-[12px] font-semibold text-gray-700 no-underline hover:bg-gray-100 transition-colors truncate"
+          >
+            <svg
+              class="w-3.5 h-3.5 text-[#E4405F]"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+            </svg>
+            Instagram
+          </a>
+          <a
+            *ngIf="profileForm.get('twitterUrl')?.value"
+            [href]="profileForm.get('twitterUrl')?.value"
+            target="_blank"
+            class="flex items-center gap-2.5 py-2.5 px-3.5 bg-gray-50 rounded-xl text-[12px] font-semibold text-gray-700 no-underline hover:bg-gray-100 transition-colors truncate"
+          >
+            <span class="text-gray-800 font-extrabold text-[14px]">𝕏</span> Twitter / X
+          </a>
+          <a
+            *ngIf="profileForm.get('websiteUrl')?.value"
+            [href]="profileForm.get('websiteUrl')?.value"
+            target="_blank"
+            class="flex items-center gap-2.5 py-2.5 px-3.5 bg-gray-50 rounded-xl text-[12px] font-semibold text-gray-700 no-underline hover:bg-gray-100 transition-colors truncate"
+          >
+            <svg
+              class="w-3.5 h-3.5 text-[#D14D1E]"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="2" y1="12" x2="22" y2="12"></line>
+              <path
+                d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"
+              ></path>
+            </svg>
+            Website
+          </a>
+        </div>
+
+        <!-- Public/Private -->
+        <div class="w-full px-1 mt-4">
+          <div class="flex items-center gap-3 py-3 px-4 bg-gray-50 rounded-xl">
+            <div
+              class="w-8 h-8 rounded-lg flex items-center justify-center"
+              [ngClass]="
+                profileForm.get('isProfilePublic')?.value
+                  ? 'bg-emerald-100 text-emerald-500'
+                  : 'bg-amber-100 text-amber-500'
+              "
+            >
+              <svg
+                *ngIf="profileForm.get('isProfilePublic')?.value"
+                class="w-4 h-4"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="2" y1="12" x2="22" y2="12"></line>
+                <path
+                  d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"
+                ></path>
+              </svg>
+              <svg
+                *ngIf="!profileForm.get('isProfilePublic')?.value"
+                class="w-4 h-4"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+            </div>
+            <div class="flex flex-col">
+              <span class="text-[12px] font-bold text-gray-800">{{
+                profileForm.get('isProfilePublic')?.value ? 'Public profile' : 'Private profile'
+              }}</span>
+              <span class="text-[10px] text-gray-400 font-medium">{{
+                profileForm.get('isProfilePublic')?.value
+                  ? 'Visible to everyone'
+                  : 'Visible only to you'
+              }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Account Info -->
+        <div class="w-full border-t border-gray-100 mt-5 mb-4"></div>
+        <span
+          class="text-[10px] font-extrabold uppercase tracking-[0.12em] text-gray-400 px-1 mb-2 block"
+          >Account</span
+        >
+        <div class="w-full px-1 flex flex-col gap-1.5">
+          <!-- Email -->
+          <div class="flex justify-between items-center py-2.5 px-3 bg-gray-50 rounded-lg">
+            <div class="flex items-center gap-2 text-[11px] text-gray-400 font-medium">
+              <svg
+                class="w-3.5 h-3.5"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"
+                ></path>
+                <polyline points="22,6 12,13 2,6"></polyline>
+              </svg>
+              <span>E-mail</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span class="text-[11px] font-bold text-gray-700 truncate max-w-[130px]">{{
+                profile()?.email
+              }}</span>
+              <span
+                *ngIf="profile()?.isEmailVerified"
+                class="text-[8px] font-extrabold py-0.5 px-1.5 bg-emerald-100 text-emerald-600 rounded-full"
+                >✓</span
+              >
+            </div>
+          </div>
+          <!-- Phone -->
+          <div
+            *ngIf="profile()?.phoneNumber"
+            class="flex justify-between items-center py-2.5 px-3 bg-gray-50 rounded-lg"
+          >
+            <div class="flex items-center gap-2 text-[11px] text-gray-400 font-medium">
+              <svg
+                class="w-3.5 h-3.5"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"
+                ></path>
+              </svg>
+              <span>Phone</span>
+            </div>
+            <span class="text-[11px] font-bold text-gray-700">{{ profile()?.phoneNumber }}</span>
+          </div>
+          <!-- Member Since -->
+          <div class="flex justify-between items-center py-2.5 px-3 bg-gray-50 rounded-lg">
+            <div class="flex items-center gap-2 text-[11px] text-gray-400 font-medium">
+              <svg
+                class="w-3.5 h-3.5"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+              <span>Member since</span>
+            </div>
+            <span class="text-[11px] font-bold text-gray-700">{{
+              profile()?.createdAt | date: 'dd MMM yyyy'
+            }}</span>
+          </div>
+          <!-- Last Login -->
+          <div class="flex justify-between items-center py-2.5 px-3 bg-gray-50 rounded-lg">
+            <div class="flex items-center gap-2 text-[11px] text-gray-400 font-medium">
+              <svg
+                class="w-3.5 h-3.5"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              <span>Last login</span>
+            </div>
+            <span class="text-[11px] font-bold text-gray-700">{{
+              profile()?.lastLoginAt | date: 'dd/MM/yy HH:mm'
+            }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Loading State -->
+<div *ngIf="isLoading()" class="flex items-center justify-center min-h-[60vh] w-full">
+  <div
+    class="w-8 h-8 border-[3px] border-gray-200 border-t-[#D14D1E] rounded-full animate-spin"
+  ></div>
+</div>
+
+<!-- Error State -->
+<div
+  *ngIf="!isLoading() && !profile() && errorMessage()"
+  class="flex flex-col items-center justify-center min-h-[60vh] w-full gap-4"
+>
+  <div class="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center">
+    <svg
+      class="w-7 h-7 text-red-400"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <circle cx="12" cy="12" r="10"></circle>
+      <line x1="12" y1="8" x2="12" y2="12"></line>
+      <line x1="12" y1="16" x2="12.01" y2="16"></line>
+    </svg>
+  </div>
+  <p class="text-[15px] font-bold text-red-600">{{ errorMessage() }}</p>
+  <a
+    routerLink="/dashboard/overview"
+    class="text-[#D14D1E] font-bold text-sm hover:underline no-underline"
+    >← Back to profile</a
+  >
+</div>

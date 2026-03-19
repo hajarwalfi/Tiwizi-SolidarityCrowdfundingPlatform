@@ -1,0 +1,508 @@
+<!-- Header -->
+<div class="flex-1 min-w-0 max-w-6xl flex flex-col gap-8">
+  <div>
+    <h1 class="text-3xl font-bold text-gray-900">My Payments</h1>
+    <p class="text-gray-600 mt-1">Payment method and transaction history</p>
+  </div>
+
+  <!-- Two-column layout -->
+  <div class="grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-6 items-start">
+    <!-- ========== LEFT COLUMN: Card + Stats ========== -->
+    <div class="flex flex-col gap-6">
+      <!-- Card Section -->
+      <div
+        class="bg-white rounded-2xl border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.03)] overflow-hidden"
+      >
+        <div class="p-5">
+          <h2 class="text-base font-bold text-gray-900 mb-4">Payment Method</h2>
+
+          <!-- Stripe Card Visual -->
+          <div
+            class="relative w-full h-[210px] rounded-2xl p-5 flex flex-col justify-between overflow-hidden"
+            style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)"
+          >
+            <!-- Decorative circles -->
+            <div class="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-white/5"></div>
+            <div class="absolute -bottom-8 -left-8 w-32 h-32 rounded-full bg-white/5"></div>
+
+            <!-- Top row: chip + brand -->
+            <div class="flex items-center justify-between relative z-10">
+              <div
+                class="w-11 h-8 rounded-md bg-gradient-to-br from-yellow-300 to-yellow-500 opacity-80"
+              ></div>
+              @if (cardInfo()?.brand) {
+                <span class="text-white/80 text-sm font-semibold tracking-wider uppercase">{{
+                  cardInfo()!.brand
+                }}</span>
+              } @else {
+                <svg class="w-14 h-5 text-white/70" viewBox="0 0 60 25" fill="currentColor">
+                  <path
+                    d="M5 10.3c0-.7.6-1 1.5-1 1.3 0 3 .4 4.3 1.1V6.7c-1.4-.6-2.9-.8-4.3-.8C3.3 5.9 1 7.6 1 10.5c0 4.5 6.2 3.8 6.2 5.7 0 .8-.7 1.1-1.7 1.1-1.5 0-3.4-.6-4.9-1.4v3.7c1.7.7 3.3 1 4.9 1 3.3 0 5.6-1.6 5.6-4.6-.1-4.8-6.1-4-6.1-5.7zM17.9 2.3l-3.9.8v3.2H12v3.4h2v4.8c0 2 1 3.4 3.3 3.4 1 0 1.7-.2 2.2-.4v-3.2c-.4.1-1.2.2-1.6.2-.9 0-1.3-.3-1.3-1.2V9.7h2.9V6.3h-2.9l.3-4zM26.3 6c-1.2 0-2 .6-2.4 1l-.2-.8h-3.5v11.5h4V10c.5-.6 1.3-.8 2.2-.8h.5V6h-.6zM31 6.3h-4v11.5h4V6.3zm-2-5.7c-1.3 0-2.3 1-2.3 2.3s1 2.3 2.3 2.3 2.3-1 2.3-2.3-1-2.3-2.3-2.3zM42.4 11.9c0-3.4-1.6-5.9-4.7-5.9-3.1 0-5 2.5-5 5.9 0 3.9 2.2 5.8 5.4 5.8 1.6 0 2.7-.4 3.6-.9v-3c-.9.4-1.9.7-3.2.7-1.3 0-2.4-.4-2.5-2h6.3c0-.2.1-1 .1-1.6zm-6.4-1.2c0-1.5.9-2.1 1.7-2.1.8 0 1.7.6 1.7 2.1h-3.4z"
+                  />
+                </svg>
+              }
+            </div>
+
+            <!-- Card number -->
+            <div class="relative z-10">
+              <div class="text-white/40 text-xs mb-1 tracking-widest">CARD NUMBER</div>
+              @if (cardInfo()) {
+                <div class="text-white text-base tracking-[0.25em] font-mono">
+                  •••• •••• •••• {{ cardInfo()!.last4 }}
+                </div>
+              } @else {
+                <div class="text-white/30 text-base tracking-[0.25em] font-mono">
+                  •••• •••• •••• ••••
+                </div>
+              }
+            </div>
+
+            <!-- Bottom row: name + expiry -->
+            <div class="flex justify-between items-end relative z-10">
+              <div>
+                <div class="text-white/40 text-[10px] tracking-widest mb-0.5">CARDHOLDER</div>
+                @if (userName()) {
+                  <div class="text-white text-sm font-medium uppercase">{{ userName() }}</div>
+                } @else {
+                  <div class="text-white/30 text-sm font-medium">————</div>
+                }
+              </div>
+              <div class="text-right">
+                <div class="text-white/40 text-[10px] tracking-widest mb-0.5">EXPIRES</div>
+                @if (cardInfo()) {
+                  <div class="text-white text-sm font-medium">
+                    {{ cardInfo()!.expMonth | number: '2.0-0' }}/{{ cardInfo()!.expYear }}
+                  </div>
+                } @else {
+                  <div class="text-white/30 text-sm font-medium">--/--</div>
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- No card info message -->
+          @if (!cardInfo()) {
+            <p class="text-xs text-gray-400 mt-3">
+              Your card information will appear here after your first payment via Stripe.
+            </p>
+          }
+        </div>
+      </div>
+
+      <!-- Stats -->
+      @if (!isLoading() && !error() && donations().length > 0) {
+        <div class="flex flex-col gap-3">
+          <div
+            class="bg-white rounded-xl border border-gray-100 p-4 shadow-[0_2px_10px_rgba(0,0,0,0.03)]"
+          >
+            <div class="text-xs text-gray-500 mb-1">Total Paid</div>
+            <div class="text-xl font-bold text-gray-900">
+              {{ formatAmount(totalPaid()) }}
+              <span class="text-xs font-normal text-gray-400">MAD</span>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div
+              class="bg-white rounded-xl border border-gray-100 p-4 shadow-[0_2px_10px_rgba(0,0,0,0.03)]"
+            >
+              <div class="text-xs text-gray-500 mb-1">Successful</div>
+              <div class="text-xl font-bold text-emerald-600">{{ successPayments().length }}</div>
+            </div>
+            <div
+              class="bg-white rounded-xl border border-gray-100 p-4 shadow-[0_2px_10px_rgba(0,0,0,0.03)]"
+            >
+              <div class="text-xs text-gray-500 mb-1">Total</div>
+              <div class="text-xl font-bold text-gray-900">{{ donations().length }}</div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- ========== RIGHT COLUMN: Campaign Payments ========== -->
+    <div class="min-w-0">
+      <!-- Loading State -->
+      @if (isLoading()) {
+        <div
+          class="bg-white rounded-2xl border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.03)] flex flex-col items-center justify-center py-20 gap-3"
+        >
+          <div
+            class="w-8 h-8 border-3 border-tiwizi-primary border-t-transparent rounded-full animate-spin"
+          ></div>
+          <p class="text-gray-500 text-sm">Loading your payments...</p>
+        </div>
+      }
+
+      <!-- Error State -->
+      @if (!isLoading() && error()) {
+        <div class="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
+          <div class="text-4xl mb-4 text-red-400">!</div>
+          <p class="text-red-800 font-semibold mb-4">{{ error() }}</p>
+          <button
+            (click)="loadPayments()"
+            class="px-6 py-2 bg-tiwizi-primary text-white rounded-lg font-semibold hover:bg-tiwizi-primary/90 transition-colors"
+          >
+            Retry
+          </button>
+        </div>
+      }
+
+      <!-- Empty State -->
+      @if (!isLoading() && !error() && donations().length === 0) {
+        <div class="flex flex-col items-center justify-center py-20 text-center">
+          <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-5">
+            <svg
+              class="w-7 h-7 text-gray-300"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
+              <line x1="1" y1="10" x2="23" y2="10" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-bold text-gray-800 mb-1.5">No payments yet</h3>
+          <p class="text-sm text-gray-400 max-w-sm mb-7 font-medium">
+            Your payments will appear here after your first donation
+          </p>
+          <a
+            routerLink="/campaigns"
+            class="px-7 py-3 bg-[#1c1c1c] text-white rounded-full font-bold hover:bg-black transition-all shadow-md active:scale-95 no-underline text-sm"
+          >
+            Explore Campaigns
+          </a>
+        </div>
+      }
+
+      <!-- Payments List -->
+      @if (!isLoading() && !error() && donations().length > 0) {
+        <div
+          class="bg-white rounded-2xl border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.03)] overflow-hidden"
+        >
+          <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+            <h2 class="text-base font-bold text-gray-900">Paid Campaigns</h2>
+            <button
+              (click)="toggleSortOrder()"
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-50 border border-gray-200 transition-colors"
+            >
+              <svg
+                class="w-3.5 h-3.5"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                @if (sortOrder() === 'newest') {
+                  <path d="M12 5v14" />
+                  <path d="m19 12-7 7-7-7" />
+                } @else {
+                  <path d="M12 19V5" />
+                  <path d="m5 12 7-7 7 7" />
+                }
+              </svg>
+              {{ sortOrder() === 'newest' ? 'Newest' : 'Oldest' }}
+            </button>
+          </div>
+
+          <!-- Payment Rows -->
+          <div class="divide-y divide-gray-50">
+            @for (donation of paginatedDonations(); track donation.id) {
+              <div
+                class="flex items-center gap-3 px-5 py-3.5 hover:bg-gray-50/50 transition-colors cursor-pointer"
+                (click)="selectDonation(donation)"
+              >
+                <!-- Icon -->
+                <div
+                  class="w-9 h-9 rounded-lg bg-tiwizi-primary/10 text-tiwizi-primary flex items-center justify-center shrink-0"
+                >
+                  <svg
+                    class="w-4 h-4"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  >
+                    <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+                  </svg>
+                </div>
+
+                <!-- Campaign info -->
+                <div class="flex-1 min-w-0">
+                  <div class="font-semibold text-sm text-gray-900 truncate">
+                    {{ donation.campaignTitle }}
+                  </div>
+                  <div class="text-xs text-gray-400">
+                    {{ formatDate(donation.paidAt || donation.createdAt) }}
+                  </div>
+                </div>
+
+                <!-- Amount + Status + Arrow -->
+                <div class="flex items-center gap-3 shrink-0">
+                  <span
+                    class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium border {{
+                      getStatusClasses(donation.status)
+                    }}"
+                  >
+                    {{ getStatusLabel(donation.status) }}
+                  </span>
+                  <div class="text-right min-w-[70px]">
+                    <span class="font-bold text-sm text-gray-900">{{
+                      formatAmount(donation.amount)
+                    }}</span>
+                    <span class="text-[11px] text-gray-400 ml-0.5">MAD</span>
+                  </div>
+                  <!-- Arrow -->
+                  <svg
+                    class="w-4 h-4 text-gray-300"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg>
+                </div>
+              </div>
+            }
+          </div>
+
+          <!-- Pagination -->
+          @if (totalPages() > 1) {
+            <div class="px-5 py-4 border-t border-gray-100 flex items-center justify-between">
+              <span class="text-xs text-gray-400">
+                Page {{ currentPage() }} of {{ totalPages() }}
+                <span class="hidden sm:inline">
+                  · {{ donations().length }} transaction{{ donations().length > 1 ? 's' : '' }}
+                </span>
+              </span>
+              <div class="flex items-center gap-1">
+                <!-- Previous -->
+                <button
+                  (click)="goToPage(currentPage() - 1)"
+                  [disabled]="currentPage() === 1"
+                  class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                  <svg
+                    class="w-4 h-4"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <polyline points="15 18 9 12 15 6" />
+                  </svg>
+                </button>
+
+                <!-- Page Numbers -->
+                @for (page of pageNumbers; track $index) {
+                  @if (page === -1) {
+                    <span class="w-8 h-8 flex items-center justify-center text-gray-300 text-xs"
+                      >…</span
+                    >
+                  } @else {
+                    <button
+                      (click)="goToPage(page)"
+                      class="w-8 h-8 rounded-lg text-xs font-semibold transition-colors"
+                      [class]="
+                        page === currentPage()
+                          ? 'bg-tiwizi-primary text-white shadow-sm'
+                          : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700'
+                      "
+                    >
+                      {{ page }}
+                    </button>
+                  }
+                }
+
+                <!-- Next -->
+                <button
+                  (click)="goToPage(currentPage() + 1)"
+                  [disabled]="currentPage() === totalPages()"
+                  class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                  <svg
+                    class="w-4 h-4"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </div>
+</div>
+
+<!-- ========== Payment Detail Overlay ========== -->
+@if (selectedDonation()) {
+  <div class="fixed inset-0 z-50 flex justify-end" (click)="closeDetail()">
+    <!-- Backdrop -->
+    <div class="absolute inset-0 bg-black/30 backdrop-blur-sm"></div>
+
+    <!-- Panel -->
+    <div
+      class="relative w-full max-w-md bg-white shadow-2xl flex flex-col h-full animate-slide-in"
+      (click)="$event.stopPropagation()"
+    >
+      <!-- Panel Header -->
+      <div class="flex items-center justify-between px-6 py-5 border-b border-gray-100">
+        <h2 class="text-lg font-bold text-gray-900">Payment Details</h2>
+        <button
+          (click)="closeDetail()"
+          class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
+        >
+          <svg
+            class="w-4 h-4 text-gray-500"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+          >
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Panel Body -->
+      <div class="flex-1 overflow-y-auto px-6 py-6 flex flex-col gap-6">
+        <!-- Amount Hero -->
+        <div class="text-center py-4">
+          <div class="text-xs text-gray-400 uppercase tracking-wider mb-1">Amount Paid</div>
+          <div class="text-4xl font-bold text-gray-900">
+            {{ formatAmount(selectedDonation()!.amount) }}
+            <span class="text-lg font-normal text-gray-400">MAD</span>
+          </div>
+          <span
+            class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border mt-3 {{
+              getStatusClasses(selectedDonation()!.status)
+            }}"
+          >
+            {{ getStatusLabel(selectedDonation()!.status) }}
+          </span>
+        </div>
+
+        <!-- Info Rows -->
+        <div class="bg-gray-50 rounded-xl divide-y divide-gray-100">
+          <!-- Campaign -->
+          <div class="flex items-center justify-between px-4 py-3.5">
+            <span class="text-sm text-gray-500">Campaign</span>
+            <span class="text-sm font-semibold text-gray-900 text-right max-w-[200px] truncate">
+              {{ selectedDonation()!.campaignTitle }}
+            </span>
+          </div>
+
+          <!-- Date -->
+          <div class="flex items-center justify-between px-4 py-3.5">
+            <span class="text-sm text-gray-500">Date</span>
+            <span class="text-sm font-medium text-gray-900">
+              {{ formatDate(selectedDonation()!.paidAt || selectedDonation()!.createdAt) }}
+            </span>
+          </div>
+
+          <!-- Anonymous -->
+          <div class="flex items-center justify-between px-4 py-3.5">
+            <span class="text-sm text-gray-500">Anonymous Donation</span>
+            <span
+              class="text-sm font-medium"
+              [class]="selectedDonation()!.isAnonymous ? 'text-tiwizi-primary' : 'text-gray-900'"
+            >
+              {{ selectedDonation()!.isAnonymous ? 'Yes' : 'No' }}
+            </span>
+          </div>
+
+          <!-- Donor Name -->
+          @if (!selectedDonation()!.isAnonymous && selectedDonation()!.donorName) {
+            <div class="flex items-center justify-between px-4 py-3.5">
+              <span class="text-sm text-gray-500">Donor</span>
+              <span class="text-sm font-medium text-gray-900">{{
+                selectedDonation()!.donorName
+              }}</span>
+            </div>
+          }
+
+          <!-- Transaction ID -->
+          <div class="flex items-center justify-between px-4 py-3.5">
+            <span class="text-sm text-gray-500">ID Transaction</span>
+            <span class="text-xs font-mono text-gray-400">{{ selectedDonation()!.id }}</span>
+          </div>
+        </div>
+
+
+        <!-- Receipt -->
+        @if (selectedDonation()!.receiptUrl) {
+          <a
+            [href]="selectedDonation()!.receiptUrl"
+            target="_blank"
+            rel="noopener"
+            class="flex items-center gap-2 text-sm text-tiwizi-primary hover:underline"
+          >
+            <svg
+              class="w-4 h-4"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+              <line x1="16" y1="13" x2="8" y2="13" />
+              <line x1="16" y1="17" x2="8" y2="17" />
+              <polyline points="10 9 9 9 8 9" />
+            </svg>
+            View Stripe Receipt
+          </a>
+        }
+      </div>
+
+      <!-- Panel Footer -->
+      <div class="px-6 py-4 border-t border-gray-100 flex flex-col gap-3">
+        <button
+          (click)="donateAgain(selectedDonation()!)"
+          class="w-full flex items-center justify-center gap-2 bg-tiwizi-primary text-white font-semibold px-5 py-3 rounded-xl hover:bg-tiwizi-primary/90 transition-colors text-sm"
+        >
+          <svg
+            class="w-4 h-4"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <line x1="12" y1="5" x2="12" y2="19" />
+            <line x1="5" y1="12" x2="19" y2="12" />
+          </svg>
+          Donate again to this campaign
+        </button>
+        <button
+          (click)="closeDetail()"
+          class="w-full text-sm text-gray-500 hover:text-gray-700 font-medium py-2 transition-colors"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+}

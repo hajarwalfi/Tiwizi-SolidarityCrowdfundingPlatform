@@ -1,0 +1,176 @@
+<!-- Main Content Area -->
+<div class="flex-1 min-w-0 max-w-[1100px] flex flex-col gap-6">
+  <!-- Header -->
+  <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mt-1">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900">My Favorites</h1>
+      <p class="text-sm text-gray-500 mt-1 font-medium">Campaigns you're following closely</p>
+    </div>
+  </div>
+
+  <!-- Content Sections -->
+  <div class="min-h-[500px]">
+    <!-- Loading State -->
+    @if (isLoading()) {
+      <div class="flex flex-col items-center justify-center py-20">
+        <div class="w-12 h-12 relative">
+          <div class="absolute inset-0 rounded-full border-4 border-[#FF594B]/20"></div>
+          <div class="absolute inset-0 rounded-full border-4 border-t-[#FF594B] animate-spin"></div>
+        </div>
+        <p class="text-sm font-bold text-gray-400 mt-4">Loading your favorites...</p>
+      </div>
+    }
+
+    <!-- Error State -->
+    @if (error()) {
+      <div
+        class="bg-red-50 border border-red-200 rounded-2xl p-4 text-red-700 font-bold flex items-center gap-3"
+      >
+        {{ error() }}
+      </div>
+    }
+
+    <!-- Favorites List -->
+    @if (!isLoading() && !error() && favorites().length > 0) {
+      <div class="flex flex-col bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <!-- Search bar -->
+        <div class="px-4 py-3 border-b border-gray-100 flex justify-center">
+          <div class="flex items-center gap-2 bg-[#FDFBF7] rounded-lg px-3 py-2 w-72">
+            <svg class="w-4 h-4 text-gray-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <input
+              type="text"
+              placeholder="Search favorites..."
+              class="flex-1 bg-transparent text-[13px] text-gray-700 placeholder-gray-400 outline-none"
+              [value]="searchQuery()"
+              (input)="onSearch($any($event.target).value)"
+            />
+          </div>
+        </div>
+        <div class="divide-y divide-gray-100">
+        <div
+          *ngFor="let favorite of paginatedFavorites(); let i = index"
+          class="flex items-center gap-4 px-5 py-3.5 hover:bg-gray-50/60 transition-colors cursor-pointer group"
+          style="animation: fadeInUp 0.3s ease-out both"
+          [style.animation-delay]="i * 40 + 'ms'"
+          [routerLink]="['/campaigns', favorite.campaign.id]"
+        >
+          <!-- Color dot -->
+          <div
+            class="w-9 h-9 rounded-xl shrink-0"
+            [style.background-color]="getCategoryColor(favorite.campaign.category)"
+          ></div>
+
+          <!-- Title + category -->
+          <div class="flex-1 min-w-0">
+            <div class="font-semibold text-[14px] text-[#1c1c1c] truncate group-hover:text-[#FF594B] transition-colors">
+              {{ favorite.campaign.title }}
+            </div>
+            <div class="text-[11px] text-gray-400 font-medium mt-0.5">
+              {{ categoryLabels[favorite.campaign.category] }}
+            </div>
+          </div>
+
+          <!-- Status badge -->
+          <span
+            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-extrabold shrink-0"
+            [ngClass]="getStatusColor(favorite.campaign.status)"
+          >
+            <span class="w-[5px] h-[5px] rounded-full" [ngClass]="getStatusDotColor(favorite.campaign.status)"></span>
+            {{ getStatusLabel(favorite.campaign.status) }}
+          </span>
+
+          <!-- Remove button -->
+          <button
+            (click)="removeFavorite(favorite.campaign.id); $event.stopPropagation()"
+            class="w-7 h-7 rounded-full flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 transition-all shrink-0"
+            title="Remove from favorites"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+            </svg>
+          </button>
+        </div>
+        </div>
+      </div>
+
+      <!-- Pagination Controls -->
+      <div
+        *ngIf="favorites().length > pageSize"
+        class="flex items-center justify-center gap-3 mt-6"
+      >
+        <button
+          (click)="setPage(currentPage() - 1); $event.stopPropagation()"
+          [disabled]="currentPage() === 1"
+          class="inline-flex items-center gap-1 px-4 py-2 rounded-full text-[13px] font-medium border transition-all"
+          [class]="currentPage() === 1
+            ? 'border-gray-100 text-gray-300 bg-gray-50 cursor-not-allowed'
+            : 'border-gray-200 text-gray-600 bg-white hover:bg-gray-50 active:scale-95'"
+        >
+          ← Previous
+        </button>
+
+        <span class="text-[13px] text-gray-500 font-medium px-1">
+          Page {{ currentPage() }} / {{ totalPages() }}
+        </span>
+
+        <button
+          (click)="setPage(currentPage() + 1); $event.stopPropagation()"
+          [disabled]="currentPage() === totalPages()"
+          class="inline-flex items-center gap-1 px-4 py-2 rounded-full text-[13px] font-medium border transition-all"
+          [class]="currentPage() === totalPages()
+            ? 'border-gray-100 text-gray-300 bg-gray-50 cursor-not-allowed'
+            : 'border-gray-200 text-gray-700 bg-white hover:bg-gray-50 active:scale-95'"
+        >
+          Next →
+        </button>
+      </div>
+    }
+
+    <!-- Empty State -->
+    @if (!isLoading() && !error() && favorites().length === 0) {
+      <div class="flex flex-col items-center justify-center py-20 text-center">
+        <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-5">
+          <svg
+            class="w-7 h-7 text-gray-300"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path
+              d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
+            ></path>
+          </svg>
+        </div>
+        <h3 class="text-lg font-bold text-gray-800 mb-1.5">No favorites yet</h3>
+        <p class="text-sm text-gray-400 max-w-sm mb-7 font-medium">
+          Explore campaigns and add them to your favorites to follow them easily and find them here.
+        </p>
+        <a
+          routerLink="/campaigns"
+          class="px-7 py-3 bg-[#FF594B] text-white rounded-full font-bold hover:bg-[#e04a3e] transition-all shadow-md active:scale-95 no-underline text-sm"
+        >
+          Explore Campaigns
+        </a>
+      </div>
+    }
+  </div>
+
+</div>
+
+<style>
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>

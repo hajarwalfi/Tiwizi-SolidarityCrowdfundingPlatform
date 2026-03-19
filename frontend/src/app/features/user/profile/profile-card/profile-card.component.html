@@ -1,0 +1,154 @@
+<div
+  class="bg-[#F2EFEA] rounded-[2rem] p-4 sm:p-5 shadow-[inset_0_2px_10px_rgba(255,255,255,0.8),_0_5px_15px_rgba(0,0,0,0.03)] h-full flex flex-col items-center"
+>
+  <!-- Avatar -->
+  <div class="relative mb-3 group cursor-pointer inline-block mt-4">
+    <div class="absolute inset-0 bg-[#A3E635]/20 rounded-full blur-xl scale-[1.2] opacity-0 group-hover:opacity-100 transition-opacity"></div>
+    <div class="relative w-[85px] h-[85px] rounded-full border-[5px] border-[#F2EFEA] overflow-hidden shadow-[0_8px_20px_rgba(0,0,0,0.1)] bg-[#a3e635] z-10 transition-transform group-hover:scale-[1.03] duration-300">
+      <img
+        [src]="profile.profilePictureUrl || 'https://ui-avatars.com/api/?name=' + (profile.displayName || profile.fullName || 'User') + '&background=random'"
+        alt="Avatar"
+        class="w-full h-full object-cover"
+      />
+    </div>
+  </div>
+
+  <h2 class="text-[1.15rem] font-bold font-display text-[#1c1c1c] mb-3">
+    {{ profile.displayName || profile.fullName || 'User' }}
+  </h2>
+
+  <!-- Stats Badges -->
+  <div class="grid grid-cols-3 gap-3 w-full mb-4 px-1">
+    <div class="bg-[#FDFCF9] rounded-[1.25rem] p-[0.9rem] flex flex-col items-center justify-center shadow-[0_2px_8px_rgba(0,0,0,0.02)]">
+      <div class="text-[#EF4444] mb-1.5">
+        <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+        </svg>
+      </div>
+      <span class="font-bold text-[1.1rem] text-[#1c1c1c] leading-tight">{{ profile.donationsMade || 0 }}</span>
+      <span class="text-[10px] text-[#9CA3AF] font-bold mt-0.5 tracking-wide">Donations</span>
+    </div>
+    <div class="bg-[#FDFCF9] rounded-[1.25rem] p-[0.9rem] flex flex-col items-center justify-center shadow-[0_2px_8px_rgba(0,0,0,0.02)]">
+      <div class="text-[#84CC16] mb-1.5">
+        <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m3 11 18-5v12L3 13v-2z" />
+          <path d="M11.6 16.8a3 3 0 1 1-5.8-1.6" />
+        </svg>
+      </div>
+      <span class="font-bold text-[1.1rem] text-[#1c1c1c] leading-tight">{{ profile.campaignsCreated || 0 }}</span>
+      <span class="text-[10px] text-[#9CA3AF] font-bold mt-0.5 tracking-wide">Campaigns</span>
+    </div>
+    <div class="bg-[#FDFCF9] rounded-[1.25rem] p-[0.9rem] flex flex-col items-center justify-center shadow-[0_2px_8px_rgba(0,0,0,0.02)]">
+      <div class="text-[#8B5CF6] mb-1.5">
+        <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+        </svg>
+      </div>
+      <span class="font-bold text-[1.1rem] text-[#1c1c1c] leading-tight">{{ profile.activeCampaigns || 0 }}</span>
+      <span class="text-[10px] text-[#9CA3AF] font-bold mt-0.5 tracking-wide">Active</span>
+    </div>
+  </div>
+
+  <!-- ── Donor Chart ── -->
+  @if (viewMode === 'donor' || viewMode === 'public') {
+    <div class="bg-white rounded-[2rem] p-5 w-full shadow-[0_4px_20px_rgba(0,0,0,0.03)] flex-1 flex flex-col">
+
+      <span class="text-[10px] font-bold text-[#9CA3AF] uppercase tracking-widest mb-1">My contributions</span>
+
+      <div class="flex items-baseline gap-1.5 mb-4">
+        <span class="text-[1.9rem] leading-none font-bold font-display text-[#1c1c1c]">{{ formatAmount(totalDonated) }}</span>
+        <span class="text-sm text-[#9CA3AF] font-semibold">MAD</span>
+        @if (totalDonated > 0) {
+          <span class="ml-auto text-[10px] bg-[#FEF9C3] text-[#A16207] px-2 py-1 rounded-lg font-bold shrink-0">Thank you!</span>
+        }
+      </div>
+
+      <!-- Donut: one slice per campaign donated to -->
+      <div class="relative w-full flex items-center justify-center mb-4" style="height: 160px;">
+        <canvas
+          baseChart
+          class="w-full h-full"
+          [data]="donorChartData"
+          [options]="chartOptions"
+          [type]="'doughnut'"
+        ></canvas>
+        <!-- Center label -->
+        <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+          <span class="text-[8px] font-bold text-[#9CA3AF] tracking-wide leading-tight text-center">Total<br/>donated</span>
+          <span class="text-[1.15rem] leading-none font-bold font-display text-[#1c1c1c] mt-0.5">{{ formatAmount(totalDonated) }}</span>
+        </div>
+      </div>
+
+      <!-- Color legend -->
+      @if (donorLegend.length > 0) {
+        <div class="flex flex-col gap-1.5 mt-auto">
+          @for (item of donorLegend; track item.label) {
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full shrink-0" [style.background]="item.color"></span>
+              <span class="text-[10px] text-[#6B7280] truncate flex-1 min-w-0">{{ item.label }}</span>
+              <span class="text-[10px] font-bold text-[#1c1c1c] shrink-0">{{ formatAmount(item.amount) }} MAD</span>
+            </div>
+          }
+        </div>
+      } @else {
+        <p class="text-[11px] text-[#9CA3AF] text-center mt-auto">No confirmed donations yet</p>
+      }
+    </div>
+  }
+
+  <!-- ── Beneficiary Chart ── -->
+  @if (viewMode === 'beneficiary') {
+    <div class="bg-white rounded-[2rem] p-5 w-full shadow-[0_4px_20px_rgba(0,0,0,0.03)] flex-1 flex flex-col">
+
+      <span class="text-[10px] font-bold text-[#9CA3AF] uppercase tracking-widest mb-1">My campaigns</span>
+
+      <div class="flex items-baseline gap-1.5 mb-4">
+        <span class="text-[1.9rem] leading-none font-bold font-display text-[#1c1c1c]">{{ formatAmount(totalAmountCollected) }}</span>
+        <span class="text-sm text-[#9CA3AF] font-semibold">MAD</span>
+      </div>
+
+      <!-- Donut: collected vs remaining -->
+      <div class="relative w-full flex items-center justify-center mb-4" style="height: 160px;">
+        <canvas
+          baseChart
+          class="w-full h-full"
+          [data]="beneficiaryChartData"
+          [options]="chartOptions"
+          [type]="'doughnut'"
+        ></canvas>
+        <!-- Center: percentage -->
+      </div>
+
+      <!-- Legend: collected / remaining (active campaigns only) -->
+      <div class="flex flex-col gap-1.5 mb-4">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full shrink-0" [class]="overallProgressPercent >= 100 ? 'bg-[#22C55E]' : 'bg-[#FF594B]'"></span>
+          <span class="text-[10px] text-[#6B7280] flex-1">Total collected</span>
+          <span class="text-[10px] font-bold text-[#1c1c1c]">{{ formatAmount(totalAmountCollected) }} MAD</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-[#E5E7EB] shrink-0"></span>
+          <span class="text-[10px] text-[#6B7280] flex-1">Remaining</span>
+          <span class="text-[10px] font-bold text-[#1c1c1c]">{{ formatAmount(remainingAmount) }} MAD</span>
+        </div>
+      </div>
+
+      <!-- Campaign status mini-stats -->
+      <div class="grid grid-cols-3 gap-2 mt-auto">
+        <div class="flex flex-col items-center bg-[#F0FDF4] rounded-xl py-2.5">
+          <span class="text-base font-bold text-[#22C55E]">{{ activeCampaignsCount }}</span>
+          <span class="text-[9px] text-[#9CA3AF] font-semibold mt-0.5">Active</span>
+        </div>
+        <div class="flex flex-col items-center bg-[#EFF6FF] rounded-xl py-2.5">
+          <span class="text-base font-bold text-[#3B82F6]">{{ completedCampaignsCount }}</span>
+          <span class="text-[9px] text-[#9CA3AF] font-semibold mt-0.5">Completed</span>
+        </div>
+        <div class="flex flex-col items-center bg-[#FFF7ED] rounded-xl py-2.5">
+          <span class="text-base font-bold text-[#F97316]">{{ totalDonorsCount }}</span>
+          <span class="text-[9px] text-[#9CA3AF] font-semibold mt-0.5">Donors</span>
+        </div>
+      </div>
+
+    </div>
+  }
+</div>

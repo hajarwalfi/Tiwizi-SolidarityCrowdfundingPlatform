@@ -1,0 +1,331 @@
+<div class="flex flex-col gap-6">
+  <!-- Greeting Header -->
+  <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mt-1">
+    <h1 class="text-3xl font-bold text-gray-900">
+      Greetings,
+      {{ profile.displayName?.split(' ')?.[0] || profile.fullName.split(' ')[0] || 'there' }}
+    </h1>
+  </div>
+
+  <!-- View Mode Tabs -->
+  <div class="flex gap-5 overflow-x-auto p-1 w-full shrink-0 snap-x" style="scrollbar-width: none">
+    <button
+      (click)="viewModeChanged.emit('donor')"
+      [class.ring-2]="viewMode === 'donor'"
+      [class.ring-[#65A30D]/20]="viewMode === 'donor'"
+      [class.opacity-80]="viewMode !== 'donor'"
+      class="snap-start shrink-0 flex items-center gap-2 px-4 py-2.5 bg-white rounded-xl shadow-[0_2px_10px_rgba(0,0,0,0.03)] border border-transparent hover:border-gray-100 font-bold text-xs whitespace-nowrap transition-all hover:opacity-100"
+    >
+      <div class="w-6 h-6 rounded-md bg-[#ECFCCB] text-[#65A30D] flex items-center justify-center">
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path
+            d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
+          ></path>
+        </svg>
+      </div>
+      Donor Dashboard
+    </button>
+    <button
+      (click)="viewModeChanged.emit('beneficiary')"
+      [class.ring-2]="viewMode === 'beneficiary'"
+      [class.ring-[#A855F7]/20]="viewMode === 'beneficiary'"
+      [class.opacity-80]="viewMode !== 'beneficiary'"
+      class="snap-start shrink-0 flex items-center gap-2 px-4 py-2.5 bg-white rounded-xl shadow-[0_2px_10px_rgba(0,0,0,0.03)] border border-transparent hover:border-gray-100 font-bold text-xs whitespace-nowrap transition-all hover:opacity-100"
+    >
+      <div class="w-6 h-6 rounded-md bg-[#F3E8FF] text-[#A855F7] flex items-center justify-center">
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <polygon
+            points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+          ></polygon>
+        </svg>
+      </div>
+      Beneficiary Dashboard
+    </button>
+  </div>
+
+  <!-- DONOR VIEW -->
+  @if (viewMode === 'donor' || viewMode === 'public') {
+    <div>
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-[1.35rem] font-bold font-display text-[#1c1c1c]">Campaigns You Support</h2>
+        @if (totalDonationCount > 3) {
+          <a
+            routerLink="/dashboard/campaigns"
+            class="text-[#FF594B] font-bold text-sm hover:underline pr-1 no-underline"
+            >View all</a
+          >
+        }
+      </div>
+
+      @if (isLoadingDonations) {
+        <div class="flex items-center justify-center py-12">
+          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#65A30D]"></div>
+        </div>
+      } @else {
+        <div class="grid grid-cols-2 lg:grid-cols-3 gap-3">
+          @for (donation of previewDonations; track donation.id) {
+            <div
+              class="bg-white rounded-[1.5rem] p-3 shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-gray-50 hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] transition-all flex flex-col h-full"
+            >
+              <div
+                class="h-[80px] rounded-[1rem] bg-[#ECFCCB] mb-3 relative overflow-hidden p-2.5 w-full shrink-0 flex items-start"
+              >
+                <span
+                  class="inline-block bg-white/80 backdrop-blur-md px-2.5 py-0.5 rounded-full text-[10px] font-extrabold text-[#3F6212] shadow-sm tracking-wide z-10 flex items-center gap-1.5"
+                  >Donated</span
+                >
+                <div
+                  class="absolute -bottom-8 -right-2 text-[80px] opacity-40 mix-blend-multiply rotate-12 select-none"
+                ></div>
+              </div>
+              <div class="flex flex-col flex-1">
+                <h3 class="font-bold text-[13px] leading-[1.3] text-[#1c1c1c] mb-2 line-clamp-2">
+                  {{ donation.campaignTitle }}
+                </h3>
+                <div class="flex justify-between items-center mt-auto">
+                  <div class="flex flex-col">
+                    <span class="text-[12px] font-extrabold text-[#65A30D]"
+                      >{{ formatAmount(donation.amount) }} MAD</span
+                    >
+                    <span class="text-[10px] text-gray-400 font-semibold">{{
+                      donation.createdAt | date: 'MMM d, y'
+                    }}</span>
+                  </div>
+                  <a
+                    [routerLink]="['/campaigns', donation.campaignId]"
+                    class="px-3 py-1.5 border-2 border-[#111] bg-[#111] rounded-full text-[11px] font-bold text-white hover:bg-transparent hover:text-[#111] transition-all select-none active:scale-95 no-underline"
+                    >Support</a
+                  >
+                </div>
+              </div>
+            </div>
+          }
+          @if (previewDonations.length === 0) {
+            <div
+              class="bg-white rounded-[1.5rem] p-8 shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-gray-50 flex flex-col items-center justify-center text-center col-span-full"
+            >
+              <div
+                class="w-16 h-16 bg-[#ECFCCB] rounded-full flex items-center justify-center mb-4"
+              >
+                <svg
+                  class="w-7 h-7 text-[#65A30D]"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path
+                    d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
+                  ></path>
+                </svg>
+              </div>
+              <h3 class="font-bold text-[#1c1c1c] font-display mb-1">No donations yet</h3>
+              <p class="text-sm text-gray-500">Browse campaigns and support a cause</p>
+              <a
+                routerLink="/campaigns"
+                class="mt-4 inline-flex items-center gap-2 px-5 py-2.5 bg-[#65A30D] text-white rounded-full text-sm font-bold hover:bg-[#4d7c0f] transition-all no-underline"
+              >
+                View campaigns
+              </a>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+
+  <!-- LAST PAYMENTS (donor view only) -->
+  @if (viewMode === 'donor' || viewMode === 'public') {
+    <div>
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-[1.35rem] font-bold font-display text-[#1c1c1c]">Last Payments</h2>
+        <a
+          routerLink="/dashboard/payments"
+          class="text-[#FF594B] font-bold text-sm hover:underline pr-1 no-underline"
+        >Find more</a>
+      </div>
+
+      @if (isLoadingDonations) {
+        <div class="flex items-center justify-center py-8">
+          <div class="animate-spin rounded-full h-7 w-7 border-b-2 border-[#FF594B]"></div>
+        </div>
+      } @else if (previewPayments.length === 0) {
+        <div class="bg-white rounded-[1.5rem] p-6 shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-gray-50 flex flex-col items-center justify-center text-center">
+          <p class="text-sm text-gray-500">No payments yet</p>
+        </div>
+      } @else {
+        <div class="flex gap-4 items-stretch">
+          <!-- Payments list -->
+          <div class="bg-white rounded-[1.5rem] shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-gray-50 overflow-hidden flex-1">
+            <div class="divide-y divide-gray-50">
+              @for (payment of previewPayments; track payment.id) {
+                <div class="flex items-center gap-3 px-4 py-3 hover:bg-gray-50/50 transition-colors">
+                  <!-- Icon -->
+                  <div class="w-9 h-9 rounded-lg bg-[#ECFCCB] text-[#65A30D] flex items-center justify-center shrink-0">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                      <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                    </svg>
+                  </div>
+                  <!-- Info -->
+                  <div class="flex-1 min-w-0">
+                    <div class="font-semibold text-[13px] text-[#1c1c1c] truncate">{{ payment.campaignTitle }}</div>
+                    <div class="text-[11px] text-gray-400">{{ formatDate(payment.paidAt || payment.createdAt) }}</div>
+                  </div>
+                  <!-- Amount -->
+                  <div class="shrink-0">
+                    <span class="font-bold text-[13px] text-[#1c1c1c]">{{ formatAmount(payment.amount) }} <span class="text-[10px] font-normal text-gray-400">MAD</span></span>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+          <!-- Monthly bar chart -->
+          <div class="bg-white rounded-[1.5rem] shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-gray-50 p-4 flex flex-col flex-1">
+            <span class="text-[10px] font-bold text-[#9CA3AF] uppercase tracking-widest mb-3">Monthly</span>
+            <div class="flex-1 relative">
+              <canvas baseChart [data]="monthlyBarData" [options]="barOptions" type="bar"></canvas>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- BENEFICIARY VIEW -->
+  @if (viewMode === 'beneficiary') {
+    <div>
+      <div class="flex justify-between items-center mb-4">
+        <div class="flex items-center gap-2.5">
+          <h2 class="text-[1.35rem] font-bold font-display text-[#1c1c1c]">Your Campaigns</h2>
+          @if (totalCampaignCount > 0) {
+            <span
+              class="bg-[#F3E8FF] text-[#7C3AED] text-[12px] font-extrabold px-2.5 py-0.5 rounded-lg leading-tight"
+              >{{ totalCampaignCount }}</span
+            >
+          }
+        </div>
+        @if (totalCampaignCount > 3) {
+          <a
+            routerLink="/dashboard/campaigns"
+            class="text-[#FF594B] font-bold text-sm hover:underline pr-1 no-underline"
+            >View all</a
+          >
+        }
+      </div>
+
+      @if (isLoadingCampaigns) {
+        <div class="flex items-center justify-center py-12">
+          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#A855F7]"></div>
+        </div>
+      } @else {
+        <div class="grid grid-cols-2 lg:grid-cols-3 gap-3">
+          @for (campaign of previewCampaigns; track campaign.id) {
+            <div
+              class="bg-white rounded-[1.5rem] p-3 shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-gray-50 hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] transition-all flex flex-col h-full"
+            >
+              <div
+                class="h-[80px] rounded-[1rem] mb-3 relative overflow-hidden p-2.5 w-full shrink-0 flex items-start"
+                [style.background-color]="getCategoryColor(campaign.category)"
+              >
+                <span
+                  class="inline-block backdrop-blur-md px-2.5 py-0.5 rounded-full text-[10px] font-extrabold shadow-sm tracking-wide z-10 flex items-center gap-1.5"
+                  [ngClass]="getStatusColor(campaign.status)"
+                >
+                  <span
+                    class="w-2 h-2 rounded-full"
+                    [ngClass]="getStatusDotColor(campaign.status)"
+                  ></span>
+                  {{ getStatusLabel(campaign.status) }}
+                </span>
+              </div>
+              <div class="flex flex-col flex-1">
+                <div class="mb-1.5 flex justify-between items-center gap-1">
+                  <span
+                    class="text-[9px] font-bold px-1.5 py-0.5 bg-[#F4F5F7] text-[#4B5563] rounded-md tracking-wider uppercase truncate"
+                    >{{ campaign.category }}</span
+                  >
+                  <span class="text-[10px] font-extrabold text-[#111] shrink-0"
+                    >{{ formatAmount(campaign.amountCollected) }} /
+                    {{ formatAmount(campaign.goalAmount) }}</span
+                  >
+                </div>
+                <div class="w-full h-1 bg-gray-100 rounded-full mb-2 overflow-hidden">
+                  <div
+                    class="h-full rounded-full transition-all"
+                    [ngClass]="getProgressBarColor(campaign.status)"
+                    [style.width.%]="campaign.progressPercentage"
+                  ></div>
+                </div>
+                <h3 class="font-bold text-[13px] leading-[1.3] text-[#1c1c1c] mb-3 line-clamp-2">
+                  {{ campaign.title }}
+                </h3>
+                <div class="flex justify-between items-center mt-auto">
+                  <span class="text-[11px] font-bold text-gray-500"
+                    >{{ campaign.donorCount }} Donors</span
+                  >
+                  <a
+                    routerLink="/dashboard/campaigns"
+                    class="px-3 py-1.5 border-2 border-gray-100 bg-white rounded-full text-[11px] font-bold text-[#111] hover:border-gray-200 transition-all select-none active:scale-95 no-underline"
+                    >Manage</a
+                  >
+                </div>
+              </div>
+            </div>
+          }
+          @if (previewCampaigns.length === 0) {
+            <div
+              class="bg-white rounded-[1.5rem] p-8 col-span-full flex flex-col items-center justify-center text-center"
+            >
+              <div
+                class="w-16 h-16 bg-[#F3E8FF] rounded-full flex items-center justify-center mb-4"
+              >
+                <svg
+                  class="w-7 h-7 text-[#A855F7]"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="m3 11 18-5v12L3 13v-2z" />
+                  <path d="M11.6 16.8a3 3 0 1 1-5.8-1.6" />
+                </svg>
+              </div>
+              <h3 class="font-bold text-[#1c1c1c] font-display mb-1">No campaigns yet</h3>
+              <p class="text-sm text-gray-500 mb-5">
+                Create your first campaign to start receiving donations
+              </p>
+              <a
+                routerLink="/dashboard/campaigns/create"
+                class="px-7 py-3 bg-[#A855F7] text-white rounded-full font-bold hover:bg-[#9333EA] transition-all shadow-md active:scale-95 no-underline text-sm"
+              >
+                Create a Campaign
+              </a>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

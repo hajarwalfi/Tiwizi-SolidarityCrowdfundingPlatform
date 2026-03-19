@@ -1,0 +1,196 @@
+@if (isOpen) {
+  <div
+    class="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center p-4"
+    (click)="onClose()"
+  >
+    <div class="absolute inset-0 bg-black/30 backdrop-blur-sm"></div>
+
+    <div
+      class="relative bg-white rounded-[1.75rem] w-full max-w-md shadow-2xl animate-slide-up"
+      (click)="$event.stopPropagation()"
+    >
+      <!-- Header -->
+      <div class="flex items-center justify-between px-6 pt-6 pb-4 border-b border-gray-50">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-orange-50 flex items-center justify-center shrink-0">
+            <svg class="w-4 h-4 text-[#FF7A59]" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+          </div>
+          <div>
+            <p class="text-[15px] font-extrabold text-[#1c1c1c] leading-tight">Make a Donation</p>
+            <p class="text-[11px] text-gray-400 font-medium leading-tight mt-0.5">{{ campaign.title }}</p>
+          </div>
+        </div>
+        <button
+          (click)="onClose()"
+          type="button"
+          class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors shrink-0"
+        >
+          <svg class="w-4 h-4 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Body -->
+      <div class="p-5 max-h-[80vh] overflow-y-auto">
+
+        <!-- Success State -->
+        @if (successMessage()) {
+          <div class="flex flex-col items-center text-center py-6">
+            <div class="w-16 h-16 rounded-full bg-emerald-50 flex items-center justify-center mb-4">
+              <svg class="w-7 h-7 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+            </div>
+            <p class="text-[15px] font-extrabold text-[#1c1c1c] mb-1">Donation successful!</p>
+            <p class="text-[12px] text-gray-400">{{ successMessage() }}</p>
+          </div>
+        }
+
+        <!-- Error Banner -->
+        @if (error()) {
+          <div class="flex items-center gap-2.5 bg-red-50 border border-red-100 rounded-[1rem] px-4 py-3 mb-4">
+            <svg class="w-4 h-4 text-red-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            <p class="text-[12px] text-red-600 font-semibold">{{ error() }}</p>
+          </div>
+        }
+
+        @if (!successMessage()) {
+          <form [formGroup]="donationForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-4">
+
+            <!-- Amount Section -->
+            <div class="flex flex-col gap-2">
+              <p class="text-[11px] font-extrabold text-gray-400 uppercase tracking-wider px-1">Select an amount</p>
+              <div class="grid grid-cols-3 gap-2">
+                @for (amount of predefinedAmounts; track amount) {
+                  <button
+                    type="button"
+                    (click)="selectAmount(amount)"
+                    class="py-3 px-2 rounded-[1.25rem] text-[13px] font-bold transition-all text-center border"
+                    [class]="donationForm.value.amount === amount
+                      ? 'bg-[#FF7A59] border-[#FF7A59] text-white shadow-md shadow-[#FF7A59]/30'
+                      : 'bg-gray-50 border-transparent text-[#1c1c1c] hover:bg-orange-50 hover:border-orange-100'"
+                  >
+                    {{ getFormattedAmount(amount) }}
+                  </button>
+                }
+              </div>
+            </div>
+
+            <!-- Custom Amount -->
+            <div class="flex flex-col gap-1.5">
+              <p class="text-[11px] font-extrabold text-gray-400 uppercase tracking-wider px-1">Or enter a custom amount</p>
+              <div class="relative flex items-center">
+                <input
+                  type="number"
+                  id="customAmount"
+                  formControlName="amount"
+                  class="w-full bg-gray-50 border border-gray-100 rounded-[1rem] px-4 py-3 pr-14 text-[13px] text-gray-700 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#FF7A59]/20 focus:border-[#FF7A59]/40 transition-all"
+                  placeholder="Minimum 10 MAD"
+                  min="10"
+                  step="10"
+                />
+                <span class="absolute right-4 text-[12px] font-bold text-gray-400 pointer-events-none">MAD</span>
+              </div>
+              @if (donationForm.get('amount')?.invalid && donationForm.get('amount')?.touched) {
+                <p class="text-[11px] text-red-500 px-1">The minimum amount is 10 MAD</p>
+              }
+            </div>
+
+            <!-- Anonymous Toggle -->
+            <label class="flex items-center gap-3 px-3 py-2.5 rounded-[1.25rem] hover:bg-gray-50 cursor-pointer transition-colors border border-transparent hover:border-gray-100 select-none">
+              <input
+                type="checkbox"
+                formControlName="isAnonymous"
+                class="w-4 h-4 cursor-pointer accent-[#FF7A59] rounded"
+              />
+              <div>
+                <p class="text-[13px] font-semibold text-[#1c1c1c] m-0">Anonymous donation</p>
+                <p class="text-[11px] text-gray-400 m-0">Your name won't be shown publicly</p>
+              </div>
+            </label>
+
+            <!-- Stripe Card Input — always in DOM so getElementById works reliably -->
+            <div
+              class="flex flex-col gap-1.5"
+              [style.display]="(!isProcessingPayment() || hasSavedCard()) ? 'none' : 'flex'"
+            >
+              <p class="text-[11px] font-extrabold text-gray-400 uppercase tracking-wider px-1">Payment details</p>
+              <div
+                id="stripe-card-element"
+                #cardElement
+                class="bg-gray-50 border border-gray-100 rounded-[1rem] px-4 py-3 min-h-[45px] transition-all"
+              ></div>
+              <!-- Save card option -->
+              <label class="flex items-center gap-3 px-3 py-2.5 rounded-[1.25rem] hover:bg-gray-50 cursor-pointer transition-colors border border-transparent hover:border-gray-100 select-none mt-1">
+                <input
+                  type="checkbox"
+                  [checked]="saveCardEnabled"
+                  (change)="saveCardEnabled = $any($event.target).checked"
+                  class="w-4 h-4 cursor-pointer accent-[#FF7A59] rounded"
+                />
+                <div>
+                  <p class="text-[13px] font-semibold text-[#1c1c1c] m-0">Save card for future donations</p>
+                  <p class="text-[11px] text-gray-400 m-0">You can remove it anytime from your settings</p>
+                </div>
+              </label>
+            </div>
+
+            <!-- Saved Card -->
+            @if (hasSavedCard() && savedCard()) {
+              <div class="flex items-center gap-3 bg-emerald-50 border border-emerald-100 rounded-[1.25rem] px-4 py-3">
+                <div class="w-10 h-7 bg-white rounded-lg border border-emerald-200 flex items-center justify-center text-[10px] font-bold uppercase text-gray-600 shrink-0">
+                  {{ savedCard()!.brand }}
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-[13px] font-semibold text-emerald-800 m-0">•••• {{ savedCard()!.last4 }}</p>
+                  <p class="text-[11px] text-emerald-600 m-0">Saved card</p>
+                </div>
+                <svg class="w-4 h-4 text-emerald-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+              </div>
+            }
+
+
+            <!-- Actions -->
+            <div class="flex gap-2.5 pt-1">
+              <button
+                type="button"
+                (click)="onClose()"
+                [disabled]="isSubmitting()"
+                class="flex-1 py-3 bg-gray-50 hover:bg-gray-100 border border-gray-100 rounded-full text-[13px] font-bold text-gray-500 transition-colors disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                [disabled]="isSubmitting() || !!successMessage()"
+                class="flex-[2] py-3 bg-[#FF7A59] hover:bg-[#e86d4f] text-white rounded-full text-[13px] font-bold transition-all shadow-md shadow-[#FF7A59]/25 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 active:scale-95"
+              >
+                @if (isSubmitting()) {
+                  <div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  Processing...
+                } @else if (successMessage()) {
+                  Donation complete
+                } @else if (isCardReady()) {
+                  Pay {{ getFormattedAmount(donationForm.value.amount || 0) }}
+                } @else if (hasSavedCard()) {
+                  Pay {{ getFormattedAmount(donationForm.value.amount || 0) }}
+                } @else {
+                  Continue to payment
+                }
+              </button>
+            </div>
+
+          </form>
+        }
+
+      </div>
+    </div>
+  </div>
+}

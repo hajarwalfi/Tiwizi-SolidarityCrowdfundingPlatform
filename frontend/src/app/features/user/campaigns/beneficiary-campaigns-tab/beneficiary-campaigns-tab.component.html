@@ -1,0 +1,196 @@
+<div class="flex flex-col gap-6">
+  <!-- Search Bar -->
+  <div class="relative max-w-sm">
+    <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+    </svg>
+    <input
+      type="text"
+      placeholder="Search by title or location..."
+      [value]="searchQuery"
+      (input)="searchChanged.emit($any($event.target).value)"
+      class="w-full pl-9 py-2 text-[13px] rounded-full border border-gray-200 bg-white text-gray-700 placeholder-gray-400 outline-none focus:border-gray-400 transition-colors"
+      [class.pr-8]="searchQuery"
+      [class.pr-4]="!searchQuery"
+    />
+    @if (searchQuery) {
+      <button
+        (click)="searchChanged.emit('')"
+        class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 flex items-center justify-center rounded-full bg-gray-300 hover:bg-gray-400 transition-colors"
+      >
+        <svg class="w-2.5 h-2.5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 6 6 18M6 6l12 12"/>
+        </svg>
+      </button>
+    }
+  </div>
+
+  <!-- Status Filter Tabs -->
+  <div class="flex gap-2 overflow-x-auto pb-1 snap-x" style="scrollbar-width: none">
+    <button
+      *ngFor="let filter of statusFilters"
+      (click)="filterChanged.emit(filter.value)"
+      [class]="
+        activeFilter === filter.value
+          ? 'snap-start shrink-0 px-4 py-2 rounded-full text-[13px] font-bold transition-all bg-white text-[#FF594B] border-2 border-[#FF594B]'
+          : 'snap-start shrink-0 px-4 py-2 rounded-full text-[13px] font-bold transition-all bg-white text-gray-600 border border-gray-100 hover:border-gray-200 hover:bg-gray-50'
+      "
+    >
+      {{ filter.label }}
+    </button>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="isLoading" class="flex items-center justify-center py-20">
+    <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-[#A855F7]"></div>
+  </div>
+
+  <ng-container *ngIf="!isLoading">
+    <!-- Empty State -->
+    <div
+      *ngIf="campaigns.length === 0"
+      class="flex flex-col items-center justify-center py-20 text-center bg-white rounded-2xl shadow-sm border border-gray-100"
+    >
+      <div class="w-16 h-16 bg-lime-100 rounded-full flex items-center justify-center mb-5">
+        <svg
+          class="w-7 h-7 text-[#65A30D]"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+        </svg>
+      </div>
+      <h3 class="text-lg font-bold text-gray-800 mb-1.5">
+        {{ activeFilter === 'ALL' ? 'No campaigns yet' : 'No campaigns with this status' }}
+      </h3>
+      <p class="text-sm text-gray-400 max-w-sm mb-7 font-medium">
+        {{
+          activeFilter === 'ALL'
+            ? 'Create your first campaign and start receiving donations.'
+            : "You don't have any campaigns with this status."
+        }}
+      </p>
+      <a
+        *ngIf="activeFilter === 'ALL'"
+        routerLink="/dashboard/campaigns/create"
+        class="px-7 py-3 bg-[#65A30D] text-white rounded-full font-bold hover:bg-[#4d7a0a] transition-all shadow-md active:scale-95 no-underline text-sm"
+      >
+        Create My First Campaign
+      </a>
+    </div>
+
+    <!-- Grid of Campaign Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      <div
+        *ngFor="let campaign of campaigns; let i = index"
+        class="bg-white rounded-[1.5rem] p-4 shadow-sm border border-gray-50 hover:shadow-md transition-all flex flex-col group cursor-pointer"
+        style="animation: fadeInUp 0.4s ease-out both"
+        [style.animation-delay]="i * 60 + 'ms'"
+      >
+        <div
+          class="h-[100px] rounded-[1.15rem] mb-3 relative overflow-hidden p-3 w-full shrink-0 flex items-start"
+          [style.background-color]="getCategoryColor(campaign.category)"
+        >
+          <span
+            class="inline-flex items-center gap-1.5 backdrop-blur-md px-2.5 py-1 rounded-full text-[10px] font-extrabold shadow-sm tracking-wide z-10"
+            [ngClass]="getStatusColor(campaign.status)"
+          >
+            <span
+              class="w-[6px] h-[6px] rounded-full"
+              [ngClass]="getStatusDotColor(campaign.status)"
+            ></span>
+            {{ getStatusLabel(campaign.status) }}
+          </span>
+        </div>
+
+        <div class="flex flex-col flex-1 px-0.5">
+          <span
+            class="text-[10px] font-bold px-2 py-0.5 bg-[#F4F5F7] text-[#4B5563] rounded-md tracking-wider uppercase w-fit mb-2"
+            >{{ campaign.category }}</span
+          >
+          <a
+            [routerLink]="['/campaigns', campaign.id]"
+            (click)="$event.stopPropagation()"
+            class="font-bold text-[15px] leading-snug text-[#1c1c1c] mb-2 line-clamp-2 hover:text-[#FF594B] transition-colors block"
+          >{{ campaign.title }}</a>
+
+          <div class="mt-auto">
+            <div class="flex justify-between items-center mb-1">
+              <span class="text-[11px] font-bold text-gray-500"
+                >{{ formatAmount(campaign.amountCollected) }} /
+                {{ formatAmount(campaign.goalAmount) }} MAD</span
+              >
+              <span class="text-[11px] font-extrabold text-[#1c1c1c]"
+                >{{ campaign.progressPercentage }}%</span
+              >
+            </div>
+            <div class="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden mb-3">
+              <div
+                class="h-full rounded-full transition-all"
+                [ngClass]="getProgressBarColor(campaign.status, campaign.progressPercentage)"
+                [style.width.%]="campaign.progressPercentage"
+              ></div>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-[11px] font-semibold text-gray-400 flex items-center gap-1">
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="9" cy="7" r="4"></circle>
+                </svg>
+                {{ campaign.donorCount }} donors
+              </span>
+              <button
+                (click)="openManage($event, campaign)"
+                class="px-3 py-1 border border-gray-100 rounded-full text-[11px] font-bold text-[#111] hover:border-gray-200 hover:bg-gray-50 transition-all active:scale-95"
+              >
+                Manage
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div *ngIf="totalPages > 1" class="flex items-center justify-center gap-3 mt-6">
+      <button
+        (click)="pageChanged.emit(currentPage - 1)"
+        [disabled]="currentPage === 1"
+        class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-[13px] font-bold transition-all"
+        [class]="
+          currentPage === 1
+            ? 'bg-gray-50 text-gray-300 cursor-not-allowed border border-gray-100'
+            : 'bg-white text-[#1c1c1c] border border-gray-200 hover:border-gray-300 hover:bg-gray-50 active:scale-95 shadow-sm'
+        "
+      >
+        ← Previous
+      </button>
+      <span class="text-[13px] font-bold text-gray-500 px-3"
+        >Page {{ currentPage }} / {{ totalPages }}</span
+      >
+      <button
+        (click)="pageChanged.emit(currentPage + 1)"
+        [disabled]="currentPage === totalPages"
+        class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-[13px] font-bold transition-all"
+        [class]="
+          currentPage === totalPages
+            ? 'bg-gray-50 text-gray-300 cursor-not-allowed border border-gray-100'
+            : 'bg-white text-[#1c1c1c] border border-gray-200 hover:border-gray-300 hover:bg-gray-50 active:scale-95 shadow-sm'
+        "
+      >
+        Next →
+      </button>
+    </div>
+  </ng-container>
+</div>
