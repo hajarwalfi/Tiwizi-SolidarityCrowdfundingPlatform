@@ -2,9 +2,9 @@ pipeline {
     agent any
 
     tools {
-        jdk    'JDK-17'
-        maven  'Maven-3.9'
-        nodejs 'NodeJS-22'
+        jdk    'JDK 17'
+        maven  'Maven 3.9'
+        nodejs 'Node 22'
     }
 
     stages {
@@ -31,10 +31,9 @@ pipeline {
                     junit 'backend/target/surefire-reports/*.xml'
                     // Publish JaCoCo coverage report
                     jacoco(
-                        execPattern:    'backend/target/jacoco.exec',
-                        classPattern:   'backend/target/classes',
-                        sourcePattern:  'backend/src/main/java',
-                        reportPattern:  'backend/target/site/jacoco'
+                        execPattern:   'backend/target/jacoco.exec',
+                        classPattern:  'backend/target/classes',
+                        sourcePattern: 'backend/src/main/java'
                     )
                 }
             }
