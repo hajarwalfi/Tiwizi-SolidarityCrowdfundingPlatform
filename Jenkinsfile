@@ -93,7 +93,7 @@ pipeline {
         stage('Docker — Build Images') {
         // ─────────────────────────────────────────────
             steps {
-                sh 'docker compose build'
+                sh 'docker-compose build'
             }
         }
     }
