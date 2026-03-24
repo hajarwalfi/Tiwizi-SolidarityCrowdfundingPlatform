@@ -88,6 +88,14 @@ pipeline {
                 }
             }
         }
+
+        // ─────────────────────────────────────────────
+        stage('Docker — Build Images') {
+        // ─────────────────────────────────────────────
+            steps {
+                sh 'docker compose build'
+            }
+        }
     }
 
     post {
