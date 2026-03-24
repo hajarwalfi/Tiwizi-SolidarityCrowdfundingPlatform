@@ -63,7 +63,7 @@ app:
 
 # Stripe Payment Configuration
 stripe:
-  api-key: ${STRIPE_SECRET_KEY:sk_test_51RiBptB0527abtPhojvpHkDT4yPnourNOhxGXbGXoYyLlmSfRiiR0uSwTfgG4AJC4M9MRTTYsRKyIhYEftgmpRHb00rP7NTiwC}
+  api-key: ${STRIPE_SECRET_KEY}
   webhook-secret: ${STRIPE_WEBHOOK_SECRET:whsec_your_webhook_secret_here}
   currency: mad
   success-url: http://localhost:4200/donation/success
