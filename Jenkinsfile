@@ -90,10 +90,24 @@ pipeline {
         }
 
         // ─────────────────────────────────────────────
-        stage('Docker — Build Images') {
+        stage('Docker — Build & Push Images') {
         // ─────────────────────────────────────────────
             steps {
-                sh 'docker-compose build'
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-credentials',
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
+                    sh '''
+                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                        docker-compose build
+                        docker tag tiwizi-backend $DOCKER_USER/tiwizi-backend:latest
+                        docker tag tiwizi-frontend $DOCKER_USER/tiwizi-frontend:latest
+                        docker push $DOCKER_USER/tiwizi-backend:latest
+                        docker push $DOCKER_USER/tiwizi-frontend:latest
+                        docker logout
+                    '''
+                }
             }
         }
     }
