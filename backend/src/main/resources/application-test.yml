@@ -35,6 +35,16 @@ okta:
     client-secret: test-client-secret
     audience: api://default
 
+jwt:
+  secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+  expiration: 86400000
+  refresh-expiration: 604800000
+
+app:
+  oauth2:
+    frontend-redirect-url: http://localhost:4200/oauth2/redirect
+    frontend-error-url: http://localhost:4200/oauth2/error
+
 logging:
   level:
     com.tiwizi: INFO

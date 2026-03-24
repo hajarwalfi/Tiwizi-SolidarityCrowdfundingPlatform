@@ -6,6 +6,7 @@ import com.tiwizi.entity.Campaign;
 import com.tiwizi.entity.User;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -29,11 +30,23 @@ public class CampaignMapper {
                 .location(campaign.getLocation())
                 .deadline(campaign.getDeadline())
                 .isUrgent(campaign.getIsUrgent())
+                .creatorId(campaign.getCreator() != null ? campaign.getCreator().getId() : null)
                 .creatorName(getUserName(campaign.getCreator()))
                 .creatorProfilePicture(campaign.getCreator() != null ? campaign.getCreator().getProfilePictureUrl() : null)
                 .createdAt(campaign.getCreatedAt())
                 .progressPercentage(campaign.getProgressPercentage())
                 .donorCount(campaign.getDonationCount())
+                .photoUrls(campaign.getDocuments().stream()
+                        .filter(doc -> "COVER_IMAGE".equalsIgnoreCase(doc.getDocumentType())
+                                    || "CAMPAIGN_IMAGE".equalsIgnoreCase(doc.getDocumentType()))
+                        .sorted((a, b) -> {
+                            // COVER_IMAGE first
+                            if ("COVER_IMAGE".equalsIgnoreCase(a.getDocumentType())) return -1;
+                            if ("COVER_IMAGE".equalsIgnoreCase(b.getDocumentType())) return 1;
+                            return 0;
+                        })
+                        .map(doc -> doc.getFileUrl())
+                        .collect(Collectors.toList()))
                 .build();
     }
 
@@ -60,6 +73,7 @@ public class CampaignMapper {
                 .instagram(campaign.getInstagram())
                 .twitter(campaign.getTwitter())
                 .website(campaign.getWebsite())
+                .creatorId(campaign.getCreator() != null ? campaign.getCreator().getId() : null)
                 .creatorName(getUserName(campaign.getCreator()))
                 .creatorProfilePicture(campaign.getCreator() != null ? campaign.getCreator().getProfilePictureUrl() : null)
                 .createdAt(campaign.getCreatedAt())

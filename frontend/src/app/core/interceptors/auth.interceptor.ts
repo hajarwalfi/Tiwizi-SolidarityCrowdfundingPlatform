@@ -1,7 +1,8 @@
 import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
-import { environment } from '../../../environments/environment.development';
+import { environment } from '../../../environments/environment';
 import { TokenUtility } from '../utils/token.utility';
 
 const TOKEN_KEY = 'auth_token';
@@ -14,6 +15,7 @@ const EXPECTED_401_ENDPOINTS = [
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const tokenUtility = inject(TokenUtility);
+  const router = inject(Router);
 
   // Only intercept requests to our API
   if (req.url.startsWith(environment.apiUrl)) {
@@ -27,10 +29,10 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
       });
       return next(authReq).pipe(
         catchError((error: HttpErrorResponse) => {
-          // Suppress console errors for expected auth errors (401, 404)
-          if ((error.status === 401 || error.status === 404) && isExpected401Endpoint(req.url)) {
-            // This is expected - user not authenticated or endpoint requires auth
-            return throwError(() => error);
+          if (error.status === 403 && error.error?.error === 'ACCOUNT_BANNED') {
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('refresh_token');
+            router.navigate(['/login'], { queryParams: { banned: true } });
           }
           return throwError(() => error);
         })

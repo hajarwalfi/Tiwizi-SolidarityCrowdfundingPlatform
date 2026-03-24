@@ -11,6 +11,8 @@ import com.tiwizi.entity.Campaign;
 import com.tiwizi.entity.CampaignUpdate;
 import com.tiwizi.enums.CampaignCategory;
 import com.tiwizi.exception.ResourceNotFoundException;
+import com.tiwizi.exception.UnauthorizedAccessException;
+import com.tiwizi.enums.CampaignStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -63,6 +65,10 @@ public class CampaignService {
 
         Campaign campaign = campaignRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Campaign not found with id: " + id));
+
+        if (campaign.getStatus() == CampaignStatus.SUSPENDED) {
+            throw new UnauthorizedAccessException("This campaign has been suspended pending review.");
+        }
 
         return campaignMapper.toDetailResponse(campaign);
     }

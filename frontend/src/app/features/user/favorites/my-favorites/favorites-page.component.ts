@@ -48,7 +48,6 @@ export class FavoritesPageComponent implements OnInit {
 
     this.favoriteService.getMyFavorites().subscribe({
       next: (data) => {
-        console.log(`Loaded ${data.length} favorites`);
         this.favorites.set(data);
         this.isLoading.set(false);
       },
@@ -63,7 +62,6 @@ export class FavoritesPageComponent implements OnInit {
   removeFavorite(campaignId: string): void {
     this.favoriteService.removeFavorite(campaignId).subscribe({
       next: () => {
-        console.log(`Removed favorite: ${campaignId}`);
         this.favorites.set(this.favorites().filter((f) => f.campaign.id !== campaignId));
       },
       error: (err) => {

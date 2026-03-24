@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Builder
@@ -26,9 +27,11 @@ public class CampaignResponse {
     private String location;
     private LocalDate deadline;
     private Boolean isUrgent;
+    private String creatorId;
     private String creatorName;
     private String creatorProfilePicture;
     private LocalDateTime createdAt;
     private double progressPercentage;
     private int donorCount;
+    private List<String> photoUrls;
 }

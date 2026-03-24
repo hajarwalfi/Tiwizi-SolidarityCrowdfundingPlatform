@@ -29,6 +29,7 @@ export class CampaignDetailsPageComponent implements OnInit {
   isLoading = signal<boolean>(true);
   isLoadingUpdates = signal<boolean>(false);
   error = signal<string | null>(null);
+  isSuspended = signal<boolean>(false);
   isDonationModalOpen = signal<boolean>(false);
   isReportModalOpen = signal<boolean>(false);
   isShareModalOpen = signal<boolean>(false);
@@ -62,8 +63,12 @@ export class CampaignDetailsPageComponent implements OnInit {
         this.isLoading.set(false);
         this.loadUpdates(id);
       },
-      error: () => {
-        this.error.set('Unable to load the details of this campaign.');
+      error: (err) => {
+        if (err?.status === 403) {
+          this.isSuspended.set(true);
+        } else {
+          this.error.set('Unable to load the details of this campaign.');
+        }
         this.isLoading.set(false);
       },
     });

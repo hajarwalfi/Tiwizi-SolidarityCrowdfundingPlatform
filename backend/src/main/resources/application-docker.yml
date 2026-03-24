@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+
+app:
+  oauth2:
+    frontend-redirect-url: ${FRONTEND_URL:http://localhost:4300}/oauth2/redirect
+    frontend-error-url: ${FRONTEND_URL:http://localhost:4300}/oauth2/error
+
+stripe:
+  success-url: ${FRONTEND_URL:http://localhost:4300}/donation/success
+  cancel-url: ${FRONTEND_URL:http://localhost:4300}/donation/cancel

@@ -1,51 +1,81 @@
 version: '3.8'
 
 services:
-  # PostgreSQL Database
+  # ── PostgreSQL ──────────────────────────────────────────────────────────────
   postgres:
     image: postgres:15-alpine
-    container_name: Tiwizi-database
+    container_name: tiwizi-database
     environment:
-      POSTGRES_DB: Tiwizi
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: BLISSFUL
+      POSTGRES_DB:       ${POSTGRES_DB:-Tiwizi}
+      POSTGRES_USER:     ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-BLISSFUL}
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  # Spring Boot Backend
+  # ── Spring Boot Backend ─────────────────────────────────────────────────────
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
     container_name: tiwizi-backend
     ports:
-      - "8080:8080"
+      - "8081:8080"
     environment:
-      SPRING_PROFILES_ACTIVE: dev
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/Tiwizi
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_PROFILES_ACTIVE: docker
+      # Override datasource to use the postgres container hostname
+      SPRING_DATASOURCE_URL:      jdbc:postgresql://postgres:5432/${POSTGRES_DB:-Tiwizi}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-postgres}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-BLISSFUL}
+      # Stripe & Cloudinary — base application.yml reads these from env vars
+      STRIPE_SECRET_KEY:       ${STRIPE_SECRET_KEY}
+      STRIPE_WEBHOOK_SECRET:   ${STRIPE_WEBHOOK_SECRET}
+      CLOUDINARY_CLOUD_NAME:   ${CLOUDINARY_CLOUD_NAME}
+      CLOUDINARY_API_KEY:      ${CLOUDINARY_API_KEY}
+      CLOUDINARY_API_SECRET:   ${CLOUDINARY_API_SECRET}
+      FRONTEND_URL:            ${FRONTEND_URL:-http://localhost:4300}
+      APP_CORS_ALLOWED_ORIGINS: http://localhost:4200,http://localhost:4300,http://192.168.0.102:4200,http://192.168.0.102:4300
+      SERVER_FORWARD_HEADERS_STRATEGY: FRAMEWORK
+      # JWT & Google OAuth are hardcoded in application-dev.yml — no override needed
     depends_on:
       postgres:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      start_period: 60s
+      retries: 3
 
-  # Angular Frontend
+  # ── Angular Frontend (Nginx) ────────────────────────────────────────────────
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: tiwizi-frontend
     ports:
-      - "4200:4200"
+      - "4300:80"
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
+
+  # ── pgAdmin (browser-based DB GUI) ─────────────────────────────────────────
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: tiwizi-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL:    admin@tiwizi.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
 
 volumes:
   postgres_data:

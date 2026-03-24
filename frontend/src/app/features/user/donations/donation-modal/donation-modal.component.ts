@@ -134,19 +134,16 @@ export class DonationModalComponent implements OnDestroy {
         paymentMethod: this.donationForm.value.paymentMethod,
       };
 
-      console.log('Creating donation...', donationData);
       const donation = await this.donationService.createDonation(donationData).toPromise();
 
       if (!donation) {
         throw new Error('Failed to create donation');
       }
 
-      console.log('✅ Donation created:', donation);
       this.donationId = donation.id;
 
       // Check if the backend auto-confirmed via saved card
       if ((donation as any).paidWithSavedCard) {
-        console.log('✅ Payment auto-confirmed with saved card!');
         this.isSubmitting.set(false);
         this.successMessage.set(
           'Payment completed with your saved card! Thank you for your generosity.',
@@ -158,19 +155,15 @@ export class DonationModalComponent implements OnDestroy {
         return;
       }
 
-      console.log('Transaction ID from backend:', (donation as any).transactionId);
-
       // Step 2: Mount Stripe card element with client secret
       this.isProcessingPayment.set(true);
       this.clientSecret = (donation as any).transactionId; // This is the Payment Intent client secret
 
       if (!this.clientSecret) {
-        console.error('No client secret received from backend!');
         throw new Error('No client secret received from backend');
       }
 
       if (!this.clientSecret.startsWith('pi_')) {
-        console.error('Invalid client secret format:', this.clientSecret);
         throw new Error('Invalid payment intent format: ' + this.clientSecret);
       }
 
@@ -191,12 +184,10 @@ export class DonationModalComponent implements OnDestroy {
       try {
         this.cardElement = await this.stripeService.createCardElement(this.clientSecret);
       } catch (stripeErr: any) {
-        console.error('Stripe initialization error:', stripeErr);
         throw new Error('Stripe initialization error: ' + stripeErr.message);
       }
 
       this.cardElement!.mount(mountTarget);
-      console.log('✅ Card element mounted - waiting for user input');
       this.isCardReady.set(true);
       this.isSubmitting.set(false);
     } catch (err: any) {
@@ -273,28 +264,16 @@ export class DonationModalComponent implements OnDestroy {
         try {
           const piId = this.clientSecret!.split('_secret_')[0];
           await this.paymentApiService.enableFutureUsage(piId).toPromise();
-          console.log('✅ PaymentIntent configured for future usage');
-        } catch (fuErr) {
-          console.warn('⚠️ Could not configure future usage (non-blocking):', fuErr);
-        }
+        } catch { /* non-blocking */ }
       }
 
-      console.log('Confirming payment with Stripe...');
       const paymentIntent = await this.stripeService.confirmPayment(this.clientSecret);
-
-      console.log('✅ Payment confirmed:', paymentIntent);
 
       // Verify payment on backend to update donation status to SUCCESS
       if (paymentIntent?.id) {
         try {
           await this.paymentApiService.verifyPayment(paymentIntent.id).toPromise();
-          console.log('✅ Backend donation status updated');
-        } catch (verifyErr) {
-          console.warn(
-            '⚠️ Backend verify call failed (donation may stay PENDING until webhook):',
-            verifyErr,
-          );
-        }
+        } catch { /* webhook will handle it */ }
       }
 
       // Show success

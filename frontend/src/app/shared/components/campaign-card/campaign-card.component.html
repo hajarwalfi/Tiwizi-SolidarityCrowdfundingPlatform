@@ -4,24 +4,38 @@
   [style.animation]="'fadeInUp 0.4s ease-out ' + animationDelay + 'ms both'"
 >
 
-  <!-- ── Full-card media area (swap gradient for <img>/<video> later) ── -->
-  <div class="relative h-[330px]">
+  <!-- ── Full-card media area ── -->
+  <div
+    class="relative h-[330px] overflow-hidden"
+    (touchstart)="onTouchStart($event)"
+    (touchend)="onTouchEnd($event)"
+  >
 
-    <!-- Gradient placeholder -->
-    <div class="absolute inset-0" [style.background]="categoryGradient"></div>
+    <!-- Images carousel -->
+    @if (hasImages) {
+      <div class="absolute inset-0 overflow-hidden">
+        <div class="flex h-full transition-transform duration-300 ease-out" [style.transform]="'translateX(-' + currentSlide * 100 + '%)'">
+          @for (url of slides; track url) {
+            <div class="min-w-full h-full shrink-0">
+              <img [src]="url" class="w-full h-full object-cover" loading="lazy" />
+            </div>
+          }
+        </div>
+      </div>
+    } @else {
+      <!-- Gradient placeholder when no photos -->
+      <div class="absolute inset-0" [style.background]="categoryGradient"></div>
+    }
 
-    <!-- Status / Urgent badge — top left -->
-    <div class="absolute top-3 left-3 z-10">
-      <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-black/50 backdrop-blur-sm rounded-full text-white text-[11px] font-semibold shadow-sm">
-        @if (campaign.isUrgent) {
+    <!-- Urgent badge — top left (only shown when urgent) -->
+    @if (campaign.isUrgent) {
+      <div class="absolute top-3 left-3 z-10">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-black/50 backdrop-blur-sm rounded-full text-white text-[11px] font-semibold shadow-sm">
           <span class="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse shrink-0"></span>
           Urgent
-        } @else {
-          <span class="w-1.5 h-1.5 rounded-full bg-white/60 shrink-0"></span>
-          {{ statusLabel }}
-        }
-      </span>
-    </div>
+        </span>
+      </div>
+    }
 
     <!-- Favorite button — top right -->
     @if (showFavorite) {
@@ -30,16 +44,37 @@
       </div>
     }
 
-    <!-- Carousel dots — just above the text overlay -->
-    <div class="absolute bottom-[88px] left-0 right-0 flex justify-center gap-1.5 pointer-events-none z-10">
-      <span class="w-1.5 h-1.5 rounded-full bg-white shadow-sm"></span>
-      <span class="w-1.5 h-1.5 rounded-full bg-white/40 border border-white/70"></span>
-      <span class="w-1.5 h-1.5 rounded-full bg-white/40 border border-white/70"></span>
-      <span class="w-1.5 h-1.5 rounded-full bg-white/40 border border-white/70"></span>
-    </div>
+    <!-- Prev / Next arrows — only when multiple images -->
+    @if (slides.length > 1) {
+      <button
+        (click)="prev($event)"
+        class="absolute left-2 top-1/2 -translate-y-1/2 z-10 w-7 h-7 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity"
+      >
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+      <button
+        (click)="next($event)"
+        class="absolute right-2 top-1/2 -translate-y-1/2 z-10 w-7 h-7 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity"
+      >
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+      </button>
+    }
+
+    <!-- Carousel dots -->
+    @if (slides.length > 1) {
+      <div class="absolute bottom-[88px] left-0 right-0 flex justify-center gap-1.5 z-10">
+        @for (slide of slides; track $index) {
+          <button
+            (click)="goTo($index, $event)"
+            class="w-1.5 h-1.5 rounded-full transition-all"
+            [class]="$index === currentSlide ? 'bg-white shadow-sm scale-125' : 'bg-white/40 border border-white/70'"
+          ></button>
+        }
+      </div>
+    }
 
     <!-- Dark gradient overlay — title + separator + info row -->
-    <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/85 via-black/60 to-transparent pt-10 z-10">
+    <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/70 to-transparent pt-14 z-10">
 
       <!-- Title + goal -->
       <div class="flex items-start justify-between gap-3 px-4 pt-1 pb-0">

@@ -64,6 +64,10 @@ export class PublicProfilePageComponent implements OnInit {
     });
   }
 
+  isBanned(): boolean {
+    return this.profile()?.isBanned === true;
+  }
+
   getDisplayName(p: PublicUserProfileResponse): string {
     return p.displayName || p.fullName || p.firstName || 'Unknown';
   }

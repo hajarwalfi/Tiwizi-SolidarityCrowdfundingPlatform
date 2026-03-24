@@ -2,8 +2,25 @@ spring:
   application:
     name: Tiwizi
 
+  datasource:
+    url: jdbc:postgresql://localhost:5432/Tiwizi
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: BLISSFUL
+
   jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
     open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-master.yml
 
   jackson:
     serialization:
@@ -14,29 +31,63 @@ spring:
       max-file-size: 10MB
       max-request-size: 10MB
 
-  profiles:
-    active: local
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 236784399461-dqnrvs5vslpre61i0si0k2082htosu1f.apps.googleusercontent.com
+            client-secret: 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
+            scope:
+              - openid
+              - profile
+              - email
 
 server:
   port: 8080
+  forward-headers-strategy: framework
   error:
     include-message: always
 
-logging:
-  level:
-    "[com.tiwizi]": DEBUG
-    "[org.springframework]": INFO
+# JWT Configuration
+jwt:
+  secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+  expiration: 86400000       # 24 hours
+  refresh-expiration: 604800000  # 7 days
+
+# Application Configuration
+app:
+  oauth2:
+    frontend-redirect-url: http://localhost:4200/oauth2/redirect
+    frontend-error-url: http://localhost:4200/oauth2/error
 
 # Stripe Payment Configuration
 stripe:
-  api-key: ${STRIPE_SECRET_KEY:sk_test_your_key_here}
+  api-key: ${STRIPE_SECRET_KEY:sk_test_51RiBptB0527abtPhojvpHkDT4yPnourNOhxGXbGXoYyLlmSfRiiR0uSwTfgG4AJC4M9MRTTYsRKyIhYEftgmpRHb00rP7NTiwC}
   webhook-secret: ${STRIPE_WEBHOOK_SECRET:whsec_your_webhook_secret_here}
-  currency: mad # Moroccan Dirham
-  success-url: ${FRONTEND_URL:http://localhost:4200}/donation/success
-  cancel-url: ${FRONTEND_URL:http://localhost:4200}/donation/cancel
+  currency: mad
+  success-url: http://localhost:4200/donation/success
+  cancel-url: http://localhost:4200/donation/cancel
 
 # Cloudinary Configuration
 cloudinary:
-  cloud-name: ${CLOUDINARY_CLOUD_NAME:your_cloud_name}
-  api-key: ${CLOUDINARY_API_KEY:your_api_key}
-  api-secret: ${CLOUDINARY_API_SECRET:your_api_secret}
+  cloud-name: ${CLOUDINARY_CLOUD_NAME:diodggw0z}
+  api-key: ${CLOUDINARY_API_KEY:943318339539811}
+  api-secret: ${CLOUDINARY_API_SECRET:FBHnqEvrRhrf5B842_vLYxczzjs}
+
+logging:
+  level:
+    com.tiwizi: DEBUG
+    org.springframework.web: DEBUG
+    org.hibernate.SQL: DEBUG
+    liquibase: INFO
+  file:
+    name: logs/tiwizi.log
+    path: logs
+  pattern:
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  logback:
+    rollingpolicy:
+      max-file-size: 10MB
+      max-history: 30
+      total-size-cap: 1GB

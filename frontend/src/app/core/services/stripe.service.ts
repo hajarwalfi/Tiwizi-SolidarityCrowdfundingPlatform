@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { loadStripe, Stripe, StripeElements, StripeCardElement } from '@stripe/stripe-js';
-import { environment } from '../../../environments/environment.development';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -23,10 +23,9 @@ export class StripeService {
   private async initializeStripe(): Promise<Stripe | null> {
     try {
       this.stripe = await loadStripe(environment.stripe.publishableKey);
-      console.log('✅ Stripe initialized successfully');
       return this.stripe;
     } catch (error) {
-      console.error('❌ Failed to initialize Stripe:', error);
+      console.error('Failed to initialize Stripe:', error);
       return null;
     }
   }
@@ -46,7 +45,6 @@ export class StripeService {
     await this.ensureStripeLoaded();
 
     if (!this.stripe) {
-      console.error('Stripe not initialized - publishableKey may be invalid');
       throw new Error('Stripe not initialized. Please check your Stripe publishable key.');
     }
 
@@ -90,7 +88,6 @@ export class StripeService {
     });
 
     if (error) {
-      console.error('Payment confirmation error:', error);
       throw error;
     }
 
@@ -152,7 +149,6 @@ export class StripeService {
     });
 
     if (error) {
-      console.error('Setup confirmation error:', error);
       throw error;
     }
 

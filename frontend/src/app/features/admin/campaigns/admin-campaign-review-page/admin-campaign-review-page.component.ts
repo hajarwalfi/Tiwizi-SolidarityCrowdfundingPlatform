@@ -23,6 +23,18 @@ export class AdminCampaignReviewPageComponent implements OnInit {
   rejectReason = '';
   suspendReason = '';
   docIndex = signal(0);
+  adminDocIndex = signal(0);
+
+  private readonly PUBLIC_DOC_TYPES = ['COVER_IMAGE', 'CAMPAIGN_IMAGE', 'CAMPAIGN_DOC'];
+  private readonly ADMIN_DOC_TYPES = ['ID_CARD', 'RIB_DOC', 'PROOF_DOC'];
+
+  publicDocs() {
+    return (this.campaign()?.documents ?? []).filter(d => this.PUBLIC_DOC_TYPES.includes(d.documentType));
+  }
+
+  adminDocs() {
+    return (this.campaign()?.documents ?? []).filter(d => this.ADMIN_DOC_TYPES.includes(d.documentType));
+  }
 
   prevDoc(): void {
     this.docIndex.update(i => i - 1);
@@ -30,6 +42,14 @@ export class AdminCampaignReviewPageComponent implements OnInit {
 
   nextDoc(total: number): void {
     this.docIndex.update(i => i + 1);
+  }
+
+  prevAdminDoc(): void {
+    this.adminDocIndex.update(i => i - 1);
+  }
+
+  nextAdminDoc(total: number): void {
+    this.adminDocIndex.update(i => i + 1);
   }
 
   constructor(
@@ -107,7 +127,7 @@ export class AdminCampaignReviewPageComponent implements OnInit {
 
   formatDate(date: string | undefined): string {
     if (!date) return '—';
-    return new Intl.DateTimeFormat('fr-FR', { dateStyle: 'medium' }).format(new Date(date));
+    return new Intl.DateTimeFormat('en-GB', { dateStyle: 'medium' }).format(new Date(date));
   }
 
   getStatusColor(status: string): string {

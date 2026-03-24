@@ -34,7 +34,7 @@
           <!-- Identity block -->
           <div class="flex items-center gap-4">
             @if (detail()!.profilePictureUrl) {
-              <img [src]="detail()!.profilePictureUrl" [alt]="detail()!.fullName" class="w-16 h-16 rounded-2xl object-cover shrink-0" />
+              <img [src]="detail()!.profilePictureUrl" [alt]="detail()!.fullName" class="w-16 h-16 rounded-2xl object-cover shrink-0" referrerpolicy="no-referrer" />
             } @else {
               <div
                 class="w-16 h-16 rounded-2xl flex items-center justify-center text-white font-bold text-lg shrink-0 select-none"

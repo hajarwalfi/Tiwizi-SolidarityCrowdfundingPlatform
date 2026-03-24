@@ -1,6 +1,5 @@
 import { Component, Input, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration } from 'chart.js';
 import { UserProfileResponse } from '../../../../core/models/user.model';
@@ -14,7 +13,7 @@ const SLICE_COLORS_HOVER = ['#e84d40', '#84cc16', '#3b82f6', '#f59e0b', '#9333ea
 @Component({
   selector: 'app-profile-card',
   standalone: true,
-  imports: [CommonModule, RouterLink, BaseChartDirective],
+  imports: [CommonModule, BaseChartDirective],
   templateUrl: './profile-card.component.html',
 })
 export class ProfileCardComponent implements OnChanges {

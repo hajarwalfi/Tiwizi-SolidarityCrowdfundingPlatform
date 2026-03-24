@@ -35,6 +35,7 @@ public class CampaignDetailResponse {
     private String instagram;
     private String twitter;
     private String website;
+    private String creatorId;
     private String creatorName;
     private String creatorProfilePicture;
     private LocalDateTime createdAt;

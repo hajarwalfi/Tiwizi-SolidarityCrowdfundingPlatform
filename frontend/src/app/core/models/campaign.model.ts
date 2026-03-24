@@ -63,8 +63,10 @@ export interface Campaign {
   approvedAt?: string;
   closedAt?: string;
   deletedAt?: string;
+  creatorId?: string;
   creatorName: string;
   creatorProfilePicture?: string;
+  photoUrls?: string[];
   progressPercentage: number;
   donorCount?: number;
   documents?: CampaignDocument[];

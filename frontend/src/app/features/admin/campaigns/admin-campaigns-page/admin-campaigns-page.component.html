@@ -115,7 +115,11 @@
                 <p class="text-[11px] text-gray-400 uppercase tracking-wider">{{ campaign.category }}</p>
               </td>
               <td class="px-5 py-4">
-                <p class="text-[13px] font-semibold text-gray-700">{{ campaign.creatorName }}</p>
+                @if (campaign.creatorId) {
+                  <a [routerLink]="['/profile', campaign.creatorId]" class="text-[13px] font-semibold text-gray-700 hover:text-[#FF594B] transition-colors">{{ campaign.creatorName }}</a>
+                } @else {
+                  <p class="text-[13px] font-semibold text-gray-700">{{ campaign.creatorName }}</p>
+                }
               </td>
               <td class="px-5 py-4">
                 <p class="text-[13px] font-semibold text-gray-700">{{ formatAmount(campaign.goalAmount) }} MAD</p>

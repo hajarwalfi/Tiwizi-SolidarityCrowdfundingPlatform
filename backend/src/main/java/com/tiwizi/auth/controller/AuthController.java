@@ -61,6 +61,13 @@ public class AuthController {
                     .body(new MessageResponse("Invalid email or password"));
         }
 
+        if (Boolean.TRUE.equals(user.getIsBanned())) {
+            log.warn("Banned user attempted login: {}", user.getEmail());
+            String reason = user.getBanReason() != null ? user.getBanReason() : "Terms of service violation";
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(new MessageResponse("Your account has been banned. Reason: " + reason));
+        }
+
         user.setLastLoginAt(java.time.LocalDateTime.now());
         userRepository.save(user);
         log.info("User logged in: {}", user.getEmail());
@@ -112,6 +119,11 @@ public class AuthController {
                 !jwtService.isRefreshToken(request.getRefreshToken())) {
                 log.warn("Invalid refresh token for user: {}", username);
                 return ResponseEntity.status(401).build();
+            }
+
+            if (!userDetails.isAccountNonLocked()) {
+                log.warn("Banned user attempted token refresh: {}", username);
+                return ResponseEntity.status(403).build();
             }
 
             log.info("Token refreshed for user: {}", username);

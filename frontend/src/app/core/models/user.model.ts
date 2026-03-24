@@ -78,4 +78,8 @@ export interface PublicUserProfileResponse {
   activeCampaigns: number;
   donationsMade: number;
   topSupportedCategory?: string;
+
+  // Ban status
+  isBanned?: boolean;
+  banReason?: string;
 }

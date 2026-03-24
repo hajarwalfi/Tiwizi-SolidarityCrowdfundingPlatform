@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { tap, catchError, switchMap } from 'rxjs/operators';
-import { environment } from '../../../environments/environment.development';
+import { environment } from '../../../environments/environment';
 import { TokenUtility } from '../utils/token.utility';
 
 export interface UserProfile {
@@ -162,11 +162,9 @@ export class AuthService {
     return this.http.get<UserProfile>(`${environment.apiUrl}/auth/me`).pipe(
       tap((user) => this.currentUserSubject.next(user)),
       catchError((error) => {
-        if (error.status === 401) {
-          // Expected - user not authenticated or token expired
+        if (error.status === 401 || error.status === 403) {
           this.clearAuthState();
         } else {
-          // Unexpected error - log it
           console.error('Unexpected error loading user profile:', error);
         }
         return of(null);

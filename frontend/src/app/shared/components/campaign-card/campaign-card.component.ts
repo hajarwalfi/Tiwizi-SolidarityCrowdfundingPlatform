@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, HostListener } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Campaign, CampaignStatus } from '../../../core/models/campaign.model';
@@ -23,6 +23,46 @@ export class CampaignCardComponent {
   @Input({ required: true }) campaign!: Campaign;
   @Input() showFavorite = true;
   @Input() animationDelay = 0;
+
+  currentSlide = 0;
+  private touchStartX = 0;
+
+  get slides(): string[] {
+    return this.campaign.photoUrls?.length ? this.campaign.photoUrls : [];
+  }
+
+  get hasImages(): boolean {
+    return this.slides.length > 0;
+  }
+
+  prev(event: Event): void {
+    event.stopPropagation();
+    event.preventDefault();
+    this.currentSlide = this.currentSlide === 0 ? this.slides.length - 1 : this.currentSlide - 1;
+  }
+
+  next(event: Event): void {
+    event.stopPropagation();
+    event.preventDefault();
+    this.currentSlide = this.currentSlide === this.slides.length - 1 ? 0 : this.currentSlide + 1;
+  }
+
+  goTo(index: number, event: Event): void {
+    event.stopPropagation();
+    event.preventDefault();
+    this.currentSlide = index;
+  }
+
+  onTouchStart(event: TouchEvent): void {
+    this.touchStartX = event.changedTouches[0].screenX;
+  }
+
+  onTouchEnd(event: TouchEvent): void {
+    const diff = this.touchStartX - event.changedTouches[0].screenX;
+    if (Math.abs(diff) > 40) {
+      diff > 0 ? this.next(event) : this.prev(event);
+    }
+  }
 
   readonly categoryLabels = CAMPAIGN_CATEGORY_LABELS;
 

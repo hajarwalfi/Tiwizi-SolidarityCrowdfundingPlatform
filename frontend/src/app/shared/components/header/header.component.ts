@@ -40,7 +40,7 @@ import { NavbarService } from '../../../core/services/navbar.service';
               <span class="w-7 h-7 rounded-full flex items-center justify-center overflow-hidden"
                     [class]="isHome() ? 'bg-white/20' : 'bg-black/10'">
                 @if (authService.getCurrentUser()?.profilePictureUrl) {
-                  <img [src]="authService.getCurrentUser()!.profilePictureUrl" alt="avatar" class="w-full h-full object-cover rounded-full" />
+                  <img [src]="authService.getCurrentUser()!.profilePictureUrl" alt="avatar" class="w-full h-full object-cover rounded-full" referrerpolicy="no-referrer" />
                 } @else {
                   <svg class="w-4 h-4" [class]="isHome() ? 'text-white' : 'text-gray-600'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>

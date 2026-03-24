@@ -1,11 +1,12 @@
 import { Component, Input, Output, EventEmitter, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { Campaign } from '../../../../../core/models/campaign.model';
 
 @Component({
   selector: 'app-campaign-donation-sidebar',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './campaign-donation-sidebar.component.html',
 })
 export class CampaignDonationSidebarComponent {
@@ -55,12 +56,19 @@ export class CampaignDonationSidebarComponent {
     return colors[hash % colors.length];
   }
 
-  getDaysRemaining(): number {
-    const created = new Date(this.campaign.createdAt);
-    const deadline = new Date(created);
-    deadline.setDate(created.getDate() + 30);
-    const diff = deadline.getTime() - new Date().getTime();
+  getDaysRemaining(): number | null {
+    if (!this.campaign.deadline) return null;
+    const diff = new Date(this.campaign.deadline).getTime() - new Date().getTime();
     const days = Math.ceil(diff / (1000 * 3600 * 24));
     return days > 0 ? days : 0;
+  }
+
+  getDeadlineDate(): string | null {
+    if (!this.campaign.deadline) return null;
+    return new Date(this.campaign.deadline).toLocaleDateString('fr-MA', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    });
   }
 }

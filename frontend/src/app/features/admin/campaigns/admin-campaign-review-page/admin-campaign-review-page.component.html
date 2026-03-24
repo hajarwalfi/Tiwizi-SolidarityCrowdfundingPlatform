@@ -14,122 +14,270 @@
     <div class="text-center py-20 text-red-500 font-medium">{{ error() }}</div>
   } @else if (campaign(); as c) {
 
-    <!-- Page header -->
-    <div class="bg-white rounded-[1.5rem] px-6 py-5 shadow-sm border border-gray-50 flex items-center justify-between gap-4 flex-wrap">
-      <div class="flex-1 min-w-0">
+    <!-- Top row: header + sidebar -->
+    <div class="flex gap-5 items-start">
+
+      <!-- Title + stats card -->
+      <div class="flex-1 min-w-0 bg-white rounded-[1.5rem] px-6 py-5 shadow-sm border border-gray-50 flex flex-col gap-4">
         <h1 class="text-xl font-extrabold text-[#FF594B] leading-snug">{{ c.title }}</h1>
+
+        <!-- Quick stats + creator -->
+        <div class="flex items-center gap-3 flex-wrap">
+          <div class="text-center">
+            <p class="text-[17px] font-extrabold text-[#1c1c1c]">{{ formatAmount(c.goalAmount) }}</p>
+            <p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Goal MAD</p>
+          </div>
+          <div class="w-px h-8 bg-gray-100"></div>
+          <div class="text-center">
+            <p class="text-[17px] font-extrabold text-[#FF594B]">{{ c.progressPercentage | number:'1.0-0' }}%</p>
+            <p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Funded</p>
+          </div>
+          <div class="w-px h-8 bg-gray-100"></div>
+          <div class="text-center">
+            <p class="text-[17px] font-extrabold text-[#1c1c1c]">{{ formatAmount(c.amountCollected) }}</p>
+            <p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Raised MAD</p>
+          </div>
+          <div class="w-px h-8 bg-gray-100"></div>
+          <a [routerLink]="c.creatorId ? ['/profile', c.creatorId] : null"
+             class="flex items-center gap-2.5 rounded-xl transition-colors"
+             [class.hover:bg-gray-50]="!!c.creatorId"
+             [class.cursor-pointer]="!!c.creatorId"
+             [class.cursor-default]="!c.creatorId">
+            @if (c.creatorProfilePicture) {
+              <img [src]="c.creatorProfilePicture" alt="creator" class="w-8 h-8 rounded-full object-cover shrink-0"/>
+            } @else {
+              <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center shrink-0">
+                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg>
+              </div>
+            }
+            <div>
+              <p class="text-[13px] font-extrabold text-[#1c1c1c]" [class.hover:underline]="!!c.creatorId">{{ c.creatorName }}</p>
+              <p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Creator</p>
+            </div>
+          </a>
+        </div>
+
+        <div class="h-px bg-gray-100"></div>
+
+        <!-- Display pictures -->
+        @if (publicDocs().length > 0) {
+          <div class="flex gap-3 flex-wrap">
+            @for (doc of publicDocs(); track doc.id) {
+              <a [href]="doc.fileUrl" target="_blank" rel="noopener noreferrer" class="group shrink-0">
+                @if (isImage(doc.fileUrl)) {
+                  <div class="w-28 h-28 rounded-[1.25rem] overflow-hidden border border-gray-100 shadow-sm group-hover:shadow-md group-hover:scale-[1.02] transition-all">
+                    <img [src]="doc.fileUrl" alt="doc" class="w-full h-full object-cover"/>
+                  </div>
+                } @else {
+                  <div class="w-28 h-28 rounded-[1.25rem] bg-[#FFF1EE] border border-[#FF594B]/10 flex flex-col items-center justify-center gap-1.5 shadow-sm group-hover:shadow-md group-hover:scale-[1.02] transition-all">
+                    <svg class="w-10 h-10 text-[#FF594B]" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/></svg>
+                    <span class="text-[10px] font-extrabold text-[#FF594B] uppercase tracking-widest">{{ doc.documentType }}</span>
+                  </div>
+                }
+              </a>
+            }
+          </div>
+        }
+
+        <div class="h-px bg-gray-100"></div>
+
+        <!-- Description -->
+        <div>
+          <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2">Description</p>
+          <p class="text-[13px] text-gray-700 leading-relaxed whitespace-pre-wrap">{{ c.description }}</p>
+        </div>
+
+        <!-- Confirmation documents -->
+        @if (adminDocs().length > 0) {
+          <div class="h-px bg-gray-100"></div>
+          <div>
+            <div class="flex items-center gap-2 mb-3">
+              <svg class="w-3.5 h-3.5 text-amber-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"/></svg>
+              <p class="text-[11px] font-bold text-amber-600 uppercase tracking-wider">Confirmation documents</p>
+              <span class="text-[10px] font-bold text-amber-600 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">Admin only</span>
+            </div>
+            <div class="flex gap-3 flex-wrap">
+              @for (doc of adminDocs(); track doc.id) {
+                <a [href]="doc.fileUrl" target="_blank" rel="noopener noreferrer" class="group shrink-0">
+                  @if (isImage(doc.fileUrl)) {
+                    <div class="flex flex-col items-center gap-1.5">
+                      <div class="w-28 h-28 rounded-[1.25rem] overflow-hidden border border-amber-100 shadow-sm group-hover:shadow-md group-hover:scale-[1.02] transition-all">
+                        <img [src]="doc.fileUrl" alt="doc" class="w-full h-full object-cover"/>
+                      </div>
+                      <p class="text-[11px] font-semibold text-gray-500">{{ doc.documentType }}</p>
+                    </div>
+                  } @else {
+                    <div class="flex flex-col items-center gap-1.5">
+                      <div class="w-28 h-28 rounded-[1.25rem] bg-amber-50 border border-amber-100 flex flex-col items-center justify-center gap-1.5 shadow-sm group-hover:shadow-md group-hover:scale-[1.02] transition-all">
+                        <svg class="w-10 h-10 text-amber-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/></svg>
+                        <span class="text-[10px] font-extrabold text-amber-600 uppercase tracking-widest">PDF</span>
+                      </div>
+                      <p class="text-[11px] font-semibold text-gray-500">{{ doc.documentType }}</p>
+                    </div>
+                  }
+                </a>
+              }
+            </div>
+          </div>
+        }
       </div>
 
-      <!-- Quick stats + creator -->
-      <div class="flex items-center gap-3 shrink-0">
-        <div class="text-center">
-          <p class="text-[17px] font-extrabold text-[#1c1c1c]">{{ formatAmount(c.goalAmount) }}</p>
-          <p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Goal MAD</p>
-        </div>
-        <div class="w-px h-8 bg-gray-100"></div>
-        <div class="text-center">
-          <p class="text-[17px] font-extrabold text-[#FF594B]">{{ c.progressPercentage | number:'1.0-0' }}%</p>
-          <p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Funded</p>
-        </div>
-        <div class="w-px h-8 bg-gray-100"></div>
-        <div class="text-center">
-          <p class="text-[17px] font-extrabold text-[#1c1c1c]">{{ formatAmount(c.amountCollected) }}</p>
-          <p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Raised MAD</p>
-        </div>
-        <div class="w-px h-8 bg-gray-100"></div>
-        <div class="flex items-center gap-2.5">
-          @if (c.creatorProfilePicture) {
-            <img [src]="c.creatorProfilePicture" alt="creator" class="w-8 h-8 rounded-full object-cover shrink-0"/>
-          } @else {
-            <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center shrink-0">
-              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg>
+      <!-- Sidebar panel: Decision + Details -->
+      <div class="w-[260px] shrink-0">
+        <div class="bg-white rounded-[1.5rem] p-4 shadow-sm border border-gray-50 flex flex-col gap-4">
+
+          <!-- Decision section -->
+          @if (c.status === 'PENDING' || c.status === 'ACTIVE' || c.status === 'SUSPENDED') {
+            <div>
+              <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-3">Decision</p>
+              <div class="flex flex-col gap-2">
+
+                @if (c.status === 'PENDING') {
+                  <button (click)="approve()" [disabled]="isActing()"
+                    class="w-full py-2.5 rounded-[1rem] bg-[#FF594B] text-white text-[13px] font-bold hover:bg-[#e04a3d] disabled:opacity-50 transition-all shadow-md shadow-[#FF594B]/20 active:scale-95">
+                    ✓ Approve
+                  </button>
+                  @if (!showRejectInput()) {
+                    <button (click)="showRejectInput.set(true); showSuspendInput.set(false)" [disabled]="isActing()"
+                      class="w-full py-2.5 rounded-[1rem] bg-gray-50 text-gray-500 border border-gray-100 text-[13px] font-bold hover:bg-gray-100 disabled:opacity-50 transition-all active:scale-95">
+                      ✕ Reject
+                    </button>
+                  } @else {
+                    <div class="flex flex-col gap-2 bg-[#FFF1EE] rounded-[1rem] p-3">
+                      <p class="text-[10px] font-bold text-[#FF594B] uppercase tracking-wider">Reason (optional)</p>
+                      <textarea [(ngModel)]="rejectReason" rows="3" placeholder="Explain…"
+                        class="w-full rounded-xl border border-[#FF594B]/15 bg-white px-2.5 py-2 text-[12px] text-gray-700 resize-none focus:outline-none focus:ring-2 focus:ring-[#FF594B]/20"></textarea>
+                      <div class="flex gap-1.5">
+                        <button (click)="submitReject()" [disabled]="isActing()" class="flex-1 py-1.5 rounded-xl bg-[#FF594B] text-white text-[12px] font-bold hover:bg-[#e04a3d] disabled:opacity-50 transition-colors">Confirm</button>
+                        <button (click)="showRejectInput.set(false)" class="flex-1 py-1.5 rounded-xl bg-white border border-gray-100 text-[12px] font-semibold text-gray-400 hover:bg-gray-50 transition-colors">Cancel</button>
+                      </div>
+                    </div>
+                  }
+                }
+
+                @if (c.status === 'PENDING' || c.status === 'ACTIVE') {
+                  @if (!showSuspendInput()) {
+                    <button (click)="showSuspendInput.set(true); showRejectInput.set(false)" [disabled]="isActing()"
+                      class="w-full py-2.5 rounded-[1rem] bg-orange-50 text-orange-600 border border-orange-100 text-[13px] font-bold hover:bg-orange-100 disabled:opacity-50 transition-all active:scale-95">
+                      ⏸ Suspend
+                    </button>
+                  } @else {
+                    <div class="flex flex-col gap-2 bg-orange-50 rounded-[1rem] p-3">
+                      <p class="text-[10px] font-bold text-orange-600 uppercase tracking-wider">Suspension reason (optional)</p>
+                      <textarea [(ngModel)]="suspendReason" rows="3" placeholder="Explain…"
+                        class="w-full rounded-xl border border-orange-200/50 bg-white px-2.5 py-2 text-[12px] text-gray-700 resize-none focus:outline-none focus:ring-2 focus:ring-orange-200"></textarea>
+                      <div class="flex gap-1.5">
+                        <button (click)="submitSuspend()" [disabled]="isActing()" class="flex-1 py-1.5 rounded-xl bg-orange-500 text-white text-[12px] font-bold hover:bg-orange-600 disabled:opacity-50 transition-colors">Confirm</button>
+                        <button (click)="showSuspendInput.set(false)" class="flex-1 py-1.5 rounded-xl bg-white border border-gray-100 text-[12px] font-semibold text-gray-400 hover:bg-gray-50 transition-colors">Cancel</button>
+                      </div>
+                    </div>
+                  }
+                }
+
+                @if (c.status === 'SUSPENDED') {
+                  <button (click)="unsuspend()" [disabled]="isActing()"
+                    class="w-full py-2.5 rounded-[1rem] bg-green-50 text-green-700 border border-green-100 text-[13px] font-bold hover:bg-green-100 disabled:opacity-50 transition-all active:scale-95">
+                    ▶ Reactivate
+                  </button>
+                }
+
+              </div>
             </div>
           }
+
+          @if (c.status === 'REJECTED') {
+            <div>
+              <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-3">Decision</p>
+              <div class="bg-[#FFF1EE] rounded-[1rem] p-3">
+                <div class="flex items-center gap-1.5 mb-1.5">
+                  <svg class="w-3.5 h-3.5 text-[#FF594B]" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z"/></svg>
+                  <p class="text-[11px] font-bold text-[#FF594B] uppercase tracking-wider">Rejection reason</p>
+                </div>
+                @if (c.rejectionReason) {
+                  <p class="text-[13px] text-gray-700 leading-relaxed break-words">{{ c.rejectionReason }}</p>
+                } @else {
+                  <p class="text-[12px] text-gray-400 italic">No reason was provided.</p>
+                }
+              </div>
+            </div>
+          }
+
+          @if (c.status === 'SUSPENDED') {
+            <div class="bg-orange-50 rounded-[1rem] p-3">
+              <div class="flex items-center gap-1.5 mb-1.5">
+                <svg class="w-3.5 h-3.5 text-orange-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" stroke-linejoin="round" d="M10 9v6M14 9v6"/></svg>
+                <p class="text-[11px] font-bold text-orange-600 uppercase tracking-wider">Suspension reason</p>
+              </div>
+              @if (c.rejectionReason) {
+                <p class="text-[13px] text-gray-700 leading-relaxed break-words">{{ c.rejectionReason }}</p>
+              } @else {
+                <p class="text-[12px] text-gray-400 italic">No reason was provided.</p>
+              }
+            </div>
+          }
+
+          <div class="h-px bg-gray-100"></div>
+
+          <!-- Details -->
           <div>
-            <p class="text-[13px] font-extrabold text-[#1c1c1c]">{{ c.creatorName }}</p>
-            <p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Creator</p>
+            <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-3">Details</p>
+            <div class="flex flex-col gap-2.5">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-1.5">
+                  <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+                  <p class="text-[11px] text-gray-400 font-semibold">Status</p>
+                </div>
+                <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full" [class]="getStatusColor(c.status)">{{ c.status }}</span>
+              </div>
+              <div class="h-px bg-gray-50"></div>
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-1.5">
+                  <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6Z"/></svg>
+                  <p class="text-[11px] text-gray-400 font-semibold">Category</p>
+                </div>
+                <p class="text-[12px] font-bold text-[#1c1c1c]">{{ c.category }}</p>
+              </div>
+              <div class="h-px bg-gray-50"></div>
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-1.5">
+                  <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/></svg>
+                  <p class="text-[11px] text-gray-400 font-semibold">Location</p>
+                </div>
+                <p class="text-[12px] font-bold text-[#1c1c1c]">{{ c.location || '—' }}</p>
+              </div>
+              <div class="h-px bg-gray-50"></div>
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-1.5">
+                  <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5"/></svg>
+                  <p class="text-[11px] text-gray-400 font-semibold">Submitted</p>
+                </div>
+                <p class="text-[12px] font-bold text-[#1c1c1c]">{{ formatDate(c.createdAt) }}</p>
+              </div>
+              <div class="h-px bg-gray-50"></div>
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-1.5">
+                  <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+                  <p class="text-[11px] text-gray-400 font-semibold">Deadline</p>
+                </div>
+                <p class="text-[12px] font-bold text-[#1c1c1c]">{{ formatDate(c.deadline) }}</p>
+              </div>
+              <div class="h-px bg-gray-50"></div>
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-1.5">
+                  <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"/></svg>
+                  <p class="text-[11px] text-gray-400 font-semibold">Urgent</p>
+                </div>
+                <p class="text-[12px] font-bold" [class]="c.isUrgent ? 'text-[#FF594B]' : 'text-gray-400'">{{ c.isUrgent ? 'Yes' : 'No' }}</p>
+              </div>
+            </div>
           </div>
+
         </div>
       </div>
     </div>
 
-    <!-- Body -->
-    <div class="flex gap-5 items-start">
-
-      <!-- Left column -->
-      <div class="flex flex-col gap-4 flex-1 min-w-0">
-
-        <!-- Description -->
-        <div class="bg-white rounded-[1.5rem] px-6 py-5 shadow-sm border border-gray-50">
-          <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-3">Description</p>
-          <p class="text-[13px] text-gray-700 leading-relaxed whitespace-pre-wrap">{{ c.description }}</p>
-        </div>
-
-        <!-- Documents -->
-        <div class="bg-white rounded-[1.5rem] px-6 py-5 shadow-sm border border-gray-50">
-          <div class="flex items-center justify-between mb-4">
-            <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Documents</p>
-            @if (c.documents && c.documents.length > 1) {
-              <span class="text-[11px] font-bold text-gray-400">{{ docIndex() + 1 }} / {{ c.documents.length }}</span>
-            }
-          </div>
-
-          @if (!c.documents || c.documents.length === 0) {
-            <div class="flex flex-col items-center justify-center py-6 gap-2">
-              <div class="w-10 h-10 rounded-[1rem] bg-gray-50 flex items-center justify-center">
-                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/></svg>
-              </div>
-              <p class="text-[13px] font-semibold text-gray-400">No documents attached</p>
-            </div>
-          } @else {
-            <div class="flex flex-col items-center gap-4">
-              @for (doc of c.documents; track doc.id; let i = $index) {
-                @if (i === docIndex()) {
-                  <div class="flex flex-col items-center gap-2">
-                    <a [href]="doc.fileUrl" target="_blank" rel="noopener noreferrer" class="group relative block">
-                      @if (isImage(doc.fileUrl)) {
-                        <div class="w-24 h-24 rounded-[1.25rem] overflow-hidden border border-gray-100 shadow-sm group-hover:shadow-md group-hover:scale-[1.02] transition-all">
-                          <img [src]="doc.fileUrl" alt="doc" class="w-full h-full object-cover"/>
-                        </div>
-                      } @else if (isPdf(doc.fileUrl)) {
-                        <div class="w-24 h-24 rounded-[1.25rem] bg-[#FFF1EE] border border-[#FF594B]/10 flex flex-col items-center justify-center gap-1.5 shadow-sm group-hover:shadow-md group-hover:scale-[1.02] transition-all">
-                          <svg class="w-8 h-8 text-[#FF594B]" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/></svg>
-                          <span class="text-[10px] font-extrabold text-[#FF594B] uppercase tracking-widest">PDF</span>
-                        </div>
-                      } @else {
-                        <div class="w-24 h-24 rounded-[1.25rem] bg-gray-50 border border-gray-100 flex flex-col items-center justify-center gap-1.5 shadow-sm group-hover:shadow-md group-hover:scale-[1.02] transition-all">
-                          <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18.375 12.739l-7.693 7.693a4.5 4.5 0 0 1-6.364-6.364l10.94-10.94A3 3 0 1 1 19.5 7.372L8.552 18.32"/></svg>
-                          <span class="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">FILE</span>
-                        </div>
-                      }
-                    </a>
-                    <div class="text-center">
-                      <p class="text-[12px] font-bold text-[#1c1c1c]">{{ doc.documentType }}</p>
-                      <a [href]="doc.fileUrl" target="_blank" rel="noopener noreferrer" class="text-[11px] text-[#FF594B] hover:underline font-semibold">Open ↗</a>
-                    </div>
-                  </div>
-                }
-              }
-
-              @if (c.documents.length > 1) {
-                <div class="flex items-center gap-3">
-                  <button (click)="prevDoc()" [disabled]="docIndex() === 0"
-                    class="w-7 h-7 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-400 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-all">
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
-                  </button>
-                  @for (doc of c.documents; track doc.id; let i = $index) {
-                    <button (click)="docIndex.set(i)" class="rounded-full transition-all duration-200"
-                      [class]="i === docIndex() ? 'w-4 h-1.5 bg-[#FF594B]' : 'w-1.5 h-1.5 bg-gray-200 hover:bg-gray-300'"></button>
-                  }
-                  <button (click)="nextDoc(c.documents.length)" [disabled]="docIndex() === c.documents.length - 1"
-                    class="w-7 h-7 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-400 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-all">
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
-                  </button>
-                </div>
-              }
-            </div>
-          }
-        </div>
+    <!-- Body (full width) -->
+    <div class="flex flex-col gap-4">
 
         <!-- Updates (hidden for rejected campaigns) -->
         @if (c.updates && c.updates.length > 0 && c.status !== 'REJECTED') {
@@ -155,159 +303,6 @@
           </div>
         }
 
-      </div>
-
-      <!-- Right sidebar -->
-      <div class="w-[230px] shrink-0 flex flex-col gap-4">
-
-        <!-- Decision -->
-        @if (c.status === 'PENDING' || c.status === 'ACTIVE' || c.status === 'SUSPENDED') {
-          <div class="bg-white rounded-[1.5rem] p-4 shadow-sm border border-gray-50">
-            <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-3">Decision</p>
-            <div class="flex flex-col gap-2">
-
-              <!-- PENDING actions -->
-              @if (c.status === 'PENDING') {
-                <button (click)="approve()" [disabled]="isActing()"
-                  class="w-full py-2.5 rounded-[1rem] bg-[#FF594B] text-white text-[13px] font-bold hover:bg-[#e04a3d] disabled:opacity-50 transition-all shadow-md shadow-[#FF594B]/20 active:scale-95">
-                  ✓ Approve
-                </button>
-                @if (!showRejectInput()) {
-                  <button (click)="showRejectInput.set(true); showSuspendInput.set(false)" [disabled]="isActing()"
-                    class="w-full py-2.5 rounded-[1rem] bg-gray-50 text-gray-500 border border-gray-100 text-[13px] font-bold hover:bg-gray-100 disabled:opacity-50 transition-all active:scale-95">
-                    ✕ Reject
-                  </button>
-                } @else {
-                  <div class="flex flex-col gap-2 bg-[#FFF1EE] rounded-[1rem] p-3">
-                    <p class="text-[10px] font-bold text-[#FF594B] uppercase tracking-wider">Reason (optional)</p>
-                    <textarea [(ngModel)]="rejectReason" rows="3" placeholder="Explain…"
-                      class="w-full rounded-xl border border-[#FF594B]/15 bg-white px-2.5 py-2 text-[12px] text-gray-700 resize-none focus:outline-none focus:ring-2 focus:ring-[#FF594B]/20"></textarea>
-                    <div class="flex gap-1.5">
-                      <button (click)="submitReject()" [disabled]="isActing()" class="flex-1 py-1.5 rounded-xl bg-[#FF594B] text-white text-[12px] font-bold hover:bg-[#e04a3d] disabled:opacity-50 transition-colors">Confirm</button>
-                      <button (click)="showRejectInput.set(false)" class="flex-1 py-1.5 rounded-xl bg-white border border-gray-100 text-[12px] font-semibold text-gray-400 hover:bg-gray-50 transition-colors">Cancel</button>
-                    </div>
-                  </div>
-                }
-              }
-
-              <!-- Suspend (available for PENDING and ACTIVE) -->
-              @if (c.status === 'PENDING' || c.status === 'ACTIVE') {
-                @if (!showSuspendInput()) {
-                  <button (click)="showSuspendInput.set(true); showRejectInput.set(false)" [disabled]="isActing()"
-                    class="w-full py-2.5 rounded-[1rem] bg-orange-50 text-orange-600 border border-orange-100 text-[13px] font-bold hover:bg-orange-100 disabled:opacity-50 transition-all active:scale-95">
-                    ⏸ Suspend
-                  </button>
-                } @else {
-                  <div class="flex flex-col gap-2 bg-orange-50 rounded-[1rem] p-3">
-                    <p class="text-[10px] font-bold text-orange-600 uppercase tracking-wider">Suspension reason (optional)</p>
-                    <textarea [(ngModel)]="suspendReason" rows="3" placeholder="Explain…"
-                      class="w-full rounded-xl border border-orange-200/50 bg-white px-2.5 py-2 text-[12px] text-gray-700 resize-none focus:outline-none focus:ring-2 focus:ring-orange-200"></textarea>
-                    <div class="flex gap-1.5">
-                      <button (click)="submitSuspend()" [disabled]="isActing()" class="flex-1 py-1.5 rounded-xl bg-orange-500 text-white text-[12px] font-bold hover:bg-orange-600 disabled:opacity-50 transition-colors">Confirm</button>
-                      <button (click)="showSuspendInput.set(false)" class="flex-1 py-1.5 rounded-xl bg-white border border-gray-100 text-[12px] font-semibold text-gray-400 hover:bg-gray-50 transition-colors">Cancel</button>
-                    </div>
-                  </div>
-                }
-              }
-
-              <!-- Unsuspend (available for SUSPENDED) -->
-              @if (c.status === 'SUSPENDED') {
-                <button (click)="unsuspend()" [disabled]="isActing()"
-                  class="w-full py-2.5 rounded-[1rem] bg-green-50 text-green-700 border border-green-100 text-[13px] font-bold hover:bg-green-100 disabled:opacity-50 transition-all active:scale-95">
-                  ▶ Reactivate
-                </button>
-              }
-
-            </div>
-          </div>
-        }
-
-        <!-- Rejection reason card -->
-        @if (c.status === 'REJECTED') {
-          <div class="bg-[#FFF1EE] rounded-[1.5rem] p-4 border border-[#FF594B]/10">
-            <div class="flex items-center gap-1.5 mb-2">
-              <svg class="w-3.5 h-3.5 text-[#FF594B]" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z"/></svg>
-              <p class="text-[11px] font-bold text-[#FF594B] uppercase tracking-wider">Rejection reason</p>
-            </div>
-            @if (c.rejectionReason) {
-              <p class="text-[13px] text-gray-700 leading-relaxed break-words">{{ c.rejectionReason }}</p>
-            } @else {
-              <p class="text-[12px] text-gray-400 italic">No reason was provided.</p>
-            }
-          </div>
-        }
-
-        <!-- Suspension reason card -->
-        @if (c.status === 'SUSPENDED') {
-          <div class="bg-orange-50 rounded-[1.5rem] p-4 border border-orange-100">
-            <div class="flex items-center gap-1.5 mb-2">
-              <svg class="w-3.5 h-3.5 text-orange-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" stroke-linejoin="round" d="M10 9v6M14 9v6"/></svg>
-              <p class="text-[11px] font-bold text-orange-600 uppercase tracking-wider">Suspension reason</p>
-            </div>
-            @if (c.rejectionReason) {
-              <p class="text-[13px] text-gray-700 leading-relaxed break-words">{{ c.rejectionReason }}</p>
-            } @else {
-              <p class="text-[12px] text-gray-400 italic">No reason was provided.</p>
-            }
-          </div>
-        }
-
-        <!-- Details -->
-        <div class="bg-white rounded-[1.5rem] p-4 shadow-sm border border-gray-50">
-          <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-3">Details</p>
-          <div class="flex flex-col gap-2.5">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-1.5">
-                <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
-                <p class="text-[11px] text-gray-400 font-semibold">Status</p>
-              </div>
-              <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full" [class]="getStatusColor(c.status)">{{ c.status }}</span>
-            </div>
-            <div class="h-px bg-gray-50"></div>
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-1.5">
-                <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6Z"/></svg>
-                <p class="text-[11px] text-gray-400 font-semibold">Category</p>
-              </div>
-              <p class="text-[12px] font-bold text-[#1c1c1c]">{{ c.category }}</p>
-            </div>
-            <div class="h-px bg-gray-50"></div>
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-1.5">
-                <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/></svg>
-                <p class="text-[11px] text-gray-400 font-semibold">Location</p>
-              </div>
-              <p class="text-[12px] font-bold text-[#1c1c1c]">{{ c.location || '—' }}</p>
-            </div>
-            <div class="h-px bg-gray-50"></div>
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-1.5">
-                <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5"/></svg>
-                <p class="text-[11px] text-gray-400 font-semibold">Submitted</p>
-              </div>
-              <p class="text-[12px] font-bold text-[#1c1c1c]">{{ formatDate(c.createdAt) }}</p>
-            </div>
-            <div class="h-px bg-gray-50"></div>
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-1.5">
-                <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
-                <p class="text-[11px] text-gray-400 font-semibold">Deadline</p>
-              </div>
-              <p class="text-[12px] font-bold text-[#1c1c1c]">{{ formatDate(c.deadline) }}</p>
-            </div>
-            <div class="h-px bg-gray-50"></div>
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-1.5">
-                <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"/></svg>
-                <p class="text-[11px] text-gray-400 font-semibold">Urgent</p>
-              </div>
-              <p class="text-[12px] font-bold" [class]="c.isUrgent ? 'text-[#FF594B]' : 'text-gray-400'">{{ c.isUrgent ? 'Yes' : 'No' }}</p>
-            </div>
-          </div>
-        </div>
-
-
-      </div>
     </div>
   }
 </div>

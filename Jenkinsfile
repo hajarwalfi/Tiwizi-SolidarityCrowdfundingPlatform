@@ -1,50 +1,105 @@
 pipeline {
     agent any
 
+    tools {
+        jdk    'JDK-17'
+        maven  'Maven-3.9'
+        nodejs 'NodeJS-22'
+    }
+
     stages {
+
+        // ─────────────────────────────────────────────
         stage('Checkout') {
+        // ─────────────────────────────────────────────
             steps {
                 checkout scm
             }
         }
 
-        stage('Backend Tests') {
+        // ─────────────────────────────────────────────
+        stage('Backend — Tests + Coverage') {
+        // ─────────────────────────────────────────────
             steps {
                 dir('backend') {
-                    bat 'mvn clean test'
+                    sh 'mvn test -B -Dspring.profiles.active=test'
+                }
+            }
+            post {
+                always {
+                    // Publish JUnit test results
+                    junit 'backend/target/surefire-reports/*.xml'
+                    // Publish JaCoCo coverage report
+                    jacoco(
+                        execPattern:    'backend/target/jacoco.exec',
+                        classPattern:   'backend/target/classes',
+                        sourcePattern:  'backend/src/main/java',
+                        reportPattern:  'backend/target/site/jacoco'
+                    )
                 }
             }
         }
 
-        stage('Frontend Tests') {
+        // ─────────────────────────────────────────────
+        stage('Backend — Build JAR') {
+        // ─────────────────────────────────────────────
+            steps {
+                dir('backend') {
+                    sh 'mvn package -B -DskipTests'
+                }
+            }
+            post {
+                success {
+                    archiveArtifacts artifacts: 'backend/target/*.jar', fingerprint: true
+                }
+            }
+        }
+
+        // ─────────────────────────────────────────────
+        stage('Frontend — Install') {
+        // ─────────────────────────────────────────────
             steps {
                 dir('frontend') {
-                    bat 'npm ci'
-                    bat 'npm run test'
+                    sh 'npm ci'
                 }
             }
         }
 
-        stage('Build Docker Images') {
+        // ─────────────────────────────────────────────
+        stage('Frontend — Tests') {
+        // ─────────────────────────────────────────────
             steps {
-                bat 'docker-compose build'
+                dir('frontend') {
+                    sh 'npm test -- --watch=false'
+                }
             }
         }
 
-        stage('Deploy') {
+        // ─────────────────────────────────────────────
+        stage('Frontend — Build') {
+        // ─────────────────────────────────────────────
             steps {
-                bat 'docker-compose down'
-                bat 'docker-compose up -d'
+                dir('frontend') {
+                    sh 'npm run build'
+                }
+            }
+            post {
+                success {
+                    archiveArtifacts artifacts: 'frontend/dist/**', fingerprint: true
+                }
             }
         }
     }
 
     post {
+        always {
+            cleanWs()
+        }
         success {
-            echo 'Pipeline completed successfully!'
+            echo 'Pipeline succeeded.'
         }
         failure {
-            echo 'Pipeline failed!'
+            echo 'Pipeline failed — check the stage logs above.'
         }
     }
 }

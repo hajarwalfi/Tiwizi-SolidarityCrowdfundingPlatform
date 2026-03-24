@@ -1,5 +1,6 @@
 import { Component, OnInit, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { AdminService } from '../../../../core/services/admin.service';
 import { AdminUser } from '../../../../core/models/admin.model';
 import { AdminUserDetailPanelComponent } from '../admin-user-detail-panel/admin-user-detail-panel.component';
@@ -26,7 +27,7 @@ export const BAN_REASONS: BanReason[] = [
 @Component({
   selector: 'app-admin-users-page',
   standalone: true,
-  imports: [CommonModule, AdminUserDetailPanelComponent],
+  imports: [CommonModule, RouterModule, AdminUserDetailPanelComponent],
   templateUrl: './admin-users-page.component.html',
 })
 export class AdminUsersPageComponent implements OnInit {

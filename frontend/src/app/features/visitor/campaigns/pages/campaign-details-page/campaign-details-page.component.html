@@ -7,6 +7,27 @@
     </div>
   }
 
+  <!-- Suspended State -->
+  @if (!isLoading() && isSuspended()) {
+    <div class="flex flex-col items-center justify-center min-h-[80vh] px-6 text-center">
+      <div class="w-20 h-20 bg-orange-50 rounded-[1.5rem] flex items-center justify-center mb-6">
+        <svg class="w-9 h-9 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/><path d="M10 9v6M14 9v6"/>
+        </svg>
+      </div>
+      <h1 class="text-2xl font-bold text-[#1c1c1c] mb-3">Campaign temporarily suspended</h1>
+      <p class="text-[14px] text-gray-400 font-medium max-w-sm leading-relaxed">
+        This campaign has been suspended pending review. If you previously supported it, your donation history is still recorded in your account.
+      </p>
+      <a
+        routerLink="/campaigns"
+        class="mt-8 px-6 py-2.5 bg-[#FF594B] text-white rounded-full font-bold text-sm hover:bg-[#e04a3d] transition-all shadow-md shadow-[#FF594B]/25 active:scale-95"
+      >
+        Discover other campaigns
+      </a>
+    </div>
+  }
+
   <!-- Error State -->
   @if (!isLoading() && error()) {
     <div class="flex flex-col items-center justify-center min-h-[80vh] px-6 text-center">

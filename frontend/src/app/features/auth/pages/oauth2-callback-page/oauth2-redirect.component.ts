@@ -36,10 +36,13 @@ export class OAuth2RedirectComponent implements OnInit {
       const code = params['code'];
 
       if (code) {
-        console.log('Authorization code received from backend');
         this.authService.exchangeCodeForTokens(code).subscribe({
-          next: () => {
-            this.router.navigate(['/']);
+          next: (user) => {
+            if (user) {
+              this.router.navigate(['/']);
+            } else {
+              this.router.navigate(['/login']);
+            }
           },
           error: (err) => {
             console.error('Code exchange failed:', err);

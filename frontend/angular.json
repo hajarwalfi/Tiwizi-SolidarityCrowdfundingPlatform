@@ -100,7 +100,8 @@
           "options": {
             "port": 4200,
             "open": false,
-            "liveReload": true
+            "liveReload": true,
+            "proxyConfig": "proxy.conf.json"
           },
           "configurations": {
             "production": {

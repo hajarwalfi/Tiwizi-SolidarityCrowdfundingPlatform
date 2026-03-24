@@ -143,6 +143,19 @@ public class UserProfileService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
+        // If banned, return minimal info with ban status
+        if (Boolean.TRUE.equals(user.getIsBanned())) {
+            return PublicUserProfileResponse.builder()
+                    .id(user.getId())
+                    .fullName(user.getFullName())
+                    .firstName(user.getFirstName())
+                    .displayName(user.getDisplayName())
+                    .profilePictureUrl(user.getProfilePictureUrl())
+                    .isBanned(true)
+                    .banReason(user.getBanReason())
+                    .build();
+        }
+
         // Check if profile is public
         if (Boolean.FALSE.equals(user.getIsProfilePublic())) {
             // Return minimal public info for private profiles
@@ -190,6 +203,7 @@ public class UserProfileService {
                 .activeCampaigns((int) activeCampaigns)
                 .donationsMade(donationsMade)
                 .topSupportedCategory(topSupportedCategory)
+                .isBanned(false)
                 .build();
     }
 }

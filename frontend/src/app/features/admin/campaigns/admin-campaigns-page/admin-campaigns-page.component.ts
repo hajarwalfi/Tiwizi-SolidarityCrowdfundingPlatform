@@ -11,6 +11,7 @@ interface AdminCampaignItem {
   title: string;
   category: string;
   status: string;
+  creatorId?: string;
   creatorName: string;
   goalAmount: number;
   amountCollected: number;
@@ -82,6 +83,7 @@ export class AdminCampaignsPageComponent implements OnInit {
           title: c.title,
           category: c.category as string,
           status: c.status as string,
+          creatorId: c.creatorId,
           creatorName: c.creatorName ?? '',
           goalAmount: Number(c.goalAmount),
           amountCollected: Number(c.amountCollected),

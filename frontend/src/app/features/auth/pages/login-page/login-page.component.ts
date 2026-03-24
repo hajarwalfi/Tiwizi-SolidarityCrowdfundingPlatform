@@ -1,7 +1,7 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
@@ -175,7 +175,7 @@ import { AuthService } from '../../../../core/services/auth.service';
     </div>
   `,
 })
-export class LoginPageComponent {
+export class LoginPageComponent implements OnInit {
   loginForm: FormGroup;
   errorMessage = '';
   isLoading = false;
@@ -184,11 +184,18 @@ export class LoginPageComponent {
     private fb: FormBuilder,
     private authService: AuthService,
     private router: Router,
+    private route: ActivatedRoute,
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(8)]],
     });
+  }
+
+  ngOnInit(): void {
+    if (this.route.snapshot.queryParamMap.get('banned') === 'true') {
+      this.errorMessage = 'Your account has been banned. Contact our support team at hello@tiwizi.com to appeal.';
+    }
   }
 
   onSubmit(): void {
@@ -203,7 +210,11 @@ export class LoginPageComponent {
         },
         error: (err) => {
           this.isLoading = false;
-          this.errorMessage = err.error?.message || 'Invalid email or password';
+          if (err.status === 403) {
+            this.errorMessage = 'Your account has been banned. Contact our support team at hello@tiwizi.com to appeal.';
+          } else {
+            this.errorMessage = err.error?.message || 'Invalid email or password';
+          }
         },
       });
     }

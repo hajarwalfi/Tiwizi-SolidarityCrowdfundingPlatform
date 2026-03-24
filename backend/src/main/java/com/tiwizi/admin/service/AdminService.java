@@ -373,6 +373,17 @@ public class AdminService {
         user.setBannedAt(LocalDateTime.now());
         userRepository.save(user);
 
+        // Suspend all active/pending campaigns of the banned user
+        List<Campaign> userCampaigns = campaignRepository.findByCreatorId(userId);
+        userCampaigns.stream()
+                .filter(c -> c.getStatus() == CampaignStatus.ACTIVE || c.getStatus() == CampaignStatus.PENDING)
+                .forEach(c -> {
+                    c.setStatus(CampaignStatus.SUSPENDED);
+                    c.setRejectionReason("Campaign suspended: creator account was banned.");
+                    campaignRepository.save(c);
+                    log.info("Campaign {} suspended due to ban of user {}", c.getId(), userId);
+                });
+
         notificationService.sendBanNotification(user, reason);
         log.info("User {} banned successfully for reason: {}", userId, reason);
     }
@@ -606,6 +617,15 @@ public class AdminService {
         user.setBanReason(reason);
         user.setBannedAt(LocalDateTime.now());
         userRepository.save(user);
+
+        // Suspend all active/pending campaigns of the banned user
+        campaignRepository.findByCreatorId(user.getId()).stream()
+                .filter(c -> c.getStatus() == CampaignStatus.ACTIVE || c.getStatus() == CampaignStatus.PENDING)
+                .forEach(c -> {
+                    c.setStatus(CampaignStatus.SUSPENDED);
+                    c.setRejectionReason("Campaign suspended: creator account was banned.");
+                    campaignRepository.save(c);
+                });
 
         try {
             notificationService.sendBanNotification(user, reason);

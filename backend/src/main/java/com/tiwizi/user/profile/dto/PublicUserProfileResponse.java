@@ -34,4 +34,8 @@ public class PublicUserProfileResponse {
     private Integer activeCampaigns;
     private Integer donationsMade;
     private String topSupportedCategory;
+
+    // Ban status
+    private Boolean isBanned;
+    private String banReason;
 }

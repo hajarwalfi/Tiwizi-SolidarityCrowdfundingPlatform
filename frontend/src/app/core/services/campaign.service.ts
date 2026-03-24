@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment.development';
+import { environment } from '../../../environments/environment';
 import { Campaign, CreateCampaignDto, CampaignCategory, CampaignStatus, CampaignUpdate } from '../models/campaign.model';
 
 export interface PageResponse<T> {
