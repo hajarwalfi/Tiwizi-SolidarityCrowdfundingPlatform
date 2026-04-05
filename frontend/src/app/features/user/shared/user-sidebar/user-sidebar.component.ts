@@ -1,5 +1,5 @@
 import { Component, OnInit, signal } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+  import { RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { ProfileService } from '../../../../core/services/profile.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { UserProfileResponse } from '../../../../core/models/user.model';
@@ -19,6 +19,7 @@ export class UserSidebarComponent implements OnInit {
     private profileService: ProfileService,
     private authService: AuthService,
     private notificationApi: NotificationApiService,
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -36,5 +37,10 @@ export class UserSidebarComponent implements OnInit {
       next: (res) => this.unreadCount.set(res.count),
       error: () => {},
     });
+  }
+
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/']);
   }
 }

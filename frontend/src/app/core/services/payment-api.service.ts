@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 
 export interface SetupIntentResponse {
@@ -29,9 +30,22 @@ export class PaymentApiService {
     return this.http.post<SetupIntentResponse>(`${this.baseUrl}/setup-intent`, {});
   }
 
-  /** Get the user's saved card info */
-  getSavedCard(): Observable<SavedCardResponse> {
-    return this.http.get<SavedCardResponse>(`${this.baseUrl}/saved-card`);
+  /** Get the user's saved card info - returns null if no card saved (204 NO_CONTENT) */
+  getSavedCard(): Observable<SavedCardResponse | null> {
+    return this.http.get<SavedCardResponse>(`${this.baseUrl}/saved-card`).pipe(
+      catchError((error) => {
+        // 204 NO_CONTENT is normal when no card exists - treat as null
+        if (error.status === 204) {
+          return of(null);
+        }
+        // For 404 or other errors, also treat as no card
+        if (error.status === 404) {
+          return of(null);
+        }
+        // For actual errors, throw
+        return throwError(() => error);
+      }),
+    );
   }
 
   /** Delete/detach the user's saved card */

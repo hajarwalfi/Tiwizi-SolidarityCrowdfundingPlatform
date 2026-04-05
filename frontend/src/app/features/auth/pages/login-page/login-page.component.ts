@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
@@ -88,6 +88,17 @@ import { AuthService } from '../../../../core/services/auth.service';
             </div>
           }
 
+          <!-- Loading Indicator -->
+          @if (isLoading) {
+            <div class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-xl text-blue-600 text-xs text-center flex items-center justify-center gap-2">
+              <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Verifying credentials...
+            </div>
+          }
+
           <!-- Email/Password Form -->
           <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-4">
             <div>
@@ -101,7 +112,8 @@ import { AuthService } from '../../../../core/services/auth.service';
                 type="email"
                 formControlName="email"
                 placeholder="name@example.com"
-                class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-4 focus:ring-tiwizi-primary/10 focus:border-tiwizi-primary outline-none transition-all duration-300 font-body text-xs"
+                [disabled]="isLoading"
+                class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-4 focus:ring-tiwizi-primary/10 focus:border-tiwizi-primary outline-none transition-all duration-300 font-body text-xs disabled:opacity-50"
                 [class.border-red-500]="
                   loginForm.get('email')?.invalid && loginForm.get('email')?.touched
                 "
@@ -119,7 +131,8 @@ import { AuthService } from '../../../../core/services/auth.service';
                 type="password"
                 formControlName="password"
                 placeholder="••••••••"
-                class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-4 focus:ring-tiwizi-primary/10 focus:border-tiwizi-primary outline-none transition-all duration-300 font-body text-xs"
+                [disabled]="isLoading"
+                class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-4 focus:ring-tiwizi-primary/10 focus:border-tiwizi-primary outline-none transition-all duration-300 font-body text-xs disabled:opacity-50"
                 [class.border-red-500]="
                   loginForm.get('password')?.invalid && loginForm.get('password')?.touched
                 "
@@ -128,10 +141,10 @@ import { AuthService } from '../../../../core/services/auth.service';
 
             <button
               type="submit"
-              [disabled]="loginForm.invalid"
+              [disabled]="loginForm.invalid || isLoading"
               class="w-full py-2.5 px-6 bg-tiwizi-primary text-white font-bold rounded-xl hover:bg-tiwizi-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-lg shadow-tiwizi-primary/20 hover:shadow-xl hover:shadow-tiwizi-primary/30 active:scale-[0.98] transform mt-2 text-xs"
             >
-              Sign in
+              {{ isLoading ? 'Signing in...' : 'Sign in' }}
             </button>
           </form>
 
@@ -185,6 +198,7 @@ export class LoginPageComponent implements OnInit {
     private authService: AuthService,
     private router: Router,
     private route: ActivatedRoute,
+    private cdr: ChangeDetectorRef,
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -215,6 +229,7 @@ export class LoginPageComponent implements OnInit {
           } else {
             this.errorMessage = err.error?.message || 'Invalid email or password';
           }
+          this.cdr.markForCheck();
         },
       });
     }

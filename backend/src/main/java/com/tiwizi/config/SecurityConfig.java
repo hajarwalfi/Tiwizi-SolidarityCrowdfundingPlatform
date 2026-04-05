@@ -101,7 +101,10 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        // Using strength 10 for better performance while maintaining security
+        // Default is 10, which provides a good balance between security and performance
+        // Password verification will be ~100ms per attempt instead of 500ms+
+        return new BCryptPasswordEncoder(10);
     }
 
     @Bean

@@ -52,8 +52,8 @@ server:
 # JWT Configuration
 jwt:
   secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
-  expiration: 86400000       # 24 hours
-  refresh-expiration: 604800000  # 7 days
+  expiration: 86400000 # 24 hours
+  refresh-expiration: 604800000 # 7 days
 
 # Application Configuration
 app:
@@ -63,7 +63,7 @@ app:
 
 # Stripe Payment Configuration
 stripe:
-  api-key: ${STRIPE_SECRET_KEY}
+  api-key: sk_test_51RiBptB0527abtPhojvpHkDT4yPnourNOhxGXbGXoYyLlmSfRiiR0uSwTfgG4AJC4M9MRTTYsRKyIhYEftgmpRHb00rP7NTiwC
   webhook-secret: ${STRIPE_WEBHOOK_SECRET:whsec_your_webhook_secret_here}
   currency: mad
   success-url: http://localhost:4200/donation/success

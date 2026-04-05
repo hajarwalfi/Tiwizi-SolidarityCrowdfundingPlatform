@@ -133,7 +133,8 @@ export class SettingsPageComponent implements OnInit, OnDestroy {
       next: (card) => {
         this.savedCard.set(card);
       },
-      error: () => {
+      error: (err) => {
+        console.error('Error loading saved card:', err);
         this.savedCard.set(null);
       },
     });
@@ -295,29 +296,49 @@ export class SettingsPageComponent implements OnInit, OnDestroy {
     this.cardLoading.set(true);
 
     try {
+      // Destroy any existing card element
+      this.stripeService.destroySetupCardElement();
+
+      // Create setup intent
       const response = await this.paymentApiService.createSetupIntent().toPromise();
-      if (!response) throw new Error('No response from setup-intent');
+      if (!response || !response.clientSecret) {
+        throw new Error('No client secret returned from setup-intent');
+      }
       this.setupClientSecret = response.clientSecret;
 
-      // Small delay for DOM to render the card element container
-      await new Promise((resolve) => setTimeout(resolve, 150));
+      // Wait for DOM to fully render the card element container
+      await new Promise((resolve) => setTimeout(resolve, 300));
 
-      this.setupCardElement = await this.stripeService.createSetupCardElement();
-      if (this.setupCardElement && this.setupCardElementRef) {
-        this.setupCardElement.mount(this.setupCardElementRef.nativeElement);
+      // Verify the element exists
+      if (!this.setupCardElementRef || !this.setupCardElementRef.nativeElement) {
+        throw new Error('Card element container not found in DOM');
       }
 
+      // Create and mount the card element
+      this.setupCardElement = await this.stripeService.createSetupCardElement();
+      if (!this.setupCardElement) {
+        throw new Error('Failed to create Stripe card element');
+      }
+
+      this.setupCardElement.mount(this.setupCardElementRef.nativeElement);
       this.cardLoading.set(false);
     } catch (err: any) {
       this.cardLoading.set(false);
-      this.cardErrorMessage.set('Initialization error. Please try again.');
+      this.showCardForm.set(false);
       console.error('Setup intent error:', err);
+      this.cardErrorMessage.set(err.message || 'Initialization error. Please try again.');
+      setTimeout(() => this.cardErrorMessage.set(''), 5000);
     }
   }
 
   async saveCard(): Promise<void> {
     if (!this.setupClientSecret) {
       this.cardErrorMessage.set('Error: missing setup secret');
+      return;
+    }
+
+    if (!this.setupCardElement) {
+      this.cardErrorMessage.set('Error: card element not initialized');
       return;
     }
 
@@ -341,6 +362,7 @@ export class SettingsPageComponent implements OnInit, OnDestroy {
     } catch (err: any) {
       this.cardLoading.set(false);
       this.cardErrorMessage.set(err.message || 'Error saving card.');
+      console.error('Save card error:', err);
     }
   }
 

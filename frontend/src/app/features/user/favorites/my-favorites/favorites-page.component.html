@@ -32,12 +32,23 @@
 
     <!-- Favorites List -->
     @if (!isLoading() && !error() && favorites().length > 0) {
-      <div class="flex flex-col bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <div
+        class="flex flex-col bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"
+      >
         <!-- Search bar -->
         <div class="px-4 py-3 border-b border-gray-100 flex justify-center">
           <div class="flex items-center gap-2 bg-[#FDFBF7] rounded-lg px-3 py-2 w-72">
-            <svg class="w-4 h-4 text-gray-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            <svg
+              class="w-4 h-4 text-gray-400 shrink-0"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
             </svg>
             <input
               type="text"
@@ -49,49 +60,61 @@
           </div>
         </div>
         <div class="divide-y divide-gray-100">
-        <div
-          *ngFor="let favorite of paginatedFavorites(); let i = index"
-          class="flex items-center gap-4 px-5 py-3.5 hover:bg-gray-50/60 transition-colors cursor-pointer group"
-          style="animation: fadeInUp 0.3s ease-out both"
-          [style.animation-delay]="i * 40 + 'ms'"
-          [routerLink]="['/campaigns', favorite.campaign.id]"
-        >
-          <!-- Color dot -->
           <div
-            class="w-9 h-9 rounded-xl shrink-0"
-            [style.background-color]="getCategoryColor(favorite.campaign.category)"
-          ></div>
+            *ngFor="let favorite of paginatedFavorites(); let i = index"
+            class="flex items-center gap-4 px-5 py-3.5 hover:bg-gray-50/60 transition-colors cursor-pointer group"
+            style="animation: fadeInUp 0.3s ease-out both"
+            [style.animation-delay]="i * 40 + 'ms'"
+            [routerLink]="['/campaigns', favorite.campaign.id]"
+          >
+            <!-- Title + category -->
+            <div class="flex-1 min-w-0">
+              <div
+                class="font-semibold text-[14px] text-[#1c1c1c] truncate group-hover:text-[#FF594B] transition-colors"
+              >
+                {{ favorite.campaign.title }}
+              </div>
+              <div class="text-[11px] text-gray-400 font-medium mt-0.5">
+                {{ categoryLabels[favorite.campaign.category] }}
+              </div>
+            </div>
 
-          <!-- Title + category -->
-          <div class="flex-1 min-w-0">
-            <div class="font-semibold text-[14px] text-[#1c1c1c] truncate group-hover:text-[#FF594B] transition-colors">
-              {{ favorite.campaign.title }}
-            </div>
-            <div class="text-[11px] text-gray-400 font-medium mt-0.5">
-              {{ categoryLabels[favorite.campaign.category] }}
-            </div>
+            <!-- Status badge -->
+            <span
+              class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-extrabold shrink-0"
+              [ngClass]="getStatusColor(favorite.campaign.status)"
+            >
+              <span
+                class="w-[5px] h-[5px] rounded-full"
+                [ngClass]="getStatusDotColor(favorite.campaign.status)"
+              ></span>
+              {{ getStatusLabel(favorite.campaign.status) }}
+            </span>
+
+            <!-- Remove button -->
+            <button
+              (click)="removeFavorite(favorite.campaign.id); $event.stopPropagation()"
+              class="w-7 h-7 rounded-full flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 transition-all shrink-0"
+              title="Remove from favorites"
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="3 6 5 6 21 6" />
+                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                <path d="M10 11v6" />
+                <path d="M14 11v6" />
+                <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+              </svg>
+            </button>
           </div>
-
-          <!-- Status badge -->
-          <span
-            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-extrabold shrink-0"
-            [ngClass]="getStatusColor(favorite.campaign.status)"
-          >
-            <span class="w-[5px] h-[5px] rounded-full" [ngClass]="getStatusDotColor(favorite.campaign.status)"></span>
-            {{ getStatusLabel(favorite.campaign.status) }}
-          </span>
-
-          <!-- Remove button -->
-          <button
-            (click)="removeFavorite(favorite.campaign.id); $event.stopPropagation()"
-            class="w-7 h-7 rounded-full flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 transition-all shrink-0"
-            title="Remove from favorites"
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
-            </svg>
-          </button>
-        </div>
         </div>
       </div>
 
@@ -104,9 +127,11 @@
           (click)="setPage(currentPage() - 1); $event.stopPropagation()"
           [disabled]="currentPage() === 1"
           class="inline-flex items-center gap-1 px-4 py-2 rounded-full text-[13px] font-medium border transition-all"
-          [class]="currentPage() === 1
-            ? 'border-gray-100 text-gray-300 bg-gray-50 cursor-not-allowed'
-            : 'border-gray-200 text-gray-600 bg-white hover:bg-gray-50 active:scale-95'"
+          [class]="
+            currentPage() === 1
+              ? 'border-gray-100 text-gray-300 bg-gray-50 cursor-not-allowed'
+              : 'border-gray-200 text-gray-600 bg-white hover:bg-gray-50 active:scale-95'
+          "
         >
           ← Previous
         </button>
@@ -119,9 +144,11 @@
           (click)="setPage(currentPage() + 1); $event.stopPropagation()"
           [disabled]="currentPage() === totalPages()"
           class="inline-flex items-center gap-1 px-4 py-2 rounded-full text-[13px] font-medium border transition-all"
-          [class]="currentPage() === totalPages()
-            ? 'border-gray-100 text-gray-300 bg-gray-50 cursor-not-allowed'
-            : 'border-gray-200 text-gray-700 bg-white hover:bg-gray-50 active:scale-95'"
+          [class]="
+            currentPage() === totalPages()
+              ? 'border-gray-100 text-gray-300 bg-gray-50 cursor-not-allowed'
+              : 'border-gray-200 text-gray-700 bg-white hover:bg-gray-50 active:scale-95'
+          "
         >
           Next →
         </button>
@@ -159,7 +186,6 @@
       </div>
     }
   </div>
-
 </div>
 
 <style>

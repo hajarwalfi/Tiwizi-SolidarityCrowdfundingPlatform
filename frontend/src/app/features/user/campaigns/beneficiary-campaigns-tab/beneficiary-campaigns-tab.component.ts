@@ -11,6 +11,8 @@ import { BeneficiaryCampaignResponse } from '../../../../core/models/beneficiary
 })
 export class BeneficiaryCampaignsTabComponent {
   private router = inject(Router);
+  private carouselIndices = new Map<string, number>();
+
   @Input({ required: true }) campaigns!: BeneficiaryCampaignResponse[];
   @Input() isLoading = false;
   @Input() activeFilter = 'ALL';
@@ -21,7 +23,10 @@ export class BeneficiaryCampaignsTabComponent {
   @Output() filterChanged = new EventEmitter<string>();
   @Output() searchChanged = new EventEmitter<string>();
   @Output() pageChanged = new EventEmitter<number>();
-  @Output() manageRequested = new EventEmitter<{ campaign: BeneficiaryCampaignResponse; tab: string }>();
+  @Output() manageRequested = new EventEmitter<{
+    campaign: BeneficiaryCampaignResponse;
+    tab: string;
+  }>();
 
   readonly statusFilters = [
     { value: 'ALL', label: 'All' },
@@ -84,18 +89,34 @@ export class BeneficiaryCampaignsTabComponent {
 
   getCategoryColor(category: string): string {
     const colors: Record<string, string> = {
-      HEALTH: '#FEE2E2', EDUCATION: '#DBEAFE', HOUSING: '#FEF3C7',
-      FOOD: '#FFEDD5', EMERGENCY: '#FFE4E6', ENVIRONMENT: '#D1FAE5',
-      COMMUNITY: '#EDE9FE', DISABILITY: '#E0F2FE', CHILDREN: '#FCE7F3', OTHER: '#F3F4F6',
+      HEALTH: '#FEE2E2',
+      EDUCATION: '#DBEAFE',
+      HOUSING: '#FEF3C7',
+      FOOD: '#FFEDD5',
+      EMERGENCY: '#FFE4E6',
+      ENVIRONMENT: '#D1FAE5',
+      COMMUNITY: '#EDE9FE',
+      DISABILITY: '#E0F2FE',
+      CHILDREN: '#FCE7F3',
+      CLOTHING: '#F3E8FF',
+      OTHER: '#F3F4F6',
     };
     return colors[category] || '#F3F4F6';
   }
 
   getCategoryEmoji(category: string): string {
     const emojis: Record<string, string> = {
-      HEALTH: '❤️', EDUCATION: '📚', HOUSING: '🏠',
-      FOOD: '🍎', EMERGENCY: '🚨', ENVIRONMENT: '🌱',
-      COMMUNITY: '👥', DISABILITY: '♿', CHILDREN: '🌟', OTHER: '📦',
+      HEALTH: '❤️',
+      EDUCATION: '📚',
+      HOUSING: '🏠',
+      FOOD: '🍎',
+      EMERGENCY: '🚨',
+      ENVIRONMENT: '🌱',
+      COMMUNITY: '👥',
+      DISABILITY: '♿',
+      CHILDREN: '🌟',
+      CLOTHING: '👕',
+      OTHER: '📦',
     };
     return emojis[category] || '📦';
   }
@@ -130,9 +151,30 @@ export class BeneficiaryCampaignsTabComponent {
       this.router.navigate(['/dashboard/campaigns/edit', campaign.id], { state: { campaign } });
       return;
     }
-    const tab = campaign.status === 'ACTIVE' ? 'updates'
-      : campaign.status === 'REJECTED' ? 'overview'
-      : 'overview';
+    const tab =
+      campaign.status === 'ACTIVE'
+        ? 'updates'
+        : campaign.status === 'REJECTED'
+          ? 'overview'
+          : 'overview';
     this.manageRequested.emit({ campaign, tab });
+  }
+
+  getCarouselIndex(campaignId: string): number {
+    return this.carouselIndices.get(campaignId) || 0;
+  }
+
+  setCarouselIndex(campaignId: string, index: number): void {
+    this.carouselIndices.set(campaignId, index);
+  }
+
+  nextImage(campaignId: string, totalImages: number): void {
+    const currentIndex = this.getCarouselIndex(campaignId);
+    this.setCarouselIndex(campaignId, (currentIndex + 1) % totalImages);
+  }
+
+  previousImage(campaignId: string, totalImages: number): void {
+    const currentIndex = this.getCarouselIndex(campaignId);
+    this.setCarouselIndex(campaignId, (currentIndex - 1 + totalImages) % totalImages);
   }
 }

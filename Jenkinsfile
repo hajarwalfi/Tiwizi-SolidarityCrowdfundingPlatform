@@ -100,7 +100,7 @@ pipeline {
                 )]) {
                     sh '''
                         echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                        docker-compose build
+                        docker compose build
                         docker tag tiwizi-backend $DOCKER_USER/tiwizi-backend:latest
                         docker tag tiwizi-frontend $DOCKER_USER/tiwizi-frontend:latest
                         docker push $DOCKER_USER/tiwizi-backend:latest

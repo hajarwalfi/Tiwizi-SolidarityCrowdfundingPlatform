@@ -23,8 +23,14 @@ export interface DonorCampaignView {
 @Component({
   selector: 'app-my-campaigns-page',
   standalone: true,
-  imports: [CommonModule, RouterLink, BeneficiaryCampaignsTabComponent, DonorCampaignsTabComponent, CampaignManagePanelComponent],
-  templateUrl: './my-campaigns-page.component.html'
+  imports: [
+    CommonModule,
+    RouterLink,
+    BeneficiaryCampaignsTabComponent,
+    DonorCampaignsTabComponent,
+    CampaignManagePanelComponent,
+  ],
+  templateUrl: './my-campaigns-page.component.html',
 })
 export class MyCampaignsPageComponent implements OnInit {
   viewMode = signal<'donor' | 'beneficiary'>('beneficiary');
@@ -50,10 +56,14 @@ export class MyCampaignsPageComponent implements OnInit {
     const filter = this.activeFilter();
     const q = this.searchQuery().toLowerCase().trim();
     let result = this.beneficiaryCampaigns();
-    if (filter === 'ACTIVE') result = result.filter(c => c.status === 'ACTIVE');
-    else if (filter === 'COMPLETED') result = result.filter(c => c.status === 'COMPLETED' || c.status === 'CLOSED');
-    else if (filter !== 'ALL') result = result.filter(c => c.status === filter);
-    if (q) result = result.filter(c => c.title.toLowerCase().includes(q) || c.location.toLowerCase().includes(q));
+    if (filter === 'ACTIVE') result = result.filter((c) => c.status === 'ACTIVE');
+    else if (filter === 'COMPLETED')
+      result = result.filter((c) => c.status === 'COMPLETED' || c.status === 'CLOSED');
+    else if (filter !== 'ALL') result = result.filter((c) => c.status === filter);
+    if (q)
+      result = result.filter(
+        (c) => c.title.toLowerCase().includes(q) || c.location.toLowerCase().includes(q),
+      );
     return result;
   });
 
@@ -62,19 +72,23 @@ export class MyCampaignsPageComponent implements OnInit {
     return this.filteredBeneficiaryCampaigns().slice(start, start + this.pageSize);
   });
 
-  beneficiaryTotalPages = computed(() => Math.max(1, Math.ceil(this.filteredBeneficiaryCampaigns().length / this.pageSize)));
+  beneficiaryTotalPages = computed(() =>
+    Math.max(1, Math.ceil(this.filteredBeneficiaryCampaigns().length / this.pageSize)),
+  );
 
   paginatedDonorCampaigns = computed(() => {
     const start = (this.donorPage() - 1) * this.pageSize;
     return this.donorCampaigns().slice(start, start + this.pageSize);
   });
 
-  donorTotalPages = computed(() => Math.max(1, Math.ceil(this.donorCampaigns().length / this.pageSize)));
+  donorTotalPages = computed(() =>
+    Math.max(1, Math.ceil(this.donorCampaigns().length / this.pageSize)),
+  );
 
   constructor(
     private beneficiaryService: BeneficiaryService,
     private donationService: DonationService,
-    private campaignService: CampaignService
+    private campaignService: CampaignService,
   ) {}
 
   ngOnInit(): void {
@@ -101,11 +115,25 @@ export class MyCampaignsPageComponent implements OnInit {
     this.isLoadingBeneficiary.set(true);
     this.beneficiaryService.getMyCampaigns().subscribe({
       next: (campaigns) => {
-        this.beneficiaryCampaigns.set(campaigns);
+        // Extract photo URLs from documents
+        const campaignsWithPhotos = campaigns.map((c) => ({
+          ...c,
+          photoUrls: (c.documents || [])
+            .filter(
+              (doc: any) =>
+                doc.documentType?.includes('PHOTO') ||
+                doc.documentType?.includes('IMAGE') ||
+                !doc.documentType?.includes('ID'),
+            )
+            .map((doc: any) => doc.fileUrl)
+            .filter((url: string) => url), // Remove empty URLs
+        }));
+
+        this.beneficiaryCampaigns.set(campaignsWithPhotos);
         this.isLoadingBeneficiary.set(false);
         this.beneficiaryLoaded.set(true);
       },
-      error: () => this.isLoadingBeneficiary.set(false)
+      error: () => this.isLoadingBeneficiary.set(false),
     });
   }
 
@@ -121,7 +149,13 @@ export class MyCampaignsPageComponent implements OnInit {
             existing.donationCount++;
             if (d.createdAt > existing.lastDonationDate) existing.lastDonationDate = d.createdAt;
           } else {
-            campaignMap.set(d.campaignId, { campaignId: d.campaignId, campaignTitle: d.campaignTitle, totalDonated: d.amount, donationCount: 1, lastDonationDate: d.createdAt });
+            campaignMap.set(d.campaignId, {
+              campaignId: d.campaignId,
+              campaignTitle: d.campaignTitle,
+              totalDonated: d.amount,
+              donationCount: 1,
+              lastDonationDate: d.createdAt,
+            });
           }
         }
         const views = Array.from(campaignMap.values());
@@ -136,15 +170,23 @@ export class MyCampaignsPageComponent implements OnInit {
           this.campaignService.getCampaignById(view.campaignId).subscribe({
             next: (campaign) => {
               view.campaign = campaign;
-              if (++loaded === views.length) { this.donorCampaigns.set(views); this.isLoadingDonor.set(false); this.donorLoaded.set(true); }
+              if (++loaded === views.length) {
+                this.donorCampaigns.set(views);
+                this.isLoadingDonor.set(false);
+                this.donorLoaded.set(true);
+              }
             },
             error: () => {
-              if (++loaded === views.length) { this.donorCampaigns.set(views); this.isLoadingDonor.set(false); this.donorLoaded.set(true); }
-            }
+              if (++loaded === views.length) {
+                this.donorCampaigns.set(views);
+                this.isLoadingDonor.set(false);
+                this.donorLoaded.set(true);
+              }
+            },
           });
         }
       },
-      error: () => this.isLoadingDonor.set(false)
+      error: () => this.isLoadingDonor.set(false),
     });
   }
 
@@ -155,7 +197,7 @@ export class MyCampaignsPageComponent implements OnInit {
 
   onCampaignUpdated(updated: BeneficiaryCampaignResponse): void {
     this.beneficiaryCampaigns.update((list) =>
-      list.map((c) => (c.id === updated.id ? updated : c))
+      list.map((c) => (c.id === updated.id ? updated : c)),
     );
     this.managedCampaign.set(updated);
   }

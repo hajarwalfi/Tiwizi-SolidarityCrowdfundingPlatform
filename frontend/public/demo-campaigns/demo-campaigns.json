@@ -1,0 +1,162 @@
+[
+  {
+    "title": "Rebuilding Hope: New School for Atlas Village",
+    "description": "After recent structural damages, the children of this small Atlas Mountains village currently have no safe building to study in. We are gathering funds to completely construct a new solid brick school with two main classrooms, providing safe heating for winter and new school desks. Every child deserves the right to learn in a warm and secure environment. Please help us build their future.",
+    "goalAmount": 150000.0,
+    "category": "EDUCATION",
+    "location": "Atlas Mountains, Morocco",
+    "isUrgent": true,
+    "deadline": "2026-06-30",
+    "ribNumber": "123456789012345678901234",
+    "phone": "+212600000001",
+    "contactEmail": "atlas.school@example.com",
+    "images": [
+      "demo-campaigns/campaign_1_cover.png",
+      "demo-campaigns/id_card_mockup.png"
+    ]
+  },
+  {
+    "title": "Vital Equipment for Rural Medical Clinic",
+    "description": "A rural community of over 3000 people relies on a single small clinic that lacks basic life-saving medical equipment. We need an ECG machine, a modern sterilization unit, and secure medicine cabinets. Your donation will directly help doctors provide essential care to the most vulnerable patients, including pregnant women and the elderly, saving lives daily.",
+    "goalAmount": 85000.0,
+    "category": "HEALTH",
+    "location": "Errachidia Region, Morocco",
+    "isUrgent": true,
+    "deadline": "2026-05-15",
+    "ribNumber": "234567890123456789012345",
+    "phone": "+212600000002",
+    "contactEmail": "clinic.health@example.com",
+    "images": [
+      "demo-campaigns/campaign_2_cover.png",
+      "demo-campaigns/id_card_mockup.png"
+    ]
+  },
+  {
+    "title": "Warm Winter Clothing for Orphans",
+    "description": "Winter in the high altitude regions can be brutal and unforgiving. Over 100 orphans and homeless children lack the heavy winter coats, gloves, and boots needed to survive the freezing temperatures safely. We are raising funds to buy high-quality, durable winter clothing packs so that no child goes cold this winter. Let's wrap them in warmth and love.",
+    "goalAmount": 30000.0,
+    "category": "CLOTHING",
+    "location": "Ifrane, Morocco",
+    "isUrgent": false,
+    "deadline": "2026-11-01",
+    "ribNumber": "345678901234567890123456",
+    "phone": "+212600000003",
+    "contactEmail": "winter.coats@example.com",
+    "images": [
+      "demo-campaigns/campaign_3_cover.png",
+      "demo-campaigns/id_card_mockup.png"
+    ]
+  },
+  {
+    "title": "Life is Water: Building a Community Well",
+    "description": "Imagine walking 4 miles every single day just to fetch drinkable water. That is the daily reality for the women and children of this dry southern village. By funding this deep water well, we will provide clean, crystal-clear drinking water locally. This will severely decrease waterborne diseases and allow children to spend their days in school instead of walking.",
+    "goalAmount": 120000.0,
+    "category": "COMMUNITY",
+    "location": "Zagora, Morocco",
+    "isUrgent": true,
+    "deadline": "2026-07-20",
+    "ribNumber": "456789012345678901234567",
+    "phone": "+212600000004",
+    "contactEmail": "water.well@example.com",
+    "images": [
+      "demo-campaigns/campaign_4_cover.png",
+      "demo-campaigns/id_card_mockup.png"
+    ]
+  },
+  {
+    "title": "Ramadan Food Baskets for 200 Families",
+    "description": "During the holy month, many impoverished families in the suburban areas cannot afford a proper Iftar meal. We are preparing rich food baskets filled with dates, flour, oil, sugar, and tea. A single basket costs around 300 MAD and can feed a family of 4 for weeks. Help us reach our goal to feed 200 families and spread the joy and blessings of Ramadan.",
+    "goalAmount": 60000.0,
+    "category": "FOOD",
+    "location": "Casablanca Suburbs, Morocco",
+    "isUrgent": true,
+    "deadline": "2026-02-28",
+    "ribNumber": "567890123456789012345678",
+    "phone": "+212600000005",
+    "contactEmail": "ramadan.food@example.com",
+    "images": [
+      "demo-campaigns/campaign_5_cover.png",
+      "demo-campaigns/id_card_mockup.png"
+    ]
+  },
+  {
+    "title": "Emergency Earthquake Relief Tents & Blankets",
+    "description": "A sudden earthquake has left dozens of families homeless and sleeping outside in the cold night. We are coordinating an urgent emergency response to provide heavy-duty, weather-resistant tents, thick blankets, and basic survival kits. Time is running out. Please contribute whatever you can to give these families safe shelter tonight.",
+    "goalAmount": 200000.0,
+    "category": "EMERGENCY",
+    "location": "Al Haouz Region, Morocco",
+    "isUrgent": true,
+    "deadline": "2026-04-15",
+    "ribNumber": "678901234567890123456789",
+    "phone": "+212600000006",
+    "contactEmail": "earthquake.relief@example.com",
+    "images": [
+      "demo-campaigns/campaign_6_cover.png",
+      "demo-campaigns/id_card_mockup.png"
+    ]
+  },
+  {
+    "title": "Modern Wheelchairs for Disabled Youth",
+    "description": "Mobility is independence. Many disabled young people remain trapped indoors simply because they cannot afford a modern, lightweight sports wheelchair. Our campaign aims to purchase 15 high-quality wheelchairs tailored for active youth, allowing them to go to university, play sports, and reintegrate into active society with pride.",
+    "goalAmount": 75000.0,
+    "category": "DISABILITY",
+    "location": "Rabat, Morocco",
+    "isUrgent": false,
+    "deadline": "2026-08-30",
+    "ribNumber": "789012345678901234567890",
+    "phone": "+212600000007",
+    "contactEmail": "mobility.now@example.com",
+    "images": [
+      "demo-campaigns/campaign_7_cover.png",
+      "demo-campaigns/id_card_mockup.png"
+    ]
+  },
+  {
+    "title": "Reforestation: Planting 10,000 Cedar Trees",
+    "description": "Due to recent devastating summer wildfires, massive patches of our beautiful historic cedar forest have been lost. We must restore nature by planting 10,000 native cedar saplings before the next rainy season. This initiative will prevent soil erosion, bring back local wildlife, and preserve the natural heritage for generations to come.",
+    "goalAmount": 50000.0,
+    "category": "ENVIRONMENT",
+    "location": "Azrou, Morocco",
+    "isUrgent": false,
+    "deadline": "2026-10-15",
+    "ribNumber": "890123456789012345678901",
+    "phone": "+212600000008",
+    "contactEmail": "tree.planting@example.com",
+    "images": [
+      "demo-campaigns/campaign_8_cover.png",
+      "demo-campaigns/id_card_mockup.png"
+    ]
+  },
+  {
+    "title": "A Safe Haven Shelter for Abandoned Animals",
+    "description": "Every day, dozens of kittens, puppies, and injured stray animals are abandoned on the streets. Our small volunteer team is overwhelmed. We are raising funds to build a proper, insulated shelter with clean cages, an on-site veterinary care room, and secure fences. Give these innocent souls a safe place to heal until they find a loving family.",
+    "goalAmount": 95000.0,
+    "category": "OTHER",
+    "location": "Tangier, Morocco",
+    "isUrgent": false,
+    "deadline": "2026-09-01",
+    "ribNumber": "901234567890123456789012",
+    "phone": "+212600000009",
+    "contactEmail": "animal.rescue@example.com",
+    "images": [
+      "demo-campaigns/campaign_9_cover.png",
+      "demo-campaigns/id_card_mockup.png"
+    ]
+  },
+  {
+    "title": "Building a Modest Home for a Widow",
+    "description": "Amina lost her husband two years ago and has been struggling to raise her three children in a dilapidated, leaking tin roof shack. We are rallying together to construct a clean, structurally sound, modest 2-bedroom home for her family. A brick-and-mortar house will ensure the children are safe, warm, and have a secure place to grow up.",
+    "goalAmount": 110000.0,
+    "category": "HOUSING",
+    "location": "Marrakech Outskirts, Morocco",
+    "isUrgent": true,
+    "deadline": "2026-05-30",
+    "ribNumber": "123012345678901234567890",
+    "phone": "+212600000010",
+    "contactEmail": "housing.hope@example.com",
+    "images": [
+      "demo-campaigns/campaign_10_cover.png",
+      "demo-campaigns/id_card_mockup.png"
+    ]
+  }
+]

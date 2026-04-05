@@ -32,6 +32,7 @@ export interface BeneficiaryCampaignResponse {
   instagram?: string;
   twitter?: string;
   website?: string;
+  photoUrls?: string[];
   documents?: BeneficiaryCampaignDocument[];
 }
 
